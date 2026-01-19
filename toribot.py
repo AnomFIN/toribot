@@ -653,9 +653,11 @@ class ToriBot:
             try:
                 valuation = self.valuator.valuate_item(item)
                 if valuation:
-                    item["valuation"] = valuation
-                    item["updated_at"] = datetime.now().isoformat()
-                    self.database.add_item(item_id, item)
+                    # Work on a copy to avoid mutating shared database state outside its lock
+                    updated_item = dict(item)
+                    updated_item["valuation"] = valuation
+                    updated_item["updated_at"] = datetime.now().isoformat()
+                    self.database.add_item(item_id, updated_item)
                     logger.info(f"Valuated item {item_id}")
                 
                 # Small delay between API calls
