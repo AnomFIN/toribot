@@ -23,6 +23,10 @@ POLL_INTERVAL = 60  # seconds
 SERVER_PORT = 8000
 FETCH_DELAY = 1  # seconds between fetching individual products
 
+# Regex pattern to match product IDs in href attributes
+# Matches: href="/recommerce/forsale/item/12345" or href='https://...item/12345'
+PRODUCT_ID_PATTERN = r'href=["\'][^"\']*?/recommerce/forsale/item/(\d+)'
+
 # Setup logging
 logging.basicConfig(
     level=logging.INFO,
@@ -97,9 +101,7 @@ class ToriFetcher:
         if not html:
             return []
         
-        # Match URLs like /recommerce/forsale/item/<id> in href attributes
-        pattern = r'href=["\'][^"\']*?/recommerce/forsale/item/(\d+)'
-        matches = re.findall(pattern, html)
+        matches = re.findall(PRODUCT_ID_PATTERN, html)
         
         # Return unique IDs
         return list(set(matches))
