@@ -9,6 +9,7 @@ import json
 import time
 import logging
 import os
+from html import unescape
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from threading import Thread
 from urllib.request import urlopen, Request
@@ -192,9 +193,8 @@ class ToriFetcher:
         """Clean extracted text by removing HTML tags and extra whitespace."""
         # Remove HTML tags
         text = re.sub(r'<[^>]+>', '', text)
-        # Decode HTML entities
-        text = text.replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>')
-        text = text.replace('&quot;', '"').replace('&#39;', "'")
+        # Decode HTML entities using standard library
+        text = unescape(text)
         # Remove extra whitespace
         text = ' '.join(text.split())
         return text.strip()
