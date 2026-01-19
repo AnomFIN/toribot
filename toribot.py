@@ -13,8 +13,7 @@ import os
 import signal
 import sys
 import random
-import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime
 from threading import Thread, Event, Lock
 from pathlib import Path
 from html import unescape
@@ -605,8 +604,8 @@ class ToriBot:
         downloaded = []
         for idx, img_url in enumerate(images):
             try:
-                # Create filename
-                ext = img_url.split('.')[-1].split('?')[0]
+                # Create filename with case-insensitive extension handling
+                ext = img_url.split('.')[-1].split('?')[0].lower()
                 if ext not in ['jpg', 'jpeg', 'png', 'gif', 'webp']:
                     ext = 'jpg'
                 filename = f"{item_id}_{idx}.{ext}"
@@ -714,10 +713,12 @@ def get_settings():
     """Get current settings"""
     try:
         settings = bot.settings_manager.get_settings()
+        # Create a copy to avoid modifying the original
+        settings_copy = json.loads(json.dumps(settings))
         # Mask API key
-        if settings.get("openai", {}).get("api_key"):
-            settings["openai"]["api_key"] = "***MASKED***"
-        return jsonify({"success": True, "settings": settings})
+        if settings_copy.get("openai", {}).get("api_key"):
+            settings_copy["openai"]["api_key"] = "***MASKED***"
+        return jsonify({"success": True, "settings": settings_copy})
     except Exception as e:
         logger.error(f"Error getting settings: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
