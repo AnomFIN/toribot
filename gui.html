@@ -3,90 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToriBot - Product Monitor</title>
+    <title>Tori Annataan Bot</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>ToriBot - Product Monitor</h1>
-            <p class="subtitle">Monitoring Tori.fi for new products</p>
+            <h1>🎁 Tori Annataan Bot</h1>
+            <p class="subtitle">Monitoring free items on Tori.fi</p>
         </header>
 
-        <div class="stats">
-            <div class="stat-item">
-                <span class="stat-label">Total Products:</span>
-                <span class="stat-value" id="total-count">0</span>
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="products">Products</button>
+            <button class="tab-btn" data-tab="settings">Settings</button>
+        </nav>
+
+        <!-- Products Tab -->
+        <div class="tab-content active" id="products-tab">
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total Items:</span>
+                    <span class="stat-value" id="total-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Last Updated:</span>
+                    <span class="stat-value" id="last-update">Never</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Auto-refresh:</span>
+                    <span class="stat-value">30s</span>
+                </div>
+                <div class="stat-item">
+                    <button id="valuate-btn" class="action-btn">🤖 Run Valuations</button>
+                </div>
             </div>
-            <div class="stat-item">
-                <span class="stat-label">Last Updated:</span>
-                <span class="stat-value" id="last-update">Never</span>
+
+            <div class="table-container">
+                <table id="products-table">
+                    <thead>
+                        <tr>
+                            <th>Images</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Location</th>
+                            <th>Seller</th>
+                            <th>Valuation</th>
+                            <th>Added</th>
+                            <th>Link</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-body">
+                        <tr>
+                            <td colspan="8" class="loading">Loading products...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="stat-item">
-                <span class="stat-label">Auto-refresh:</span>
-                <span class="stat-value">30s</span>
+
+            <div class="no-products" id="no-products" style="display: none;">
+                <p>No products found yet. The bot will start monitoring shortly.</p>
             </div>
         </div>
 
-        <div class="table-container">
-            <table id="products-table">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Title</th>
-                        <th>Description</th>
-                        <th>Location</th>
-                        <th>Seller</th>
-                        <th>Added</th>
-                        <th>Link</th>
-                    </tr>
-                </thead>
-                <tbody id="products-body">
-                    <tr>
-                        <td colspan="7" class="loading">Loading products...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <!-- Settings Tab -->
+        <div class="tab-content" id="settings-tab">
+            <div class="settings-container">
+                <h2>Bot Settings</h2>
+                
+                <div class="settings-section">
+                    <h3>📊 General Settings</h3>
+                    <div class="form-group">
+                        <label>Poll Interval (seconds):</label>
+                        <input type="number" id="poll_interval" min="10" value="60">
+                        <small>How often to check for new items (min: 10s)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Request Timeout (seconds):</label>
+                        <input type="number" id="timeout" min="1" value="15">
+                    </div>
+                    <div class="form-group">
+                        <label>Max Retries:</label>
+                        <input type="number" id="max_retries" min="0" max="5" value="2">
+                    </div>
+                    <div class="form-group">
+                        <label>Listing URL:</label>
+                        <input type="text" id="listing_url" style="width: 100%;">
+                    </div>
+                </div>
 
-        <div class="no-products" id="no-products" style="display: none;">
-            <p>No products found yet. The bot will start monitoring shortly.</p>
+                <div class="settings-section">
+                    <h3>🖼️ Image Settings</h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="images_enabled" checked>
+                            Enable Image Download
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Images Per Item:</label>
+                        <input type="number" id="max_images" min="1" max="10" value="5">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>🤖 OpenAI Settings</h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="openai_enabled">
+                            Enable OpenAI Valuations
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>API Key:</label>
+                        <input type="password" id="openai_key" placeholder="sk-...">
+                        <small>Stored securely in settings.json</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Model:</label>
+                        <input type="text" id="openai_model" value="gpt-4o-mini">
+                    </div>
+                    <div class="form-group">
+                        <label>Base URL:</label>
+                        <input type="text" id="openai_base_url" value="https://api.openai.com/v1">
+                    </div>
+                    <div class="form-group">
+                        <label>Valuation Interval (minutes):</label>
+                        <input type="number" id="valuation_interval" min="10" value="60">
+                        <small>How often to run automatic valuations</small>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>🌐 Server Settings</h3>
+                    <div class="form-group">
+                        <label>Host:</label>
+                        <input type="text" id="server_host" value="127.0.0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Port:</label>
+                        <input type="number" id="server_port" min="1024" max="65535" value="8787">
+                        <small>Requires restart to take effect</small>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="save-settings-btn" class="save-btn">💾 Save Settings</button>
+                    <button id="load-settings-btn" class="secondary-btn">🔄 Reload Settings</button>
+                </div>
+
+                <div id="settings-message" class="message"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Auto-refresh interval (30 seconds)
         const REFRESH_INTERVAL = 30000;
+        let currentTab = 'products';
         
-        // Load and display products
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                switchTab(tab);
+            });
+        });
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tab);
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.toggle('active', content.id === `${tab}-tab`);
+            });
+            if (tab === 'products') loadProducts();
+            else if (tab === 'settings') loadSettings();
+        }
+        
+        // Load products
         async function loadProducts() {
             try {
-                const response = await fetch('products.json');
+                const response = await fetch('/api/products');
+                const data = await response.json();
                 
-                if (!response.ok) {
-                    throw new Error('Failed to load products');
+                if (data.success) {
+                    displayProducts(data.products);
+                    document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+                } else {
+                    showError('Failed to load products');
                 }
-                
-                const products = await response.json();
-                displayProducts(products);
-                
-                // Update last update time
-                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
-                
             } catch (error) {
                 console.error('Error loading products:', error);
-                const tbody = document.getElementById('products-body');
-                tbody.innerHTML = '<tr><td colspan="7" class="error">Error loading products. Please check if the server is running.</td></tr>';
+                showError('Error loading products. Check if server is running.');
             }
         }
         
-        // Display products in the table
+        // Display products
         function displayProducts(products) {
             const tbody = document.getElementById('products-body');
             const noProducts = document.getElementById('no-products');
             const totalCount = document.getElementById('total-count');
             
-            // Update total count
             totalCount.textContent = products.length;
             
             if (products.length === 0) {
@@ -96,62 +213,100 @@
             }
             
             noProducts.style.display = 'none';
-            
-            // Clear existing rows
             tbody.innerHTML = '';
             
-            // Add rows for each product
             products.forEach(product => {
                 const row = document.createElement('tr');
                 
-                // Image cell
-                const imageCell = document.createElement('td');
-                imageCell.className = 'image-cell';
-                if (product.image_url) {
-                    const img = document.createElement('img');
-                    img.src = product.image_url;
-                    img.alt = product.title;
-                    img.className = 'product-image';
-                    img.onerror = function() {
-                        this.style.display = 'none';
-                        this.parentElement.textContent = 'No image';
-                    };
-                    imageCell.appendChild(img);
+                // Images
+                const imagesCell = document.createElement('td');
+                imagesCell.className = 'images-cell';
+                if (product.image_files && product.image_files.length > 0) {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = 'image-gallery';
+                    product.image_files.forEach((filename, idx) => {
+                        if (idx < 3) {
+                            const img = document.createElement('img');
+                            img.src = `/images/${filename}`;
+                            img.className = 'product-thumbnail';
+                            img.alt = product.title || 'Product';
+                            img.onerror = () => img.style.display = 'none';
+                            imgContainer.appendChild(img);
+                        }
+                    });
+                    if (product.image_files.length > 3) {
+                        const more = document.createElement('span');
+                        more.className = 'more-images';
+                        more.textContent = `+${product.image_files.length - 3}`;
+                        imgContainer.appendChild(more);
+                    }
+                    imagesCell.appendChild(imgContainer);
                 } else {
-                    imageCell.textContent = 'No image';
+                    imagesCell.textContent = 'No images';
+                    imagesCell.className = 'images-cell no-images';
                 }
-                row.appendChild(imageCell);
+                row.appendChild(imagesCell);
                 
-                // Title cell
+                // Title
                 const titleCell = document.createElement('td');
                 titleCell.className = 'title-cell';
-                titleCell.textContent = product.title;
+                titleCell.textContent = product.title || 'N/A';
+                if (product.errors && product.errors.length > 0) {
+                    const badge = document.createElement('span');
+                    badge.className = 'error-badge';
+                    badge.title = product.errors.join(', ');
+                    badge.textContent = '⚠️';
+                    titleCell.appendChild(badge);
+                }
                 row.appendChild(titleCell);
                 
-                // Description cell
+                // Description
                 const descCell = document.createElement('td');
                 descCell.className = 'description-cell';
-                descCell.textContent = product.description;
-                descCell.title = product.description; // Show full text on hover
+                descCell.textContent = product.description || 'N/A';
+                descCell.title = product.description || '';
                 row.appendChild(descCell);
                 
-                // Location cell
-                const locationCell = document.createElement('td');
-                locationCell.textContent = product.location;
-                row.appendChild(locationCell);
+                // Location
+                const locCell = document.createElement('td');
+                locCell.textContent = product.location || 'N/A';
+                row.appendChild(locCell);
                 
-                // Seller cell
+                // Seller
                 const sellerCell = document.createElement('td');
-                sellerCell.textContent = product.seller;
+                sellerCell.textContent = product.seller || 'N/A';
                 row.appendChild(sellerCell);
                 
-                // Timestamp cell
-                const timestampCell = document.createElement('td');
-                timestampCell.className = 'timestamp-cell';
-                timestampCell.textContent = product.timestamp;
-                row.appendChild(timestampCell);
+                // Valuation
+                const valCell = document.createElement('td');
+                valCell.className = 'valuation-cell';
+                if (product.valuation) {
+                    if (product.valuation.status === 'completed') {
+                        const div = document.createElement('div');
+                        div.className = 'valuation-text';
+                        div.textContent = product.valuation.text;
+                        valCell.appendChild(div);
+                    } else if (product.valuation.status === 'error') {
+                        valCell.textContent = '❌ Error';
+                        valCell.title = product.valuation.message || 'Unknown error';
+                    } else {
+                        valCell.textContent = '⏳ Pending';
+                    }
+                } else {
+                    valCell.textContent = '—';
+                }
+                row.appendChild(valCell);
                 
-                // Link cell
+                // Timestamp
+                const timeCell = document.createElement('td');
+                timeCell.className = 'timestamp-cell';
+                if (product.discovered_at) {
+                    const date = new Date(product.discovered_at);
+                    timeCell.textContent = date.toLocaleString();
+                }
+                row.appendChild(timeCell);
+                
+                // Link
                 const linkCell = document.createElement('td');
                 linkCell.className = 'link-cell';
                 const link = document.createElement('a');
@@ -166,13 +321,143 @@
             });
         }
         
+        // Load settings
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                const data = await response.json();
+                
+                if (data.success) {
+                    populateSettings(data.settings);
+                } else {
+                    showSettingsMessage('Failed to load settings', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                showSettingsMessage('Error loading settings', 'error');
+            }
+        }
+        
+        // Populate settings form
+        function populateSettings(s) {
+            document.getElementById('poll_interval').value = s.poll_interval_seconds || 60;
+            document.getElementById('timeout').value = s.request_timeout_seconds || 15;
+            document.getElementById('max_retries').value = s.max_retries || 2;
+            document.getElementById('listing_url').value = s.listing_url || '';
+            
+            document.getElementById('images_enabled').checked = s.images?.download_enabled ?? true;
+            document.getElementById('max_images').value = s.images?.max_images_per_item || 5;
+            
+            document.getElementById('openai_enabled').checked = s.openai?.enabled ?? false;
+            document.getElementById('openai_model').value = s.openai?.model || 'gpt-4o-mini';
+            document.getElementById('openai_base_url').value = s.openai?.base_url || 'https://api.openai.com/v1';
+            document.getElementById('valuation_interval').value = s.openai?.valuation_interval_minutes || 60;
+            
+            document.getElementById('server_host').value = s.server?.host || '127.0.0.1';
+            document.getElementById('server_port').value = s.server?.port || 8787;
+        }
+        
+        // Save settings
+        document.getElementById('save-settings-btn').addEventListener('click', async () => {
+            const settings = {
+                poll_interval_seconds: parseInt(document.getElementById('poll_interval').value),
+                listing_url: document.getElementById('listing_url').value,
+                request_timeout_seconds: parseInt(document.getElementById('timeout').value),
+                max_retries: parseInt(document.getElementById('max_retries').value),
+                openai: {
+                    enabled: document.getElementById('openai_enabled').checked,
+                    model: document.getElementById('openai_model').value,
+                    base_url: document.getElementById('openai_base_url').value,
+                    valuation_interval_minutes: parseInt(document.getElementById('valuation_interval').value)
+                },
+                images: {
+                    download_enabled: document.getElementById('images_enabled').checked,
+                    max_images_per_item: parseInt(document.getElementById('max_images').value)
+                },
+                server: {
+                    host: document.getElementById('server_host').value,
+                    port: parseInt(document.getElementById('server_port').value)
+                }
+            };
+            
+            const apiKey = document.getElementById('openai_key').value.trim();
+            if (apiKey && apiKey !== '***MASKED***') {
+                settings.openai.api_key = apiKey;
+            }
+            
+            try {
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(settings)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showSettingsMessage('✅ Settings saved successfully!', 'success');
+                    document.getElementById('openai_key').value = '';
+                } else {
+                    showSettingsMessage('❌ Failed: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                showSettingsMessage('❌ Error saving settings', 'error');
+            }
+        });
+        
+        // Reload settings
+        document.getElementById('load-settings-btn').addEventListener('click', () => {
+            loadSettings();
+            showSettingsMessage('Settings reloaded', 'info');
+        });
+        
+        // Trigger valuation
+        document.getElementById('valuate-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('valuate-btn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Running...';
+            
+            try {
+                const response = await fetch('/api/valuate', {method: 'POST'});
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ Valuations started! Check back in a few minutes.');
+                } else {
+                    alert('❌ ' + (data.message || data.error || 'Failed'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error triggering valuations');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🤖 Run Valuations';
+            }
+        });
+        
+        function showError(message) {
+            const tbody = document.getElementById('products-body');
+            tbody.innerHTML = `<tr><td colspan="8" class="error">${message}</td></tr>`;
+        }
+        
+        function showSettingsMessage(message, type) {
+            const msgEl = document.getElementById('settings-message');
+            msgEl.textContent = message;
+            msgEl.className = `message ${type}`;
+            msgEl.style.display = 'block';
+            setTimeout(() => msgEl.style.display = 'none', 5000);
+        }
+        
         // Initial load
         loadProducts();
         
-        // Set up auto-refresh
-        setInterval(loadProducts, REFRESH_INTERVAL);
+        // Auto-refresh
+        setInterval(() => {
+            if (currentTab === 'products') loadProducts();
+        }, REFRESH_INTERVAL);
         
-        console.log(`Auto-refresh enabled: will reload every ${REFRESH_INTERVAL / 1000} seconds`);
+        console.log('Tori Annataan Bot GUI loaded. Auto-refresh: 30s');
     </script>
 </body>
 </html>

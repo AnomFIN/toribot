@@ -29,3 +29,9 @@ Thumbs.db
 
 # Test files
 test_*.json
+
+# ToriBot specific
+debug/
+images/
+settings.json
+products.json

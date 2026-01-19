@@ -1,72 +1,125 @@
-# ToriBot
+# Tori Annataan Bot 🎁
 
-Tori.fi bot ilmaisten tuotteiden arvottamista varten - A bot for monitoring new products on Tori.fi
+Complete working bot for monitoring free items on Tori.fi with OpenAI-based valuation.
 
 ## Features
 
-- 🔄 Automatically polls Tori.fi every 60 seconds for new products
-- 🔍 Extracts product details (title, description, location, seller, images)
-- 💾 Stores products in JSON format with duplicate prevention
-- 🌐 Web-based GUI with auto-refresh
-- 📊 Clean, responsive table view of all monitored products
+- 🔄 **Automatic Polling**: Checks Tori.fi every 60 seconds (configurable)
+- 🖼️ **Image Download**: Downloads up to 5 images per item
+- 🤖 **OpenAI Valuation**: Automatic item valuation using GPT models
+- ⚙️ **Web GUI**: Modern interface with settings management
+- 💾 **Persistent Storage**: All state stored in JSON files
+- 🛡️ **Robust Error Handling**: Never crashes, tracks errors per item
+- 🌐 **Polite Crawling**: Jitter, retries, and exponential backoff
 
-## Files
+## Quick Start
 
-- **toribot.py** - Main bot script with polling logic and HTTP server
-- **gui.html** - Web interface for viewing products
-- **styles.css** - Styling for the web interface
-- **products.json** - Product data storage (created automatically)
+### 1. Install Dependencies
 
-## Requirements
+```bash
+pip install -r requirements.txt
+```
 
-- Python 3.6+
-- No external dependencies (uses only Python standard library)
+### 2. Run the Bot
+
+```bash
+python3 toribot.py
+```
+
+### 3. Open GUI
+
+Open http://127.0.0.1:8787 in your browser
+
+## File Structure
+
+```
+/toribot/
+  toribot.py            # Main bot application
+  gui.html              # Web interface
+  styles.css            # Styling
+  requirements.txt      # Python dependencies
+  products.json         # Product database (auto-created)
+  settings.json         # Settings (auto-created)
+  /debug/               # Debug logs (auto-created)
+  /images/              # Downloaded images (auto-created)
+```
+
+## Settings
+
+All settings can be managed via the GUI:
+
+### General
+- **Poll Interval**: How often to check for new items (default: 60s)
+- **Request Timeout**: HTTP request timeout (default: 15s)
+- **Max Retries**: Number of retry attempts (default: 2)
+
+### Images
+- **Download Enabled**: Toggle image downloading
+- **Max Images**: Number of images per item (default: 5)
+
+### OpenAI
+- **API Key**: Your OpenAI API key (stored securely in settings.json)
+- **Model**: Model to use (default: gpt-4o-mini)
+- **Valuation Interval**: How often to run valuations (default: 60 min)
+
+### Server
+- **Host**: Server host (default: 127.0.0.1)
+- **Port**: Server port (default: 8787)
 
 ## Usage
 
-1. **Start the bot:**
-   ```bash
-   python3 toribot.py
-   ```
+### Products Tab
+- View all discovered items
+- See images, descriptions, locations, sellers
+- Read OpenAI valuations
+- Click "View" to open item on Tori.fi
+- Click "Run Valuations" to manually trigger OpenAI analysis
 
-2. **Open the GUI in your browser:**
-   ```
-   http://localhost:8000/gui.html
-   ```
+### Settings Tab
+- Modify all bot settings
+- Save OpenAI API key
+- Changes take effect immediately (except server settings)
 
-3. **The bot will:**
-   - Poll https://www.tori.fi/recommerce/forsale/search?sort=PUBLISHED_DESC&trade_type=2 every 60 seconds
-   - Extract new product IDs using regex pattern `/recommerce/forsale/item/<id>`
-   - Fetch detailed information for each new product
-   - Save data to `products.json` (duplicates are automatically prevented)
-   - Serve the GUI on port 8000
+## Safety Features
 
-4. **The GUI will:**
-   - Display all products in a responsive table
-   - Auto-refresh every 30 seconds
-   - Show product images, titles, descriptions, locations, sellers, and timestamps
-   - Provide links to view products on Tori.fi
+- **Graceful Shutdown**: Press CTRL+C to stop cleanly
+- **Error Tracking**: Each item tracks extraction errors
+- **Retry Logic**: Exponential backoff for failed requests
+- **Jitter**: Random 0-3s delay to avoid pattern detection
+- **State Persistence**: All data saved to JSON files
+- **No Crashes**: Comprehensive exception handling
 
 ## Architecture
 
-The code is designed to be clean and extendable:
-
-- **ProductStorage**: Handles all JSON file operations and duplicate checking
-- **ToriFetcher**: Manages HTTP requests and HTML parsing with regex
-- **ToriBot**: Coordinates polling and integrates storage with fetcher
-- **HTTP Server**: Serves static files for the web GUI
-
-## Configuration
-
-Edit these constants in `toribot.py` to customize:
-
 ```python
-SEARCH_URL = "..."      # The Tori.fi search URL to monitor
-POLL_INTERVAL = 60      # Polling interval in seconds
-SERVER_PORT = 8000      # HTTP server port
-PRODUCTS_FILE = "..."   # Products JSON file path
+# Clean separation of concerns
+SettingsManager      # Settings persistence and validation
+ProductDatabase      # Product storage with thread-safe operations
+ToriFetcher          # HTTP requests with retries and jitter
+ProductExtractor     # HTML parsing and data extraction
+OpenAIValuator       # OpenAI API integration
+ToriBot              # Main coordinator with background threads
+Flask App            # REST API and GUI serving
 ```
 
-## Stopping the Bot
+## API Endpoints
 
-Press `Ctrl+C` to gracefully shut down the bot.
+- `GET /` - Serve GUI
+- `GET /api/products` - Get all products
+- `GET /api/settings` - Get current settings
+- `POST /api/settings` - Update settings
+- `POST /api/valuate` - Trigger manual valuation
+- `GET /images/<filename>` - Serve downloaded images
+
+## Requirements
+
+- Python 3.8+
+- flask >= 3.0.0
+- flask-cors >= 4.0.0
+- requests >= 2.31.0
+- pillow >= 10.0.0
+- openai >= 1.0.0
+
+## License
+
+Personal use project for monitoring Tori.fi listings.
