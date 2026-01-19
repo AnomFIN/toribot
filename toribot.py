@@ -679,7 +679,6 @@ class ToriBot:
 
 # Flask Application
 app = Flask(__name__)
-CORS(app)
 
 # Global bot instance
 bot = None
