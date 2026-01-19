@@ -21,6 +21,7 @@ SEARCH_URL = "https://www.tori.fi/recommerce/forsale/search?sort=PUBLISHED_DESC&
 PRODUCTS_FILE = "products.json"
 POLL_INTERVAL = 60  # seconds
 SERVER_PORT = 8000
+FETCH_DELAY = 1  # seconds between fetching individual products
 
 # Setup logging
 logging.basicConfig(
@@ -78,7 +79,7 @@ class ToriFetcher:
     
     def __init__(self):
         self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         }
     
     def fetch_page(self, url):
@@ -96,8 +97,8 @@ class ToriFetcher:
         if not html:
             return []
         
-        # Match URLs like /recommerce/forsale/item/<id>
-        pattern = r'/recommerce/forsale/item/(\d+)'
+        # Match URLs like /recommerce/forsale/item/<id> in href attributes
+        pattern = r'href=["\'][^"\']*?/recommerce/forsale/item/(\d+)'
         matches = re.findall(pattern, html)
         
         # Return unique IDs
@@ -236,7 +237,7 @@ class ToriBot:
                     logger.info(f"Added product: {product['title']}")
                 
                 # Small delay to avoid hammering the server
-                time.sleep(1)
+                time.sleep(FETCH_DELAY)
         
         if new_count > 0:
             self.storage.save_products()
