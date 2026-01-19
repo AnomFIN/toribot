@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToriBot - Product Monitor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ToriBot - Product Monitor</h1>
+            <p class="subtitle">Monitoring Tori.fi for new products</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-label">Total Products:</span>
+                <span class="stat-value" id="total-count">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Last Updated:</span>
+                <span class="stat-value" id="last-update">Never</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Auto-refresh:</span>
+                <span class="stat-value">30s</span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="products-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Location</th>
+                        <th>Seller</th>
+                        <th>Added</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody id="products-body">
+                    <tr>
+                        <td colspan="7" class="loading">Loading products...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="no-products" id="no-products" style="display: none;">
+            <p>No products found yet. The bot will start monitoring shortly.</p>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh interval (30 seconds)
+        const REFRESH_INTERVAL = 30000;
+        
+        // Load and display products
+        async function loadProducts() {
+            try {
+                const response = await fetch('products.json');
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load products');
+                }
+                
+                const products = await response.json();
+                displayProducts(products);
+                
+                // Update last update time
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                const tbody = document.getElementById('products-body');
+                tbody.innerHTML = '<tr><td colspan="7" class="error">Error loading products. Please check if the server is running.</td></tr>';
+            }
+        }
+        
+        // Display products in the table
+        function displayProducts(products) {
+            const tbody = document.getElementById('products-body');
+            const noProducts = document.getElementById('no-products');
+            const totalCount = document.getElementById('total-count');
+            
+            // Update total count
+            totalCount.textContent = products.length;
+            
+            if (products.length === 0) {
+                tbody.innerHTML = '';
+                noProducts.style.display = 'block';
+                return;
+            }
+            
+            noProducts.style.display = 'none';
+            
+            // Clear existing rows
+            tbody.innerHTML = '';
+            
+            // Add rows for each product
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                
+                // Image cell
+                const imageCell = document.createElement('td');
+                imageCell.className = 'image-cell';
+                if (product.image_url) {
+                    const img = document.createElement('img');
+                    img.src = product.image_url;
+                    img.alt = product.title;
+                    img.className = 'product-image';
+                    img.onerror = function() {
+                        this.style.display = 'none';
+                        this.parentElement.textContent = 'No image';
+                    };
+                    imageCell.appendChild(img);
+                } else {
+                    imageCell.textContent = 'No image';
+                }
+                row.appendChild(imageCell);
+                
+                // Title cell
+                const titleCell = document.createElement('td');
+                titleCell.className = 'title-cell';
+                titleCell.textContent = product.title;
+                row.appendChild(titleCell);
+                
+                // Description cell
+                const descCell = document.createElement('td');
+                descCell.className = 'description-cell';
+                descCell.textContent = product.description;
+                descCell.title = product.description; // Show full text on hover
+                row.appendChild(descCell);
+                
+                // Location cell
+                const locationCell = document.createElement('td');
+                locationCell.textContent = product.location;
+                row.appendChild(locationCell);
+                
+                // Seller cell
+                const sellerCell = document.createElement('td');
+                sellerCell.textContent = product.seller;
+                row.appendChild(sellerCell);
+                
+                // Timestamp cell
+                const timestampCell = document.createElement('td');
+                timestampCell.className = 'timestamp-cell';
+                timestampCell.textContent = product.timestamp;
+                row.appendChild(timestampCell);
+                
+                // Link cell
+                const linkCell = document.createElement('td');
+                linkCell.className = 'link-cell';
+                const link = document.createElement('a');
+                link.href = product.url;
+                link.target = '_blank';
+                link.textContent = 'View';
+                link.className = 'view-link';
+                linkCell.appendChild(link);
+                row.appendChild(linkCell);
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Initial load
+        loadProducts();
+        
+        // Set up auto-refresh
+        setInterval(loadProducts, REFRESH_INTERVAL);
+        
+        console.log(`Auto-refresh enabled: will reload every ${REFRESH_INTERVAL / 1000} seconds`);
+    </script>
+</body>
+</html>
