@@ -528,6 +528,40 @@ body {
     font-weight: 600;
 }
 
+.preview-prices {
+    margin-top: 8px;
+}
+
+.preview-price-new {
+    margin: 2px 0;
+    font-size: 0.8em;
+    color: #999;
+}
+
+.preview-price-current {
+    margin: 2px 0;
+    font-size: 0.9em;
+    color: #28a745;
+    font-weight: 600;
+}
+
+.product-prices {
+    margin-top: 8px;
+}
+
+.price-new {
+    margin: 2px 0;
+    font-size: 0.85em;
+    color: #999;
+}
+
+.price-current {
+    margin: 2px 0;
+    font-size: 0.95em;
+    color: #28a745;
+    font-weight: 600;
+}
+
 .system-status {
     grid-area: status;
 }

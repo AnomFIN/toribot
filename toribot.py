@@ -544,7 +544,9 @@ Anna arvio 4-5 lauseessa:
 3. Kunnon arvio ja keskeiset hyvät/huonot puolet
 4. Suositus: Kannattaako hakea? (Kyllä/Ei/Ehkä)
 
-Lisää lopuksi arvioitu nykyarvo numeromuodossa: ARVO: X€
+Lisää lopuksi molemmat arviot numeromuodossa:
+HINTA_UUTENA: X€
+ARVO_NYT: Y€
 
 Vastaa vain suomeksi, ole ytimekäs."""
             
@@ -561,19 +563,41 @@ Vastaa vain suomeksi, ole ytimekäs."""
             
             valuation_text = response.choices[0].message.content.strip()
             
-            # Extract numerical price value if present
-            price_value = None
-            price_match = re.search(r'ARVO:\s*(\d+)€?', valuation_text, re.IGNORECASE)
-            if price_match:
+            # Extract both price values
+            price_new = None
+            price_current = None
+            
+            # Try to extract "HINTA_UUTENA" value
+            price_new_match = re.search(r'HINTA_UUTENA:\s*(\d+)€?', valuation_text, re.IGNORECASE)
+            if price_new_match:
                 try:
-                    price_value = int(price_match.group(1))
+                    price_new = int(price_new_match.group(1))
                 except ValueError:
                     pass
+            
+            # Try to extract "ARVO_NYT" value
+            price_current_match = re.search(r'ARVO_NYT:\s*(\d+)€?', valuation_text, re.IGNORECASE)
+            if price_current_match:
+                try:
+                    price_current = int(price_current_match.group(1))
+                except ValueError:
+                    pass
+            
+            # Fallback to old "ARVO:" format for backwards compatibility
+            if price_current is None:
+                price_match = re.search(r'ARVO:\s*(\d+)€?', valuation_text, re.IGNORECASE)
+                if price_match:
+                    try:
+                        price_current = int(price_match.group(1))
+                    except ValueError:
+                        pass
             
             return {
                 "status": "completed",
                 "text": valuation_text,
-                "price_estimate": price_value,
+                "price_new": price_new,
+                "price_current": price_current,
+                "price_estimate": price_current,  # Keep for backwards compatibility
                 "model": openai_settings.get("model"),
                 "timestamp": datetime.now().isoformat()
             }

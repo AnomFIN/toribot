@@ -912,7 +912,12 @@
                     <div class="preview-content">
                         <h4>${product.title || 'Ei otsikkoa'}</h4>
                         <p class="preview-location"><i class="fas fa-map-marker-alt"></i> ${product.location || 'Ei sijaintia'}</p>
-                        ${product.valuation?.price_estimate ? `<p class="preview-value"><i class="fas fa-euro-sign"></i> ${product.valuation.price_estimate}€</p>` : ''}
+                        ${product.valuation?.price_new || product.valuation?.price_current ? `
+                            <div class="preview-prices">
+                                ${product.valuation?.price_new ? `<p class="preview-price-new">Hinta uutena: ~${product.valuation.price_new}€</p>` : ''}
+                                ${product.valuation?.price_current ? `<p class="preview-price-current">Arvo nyt: ${product.valuation.price_current}€</p>` : ''}
+                            </div>
+                        ` : ''}
                     </div>
                 `;
                 
@@ -1027,7 +1032,12 @@
                     <div class="product-info">
                         <h3>${product.title || 'Ei otsikkoa'}</h3>
                         <p class="location"><i class="fas fa-map-marker-alt"></i> ${product.location || 'Ei sijaintia'}</p>
-                        ${product.valuation?.price_estimate ? `<p class="value"><i class="fas fa-euro-sign"></i> ${product.valuation.price_estimate}€</p>` : ''}
+                        ${product.valuation?.price_new || product.valuation?.price_current ? `
+                            <div class="product-prices">
+                                ${product.valuation?.price_new ? `<p class="price-new">Hinta uutena: ~${product.valuation.price_new}€</p>` : ''}
+                                ${product.valuation?.price_current ? `<p class="price-current">Arvo nyt: ${product.valuation.price_current}€</p>` : ''}
+                            </div>
+                        ` : ''}
                         <a href="${product.url}" target="_blank" class="view-btn">
                             <i class="fas fa-external-link-alt"></i> Näytä
                         </a>
@@ -1550,15 +1560,32 @@
                         div.textContent = product.valuation.text;
                         valCell.appendChild(div);
                         
-                        // Add price estimate if available
-                        if (product.valuation.price_estimate) {
-                            const priceDiv = document.createElement('div');
-                            priceDiv.className = 'price-estimate';
-                            priceDiv.textContent = `Arvio: ${product.valuation.price_estimate}€`;
-                            priceDiv.style.fontWeight = 'bold';
-                            priceDiv.style.color = '#28a745';
-                            priceDiv.style.marginTop = '5px';
-                            valCell.appendChild(priceDiv);
+                        // Add price estimates if available
+                        if (product.valuation.price_new || product.valuation.price_current) {
+                            const pricesDiv = document.createElement('div');
+                            pricesDiv.className = 'price-estimates';
+                            pricesDiv.style.marginTop = '8px';
+                            
+                            if (product.valuation.price_new) {
+                                const priceNewDiv = document.createElement('div');
+                                priceNewDiv.className = 'price-new';
+                                priceNewDiv.textContent = `Hinta uutena: ~${product.valuation.price_new}€`;
+                                priceNewDiv.style.color = '#999';
+                                priceNewDiv.style.fontSize = '0.9em';
+                                pricesDiv.appendChild(priceNewDiv);
+                            }
+                            
+                            if (product.valuation.price_current) {
+                                const priceCurrentDiv = document.createElement('div');
+                                priceCurrentDiv.className = 'price-current';
+                                priceCurrentDiv.textContent = `Arvo nyt: ${product.valuation.price_current}€`;
+                                priceCurrentDiv.style.fontWeight = 'bold';
+                                priceCurrentDiv.style.color = '#28a745';
+                                priceCurrentDiv.style.fontSize = '1.1em';
+                                pricesDiv.appendChild(priceCurrentDiv);
+                            }
+                            
+                            valCell.appendChild(pricesDiv);
                         }
                     } else if (product.valuation.status === 'error') {
                         valCell.textContent = '❌ Error';
