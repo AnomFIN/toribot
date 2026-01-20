@@ -878,9 +878,11 @@ def fetch_products():
     try:
         if bot:
             # Force a fetch run
-            bot.poller.poll_once()
-            logger.info("Product fetch triggered successfully")
-            return jsonify({"success": True, "message": "Fetch triggered"})
+            bot._poll_once()
+            # Count items after fetch
+            items = bot.database.get_all_items()
+            logger.info(f"Product fetch triggered successfully, total items: {len(items)}")
+            return jsonify({"success": True, "message": "Fetch completed", "count": len(items)})
         else:
             return jsonify({"success": False, "error": "Bot not initialized"}), 500
     except Exception as e:

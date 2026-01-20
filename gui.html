@@ -552,26 +552,28 @@
             }
         }
         
-        // Navigation event listeners
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const pageId = link.dataset.page;
-                showPage(pageId);
+        // Navigation event listeners - will be set up in DOMContentLoaded
+        function setupNavigationListeners() {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.dataset.page;
+                    showPage(pageId);
+                });
             });
-        });
-        
-        // Sidebar toggle
-        document.getElementById('sidebar-toggle').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-            document.getElementById('main-content').classList.toggle('expanded');
-        });
-        
-        // Mobile overlay
-        document.getElementById('mobile-overlay').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.remove('mobile-open');
-            document.getElementById('mobile-overlay').classList.remove('active');
-        });
+            
+            // Sidebar toggle
+            document.getElementById('sidebar-toggle').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('collapsed');
+                document.getElementById('main-content').classList.toggle('expanded');
+            });
+            
+            // Mobile overlay
+            document.getElementById('mobile-overlay').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.remove('mobile-open');
+                document.getElementById('mobile-overlay').classList.remove('active');
+            });
+        }
         
         // Translations
         const translations = {
@@ -932,12 +934,28 @@
             document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
                 const key = element.getAttribute('data-i18n-placeholder');
                 if (translations[lang] && translations[lang][key]) {
-                   load and refresh
+                    element.placeholder = translations[lang][key];
+                }
+            });
+            
+            // Update page title if on current page
+            if (currentPage) {
+                const title = document.getElementById('page-title');
+                const key = currentPage.replace('-', '_');
+                if (translations[currentLanguage][key]) {
+                    title.textContent = translations[currentLanguage][key];
+                }
+            }
+            
+            localStorage.setItem('language', currentLanguage);
+        }
+        
+        // Refresh current page
         function refreshCurrentPage() {
             loadPageData(currentPage);
         }
         
-        document.getElementById('refresh-btn').addEventListener('click', refreshCurrentPage);
+        // Refresh button listener - added in DOMContentLoaded
         
         // Add remaining product view functions (simplified for now)
         function loadProductsGrid() {
@@ -1026,62 +1044,24 @@
             document.getElementById('success-rate').textContent = successRate + '%';
         }
         
-        // Initialize dashboard
-        showPage('dashboard');
+        // Load saved language preference and initialize - moved to DOMContentLoaded
+        // (See consolidated initialization at the end of the script)
         
-        // Update page title if on current page
-        if (currentPage) {
-            const title = document.getElementById('page-title');
-            const key = currentPage.replace('-', '_');
-            if (translations[currentLanguage][key]) {
-                title.textContent = translations[currentLanguage][key];
-            }
-        }
-        
-        localStorage.setItem('language', currentLanguage);
-    }
-    
-    // Load saved language preference
-    const savedLanguage = localStorage.getItem('language') || 'fi';
-    document.getElementById('language-select').value = savedLanguage;
-    document.getElementById('language-select-sidebar').value = savedLanguage;
-    setLanguage(savedLanguage);
-    
-    // Language selector event listeners
-    document.getElementById('language-select').addEventListener('change', (e) => {
-        setLanguage(e.target.value);
-        document.getElementById('language-select-sidebar').value = e.target.value;
-    });
-    
-    document.getElementById('language-select-sidebar').addEventListener('change', (e) => {
-        setLanguage(e.target.value);
-        document.getElementById('language-select').value = e.target.value;
-    });
-        
-        // Language change events
-        [document.getElementById('language-select'), document.getElementById('language-select-sidebar')].forEach(select => {
-            if (select) {
-                select.addEventListener('change', (e) => {
-                    setLanguage(e.target.value);
-                    // Sync both selectors
-                    [document.getElementById('language-select'), document.getElementById('language-select-sidebar')].forEach(s => {
-                        if (s && s !== e.target) s.value = e.target.value;
-                    });
-                });
-            }
-        });
-        
-        // Logo functionality
-        const logoElement = document.getElementById('background-logo');
-        const opacitySlider = document.getElementById('logo-opacity');
-        const blurSlider = document.getElementById('logo-blur');
-        const positionSelect = document.getElementById('logo-position');
-        const sizeSelect = document.getElementById('logo-size');
-        const logoFileInput = document.getElementById('logo-file');
-        const logoUrlInput = document.getElementById('logo-url');
-        const loadUrlBtn = document.getElementById('load-logo-url-btn');
-        const opacityValue = document.getElementById('opacity-value');
-        const blurValue = document.getElementById('blur-value');
+        // Logo functionality - to be initialized on DOMContentLoaded
+        function initializeLogoFunctionality() {
+            const logoElement = document.getElementById('background-logo');
+            const opacitySlider = document.getElementById('logo-opacity');
+            const blurSlider = document.getElementById('logo-blur');
+            const positionSelect = document.getElementById('logo-position');
+            const sizeSelect = document.getElementById('logo-size');
+            const logoFileInput = document.getElementById('logo-file');
+            const logoUrlInput = document.getElementById('logo-url');
+            const loadUrlBtn = document.getElementById('load-logo-url-btn');
+            const opacityValue = document.getElementById('opacity-value');
+            const blurValue = document.getElementById('blur-value');
+            
+            // Skip if elements don't exist
+            if (!logoElement || !opacitySlider) return;
         
         // Load saved logo settings
         function loadLogoSettings() {
@@ -1304,136 +1284,31 @@
                 loadUrlBtn.textContent = originalText;
             }
         });
-        loadUrlBtn.addEventListener('click', async () => {
-            const url = logoUrlInput.value.trim();
-            
-            if (!url) {
-                const errorMsg = currentLanguage === 'fi' ? 
-                    'Anna kelvollinen URL-osoite' : 
-                    'Please enter a valid URL';
-                alert(errorMsg);
-                return;
-            }
-            
-            if (!url.startsWith('https://') && !url.startsWith('http://')) {
-                const errorMsg = currentLanguage === 'fi' ? 
-                    'URL-osoitteen tulee alkaa http:// tai https://' : 
-                    'URL must start with http:// or https://';
-                alert(errorMsg);
-                return;
-            }
-            
-            const originalText = loadUrlBtn.textContent;
-            const loadingText = currentLanguage === 'fi' ? '⏳ Ladataan...' : '⏳ Loading...';
-            
-            loadUrlBtn.disabled = true;
-            loadUrlBtn.textContent = loadingText;
-            
-            try {
-                // Test if image loads
-                const img = new Image();
-                img.crossOrigin = 'anonymous';
-                
-                img.onload = () => {
-                    try {
-                        // Create canvas to convert to base64
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        
-                        ctx.drawImage(img, 0, 0);
-                        const imageData = canvas.toDataURL('image/png');
-                        
-                        logoElement.style.backgroundImage = `url(${imageData})`;
-                        logoElement.classList.add('has-image');
-                        updateLogoStyle();
-                        saveLogoSettings();
-                        
-                        const successMsg = currentLanguage === 'fi' ? 
-                            'Logo ladattu URL:sta onnistuneesti!' : 
-                            'Logo loaded from URL successfully!';
-                        alert(successMsg);
-                        logoUrlInput.value = '';
-                    } catch (error) {
-                        console.error('Canvas error:', error);
-                        // Fallback: use URL directly
-                        logoElement.style.backgroundImage = `url(${url})`;
-                        logoElement.classList.add('has-image');
-                        updateLogoStyle();
-                        saveLogoSettings();
-                        
-                        const successMsg = currentLanguage === 'fi' ? 
-                            'Logo ladattu URL:sta!' : 
-                            'Logo loaded from URL!';
-                        alert(successMsg);
-                        logoUrlInput.value = '';
-                    }
-                    
-                    loadUrlBtn.disabled = false;
-                    loadUrlBtn.textContent = originalText;
-                };
-                
-                img.onerror = () => {
-                    const errorMsg = currentLanguage === 'fi' ? 
-                        'Kuvan lataus epäonnistui. Tarkista URL-osoite.' : 
-                        'Failed to load image. Please check the URL.';
-                    alert(errorMsg);
-                    
-                    loadUrlBtn.disabled = false;
-                    loadUrlBtn.textContent = originalText;
-                };
-                
-                img.src = url;
-                
-            } catch (error) {
-                console.error('Error loading logo from URL:', error);
-                const errorMsg = currentLanguage === 'fi' ? 
-                    'Virhe kuvan latauksessa URL:sta' : 
-                    'Error loading image from URL';
-                alert(errorMsg);
-                
-                loadUrlBtn.disabled = false;
-                loadUrlBtn.textContent = originalText;
-            }
-        });
         
-        // Clear logo button
-        document.getElementById('clear-logo-btn').addEventListener('click', () => {
-            logoElement.style.backgroundImage = '';
-            logoElement.classList.remove('has-image');
-            logoFileInput.value = '';
-            saveLogoSettings();
-            
-            const successMsg = currentLanguage === 'fi' ? 
-                'Logo poistettu' : 
-                'Logo cleared';
-            console.log(successMsg);
-        });
+        // Clear logo button functionality
+        const clearLogoBtn = document.getElementById('clear-logo-btn');
+        if (clearLogoBtn) {
+            clearLogoBtn.addEventListener('click', () => {
+                if (logoElement) {
+                    logoElement.style.backgroundImage = '';
+                    logoElement.classList.remove('has-image');
+                }
+                
+                if (typeof logoFileInput !== 'undefined' && logoFileInput) {
+                    logoFileInput.value = '';
+                }
+                
+                if (typeof saveLogoSettings === 'function') {
+                    saveLogoSettings();
+                }
+            });
+        }
         
         // Initialize logo settings
         loadLogoSettings();
+    } // End of initializeLogoFunctionality
         
-        // Tab switching
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tab = btn.dataset.tab;
-                switchTab(tab);
-            });
-        });
-        
-        function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.tab === tab);
-            });
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.toggle('active', content.id === `${tab}-tab`);
-            });
-            if (tab === 'products') loadProducts();
-            else if (tab === 'settings') loadSettings();
-        }
+        // Tab switching code removed - not used in current navigation structure
         
         // Load products
         async function loadProducts() {
@@ -1708,6 +1583,8 @@
                 
                 if (data.success) {
                     populateSettings(data.settings);
+                    // Initialize settings event listeners after settings are loaded
+                    initializeSettingsListeners();
                 } else {
                     const errorMsg = currentLanguage === 'fi' ? 'Asetusten lataus epäonnistui' : 'Failed to load settings';
                     showSettingsMessage(errorMsg, 'error');
@@ -1752,8 +1629,14 @@
             // Load logo settings are handled separately by loadLogoSettings()
         }
         
-        // Save settings
-        document.getElementById('save-settings-btn').addEventListener('click', async () => {
+        // Initialize settings page event listeners (called when settings page loads)
+        function initializeSettingsListeners() {
+            // Save settings
+            const saveSettingsBtn = document.getElementById('save-settings-btn');
+            if (!saveSettingsBtn || saveSettingsBtn.dataset.listenerAdded) return;
+            saveSettingsBtn.dataset.listenerAdded = 'true';
+            
+            saveSettingsBtn.addEventListener('click', async () => {
             const settings = {
                 poll_interval_seconds: parseInt(document.getElementById('poll_interval').value),
                 listing_url: document.getElementById('listing_url').value,
@@ -1827,7 +1710,10 @@
         });
         
         // Test Telegram connection
-        document.getElementById('test-telegram-btn').addEventListener('click', async () => {
+        const testTelegramBtn = document.getElementById('test-telegram-btn');
+        if (testTelegramBtn && !testTelegramBtn.dataset.listenerAdded) {
+            testTelegramBtn.dataset.listenerAdded = 'true';
+            testTelegramBtn.addEventListener('click', async () => {
             const btn = document.getElementById('test-telegram-btn');
             const originalText = btn.textContent;
             const testingText = currentLanguage === 'fi' ? '⏳ Lähetetään...' : '⏳ Sending...';
@@ -1879,18 +1765,25 @@
                 btn.textContent = originalText;
             }
         });
-        
+        }
         
         // Reload settings
-        document.getElementById('load-settings-btn').addEventListener('click', () => {
-            loadSettings();
-            const msg = currentLanguage === 'fi' ? 'Asetukset ladattu uudelleen' : 'Settings reloaded';
-            showSettingsMessage(msg, 'info');
-        });
+        const loadSettingsBtn = document.getElementById('load-settings-btn');
+        if (loadSettingsBtn && !loadSettingsBtn.dataset.listenerAdded) {
+            loadSettingsBtn.dataset.listenerAdded = 'true';
+            loadSettingsBtn.addEventListener('click', () => {
+                loadSettings();
+                const msg = currentLanguage === 'fi' ? 'Asetukset ladattu uudelleen' : 'Settings reloaded';
+                showSettingsMessage(msg, 'info');
+            });
+        }
         
         // Trigger valuation
-        document.getElementById('valuate-btn').addEventListener('click', async () => {
-            const btn = document.getElementById('valuate-btn');
+        const valuateBtn = document.getElementById('valuate-btn');
+        if (valuateBtn && !valuateBtn.dataset.listenerAdded) {
+            valuateBtn.dataset.listenerAdded = 'true';
+            valuateBtn.addEventListener('click', async () => {
+                const btn = valuateBtn;
             btn.disabled = true;
             const runningText = currentLanguage === 'fi' ? '⏳ Suoritetaan...' : '⏳ Running...';
             const originalText = btn.textContent;
@@ -1920,6 +1813,8 @@
                 btn.textContent = originalText;
             }
         });
+        }
+    } // End of initializeSettingsListeners
         
         function showError(message) {
             const tbody = document.getElementById('products-body');
@@ -1934,8 +1829,19 @@
             setTimeout(() => msgEl.style.display = 'none', 5000);
         }
         
-        // Dashboard action buttons event listeners
+        
+        // Initialize page when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
+            // Set up navigation listeners
+            setupNavigationListeners();
+            
+            // Refresh button listener
+            const refreshBtn = document.getElementById('refresh-btn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', refreshCurrentPage);
+            }
+            
+            // Dashboard action buttons event listeners
             // Fetch products button
             const fetchBtn = document.getElementById('fetch-btn');
             if (fetchBtn) {
@@ -2015,15 +1921,32 @@
                     }
                 });
             }
-        });
-        
-        // Initialize page when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
+            
             // Load saved language preference
             const savedLanguage = localStorage.getItem('language') || 'fi';
-            document.getElementById('language-select').value = savedLanguage;
-            document.getElementById('language-select-sidebar').value = savedLanguage;
+            const languageSelectEl = document.getElementById('language-select');
+            const languageSelectSidebarEl = document.getElementById('language-select-sidebar');
+            if (languageSelectEl) languageSelectEl.value = savedLanguage;
+            if (languageSelectSidebarEl) languageSelectSidebarEl.value = savedLanguage;
             setLanguage(savedLanguage);
+            
+            // Language selector event listeners
+            if (languageSelectEl) {
+                languageSelectEl.addEventListener('change', (e) => {
+                    setLanguage(e.target.value);
+                    if (languageSelectSidebarEl) languageSelectSidebarEl.value = e.target.value;
+                });
+            }
+            
+            if (languageSelectSidebarEl) {
+                languageSelectSidebarEl.addEventListener('change', (e) => {
+                    setLanguage(e.target.value);
+                    if (languageSelectEl) languageSelectEl.value = e.target.value;
+                });
+            }
+            
+            // Initialize logo functionality
+            initializeLogoFunctionality();
             
             // Show dashboard by default
             showPage('dashboard');
