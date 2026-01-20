@@ -342,7 +342,17 @@
                 remember_session: 'Muista kirjautuminen',
                 remember_session_desc: 'Säästää istunnon uudelleenkäyttöä varten',
                 test_login: '🧪 Testaa kirjautuminen',
-                test_login_desc: 'Testaa kirjautumistiedot ennen tallennusta'
+                test_login_desc: 'Testaa kirjautumistiedot ennen tallennusta',
+                telegram_settings: 'Telegram-ilmoitukset',
+                enable_telegram: 'Aktivoi Telegram-ilmoitukset',
+                telegram_desc: 'Lähetä ilmoitus Telegramiin kun uusi tuote löytyy',
+                telegram_token: 'Bot Token:',
+                telegram_token_desc: 'Luo bot @BotFatherissa ja kopioi token tähän',
+                telegram_chat_id: 'Chat ID:',
+                telegram_chat_desc: 'Kanavan, ryhmän tai henkilökohtaisen chatin tunniste',
+                telegram_include_images: 'Sisällytä kuvat ilmoituksiin',
+                test_telegram: '🧪 Testaa Telegram-yhteys',
+                test_telegram_desc: 'Lähetä testivesti Telegramiin'
             },
             en: {
                 subtitle: 'Monitoring free items on Tori.fi',
@@ -422,7 +432,17 @@
                 remember_session: 'Remember login session',
                 remember_session_desc: 'Saves session for reuse',
                 test_login: '🧪 Test Login',
-                test_login_desc: 'Test credentials before saving'
+                test_login_desc: 'Test credentials before saving',
+                telegram_settings: 'Telegram Notifications',
+                enable_telegram: 'Enable Telegram notifications',
+                telegram_desc: 'Send notification to Telegram when new product is found',
+                telegram_token: 'Bot Token:',
+                telegram_token_desc: 'Create bot with @BotFather and copy token here',
+                telegram_chat_id: 'Chat ID:',
+                telegram_chat_desc: 'Channel, group or private chat identifier',
+                telegram_include_images: 'Include images in notifications',
+                test_telegram: '🧪 Test Telegram Connection',
+                test_telegram_desc: 'Send test message to Telegram'
             }
         };
         
@@ -1008,6 +1028,12 @@
             // Don't populate password field for security
             document.getElementById('tori_remember_session').checked = s.tori_login?.remember_session ?? true;
             
+            // Telegram settings
+            document.getElementById('telegram_enabled').checked = s.telegram?.enabled ?? false;
+            document.getElementById('telegram_chat_id').value = s.telegram?.chat_id || '';
+            document.getElementById('telegram_include_images').checked = s.telegram?.include_images ?? true;
+            // Don't populate token field for security
+            
             // Load logo settings are handled separately by loadLogoSettings()
         }
         
@@ -1036,6 +1062,11 @@
                     enabled: document.getElementById('tori_login_enabled').checked,
                     username: document.getElementById('tori_username').value.trim(),
                     remember_session: document.getElementById('tori_remember_session').checked
+                },
+                telegram: {
+                    enabled: document.getElementById('telegram_enabled').checked,
+                    chat_id: document.getElementById('telegram_chat_id').value.trim(),
+                    include_images: document.getElementById('telegram_include_images').checked
                 }
             };
             
@@ -1047,6 +1078,11 @@
             const toriPassword = document.getElementById('tori_password').value.trim();
             if (toriPassword && toriPassword !== '') {
                 settings.tori_login.password = toriPassword;
+            }
+            
+            const telegramToken = document.getElementById('telegram_token').value.trim();
+            if (telegramToken && telegramToken !== '') {
+                settings.telegram.token = telegramToken;
             }
             
             try {
@@ -1063,6 +1099,7 @@
                     showSettingsMessage(successMsg, 'success');
                     document.getElementById('openai_key').value = '';
                     document.getElementById('tori_password').value = '';
+                    document.getElementById('telegram_token').value = '';
                 } else {
                     const errorPrefix = currentLanguage === 'fi' ? '❌ Epäonnistui: ' : '❌ Failed: ';
                     showSettingsMessage(errorPrefix + (data.error || 'Unknown error'), 'error');
@@ -1071,6 +1108,60 @@
                 console.error('Error saving settings:', error);
                 const errorMsg = currentLanguage === 'fi' ? '❌ Virhe asetusten tallennuksessa' : '❌ Error saving settings';
                 showSettingsMessage(errorMsg, 'error');
+            }
+        });
+        
+        // Test Telegram connection
+        document.getElementById('test-telegram-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('test-telegram-btn');
+            const originalText = btn.textContent;
+            const testingText = currentLanguage === 'fi' ? '⏳ Lähetetään...' : '⏳ Sending...';
+            
+            btn.disabled = true;
+            btn.textContent = testingText;
+            
+            const telegramConfig = {
+                token: document.getElementById('telegram_token').value.trim(),
+                chat_id: document.getElementById('telegram_chat_id').value.trim()
+            };
+            
+            if (!telegramConfig.token || !telegramConfig.chat_id) {
+                const errorMsg = currentLanguage === 'fi' ? 
+                    'Syötä Bot Token ja Chat ID ensin' : 
+                    'Please enter Bot Token and Chat ID first';
+                showSettingsMessage(errorMsg, 'error');
+                btn.disabled = false;
+                btn.textContent = originalText;
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/test-telegram', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(telegramConfig)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const successMsg = currentLanguage === 'fi' ? 
+                        '✅ Testivesti lähetetty onnistuneesti Telegramiin!' : 
+                        '✅ Test message sent successfully to Telegram!';
+                    showSettingsMessage(successMsg, 'success');
+                } else {
+                    const errorPrefix = currentLanguage === 'fi' ? '❌ Telegram-testi epäonnistui: ' : '❌ Telegram test failed: ';
+                    showSettingsMessage(errorPrefix + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error testing Telegram:', error);
+                const errorMsg = currentLanguage === 'fi' ? 
+                    '❌ Virhe Telegram-yhteydessä' : 
+                    '❌ Error testing Telegram connection';
+                showSettingsMessage(errorMsg, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
             }
         });
         
