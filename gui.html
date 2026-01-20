@@ -1027,26 +1027,36 @@
         }
         
         // Initialize dashboard
-        showPage('dashboard'
-            });
-            
-            // Update page title if on current page
-            if (currentPage) {
-                const title = document.getElementById('page-title');
-                const key = currentPage.replace('-', '_');
-                if (translations[lang][key]) {
-                    title.textContent = translations[lang][key];
-                }
+        showPage('dashboard');
+        
+        // Update page title if on current page
+        if (currentPage) {
+            const title = document.getElementById('page-title');
+            const key = currentPage.replace('-', '_');
+            if (translations[currentLanguage][key]) {
+                title.textContent = translations[currentLanguage][key];
             }
-            
-            localStorage.setItem('language', lang);
         }
         
-        // Load saved language preference
-        const savedLanguage = localStorage.getItem('language') || 'fi';
-        document.getElementById('language-select').value = savedLanguage;
-        document.getElementById('language-select-sidebar').value = savedLanguage;
-        setLanguage(savedLanguage);
+        localStorage.setItem('language', currentLanguage);
+    }
+    
+    // Load saved language preference
+    const savedLanguage = localStorage.getItem('language') || 'fi';
+    document.getElementById('language-select').value = savedLanguage;
+    document.getElementById('language-select-sidebar').value = savedLanguage;
+    setLanguage(savedLanguage);
+    
+    // Language selector event listeners
+    document.getElementById('language-select').addEventListener('change', (e) => {
+        setLanguage(e.target.value);
+        document.getElementById('language-select-sidebar').value = e.target.value;
+    });
+    
+    document.getElementById('language-select-sidebar').addEventListener('change', (e) => {
+        setLanguage(e.target.value);
+        document.getElementById('language-select').value = e.target.value;
+    });
         
         // Language change events
         [document.getElementById('language-select'), document.getElementById('language-select-sidebar')].forEach(select => {
@@ -2007,13 +2017,26 @@
             }
         });
         
-        // Initial load
-        loadProducts();
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved language preference
+            const savedLanguage = localStorage.getItem('language') || 'fi';
+            document.getElementById('language-select').value = savedLanguage;
+            document.getElementById('language-select-sidebar').value = savedLanguage;
+            setLanguage(savedLanguage);
+            
+            // Show dashboard by default
+            showPage('dashboard');
+        });
         
         // Auto-refresh
         setInterval(() => {
             if (currentPage === 'products' || currentPage === 'products-list' || currentPage === 'dashboard') {
-                loadProducts();
+                if (currentPage === 'dashboard') {
+                    loadDashboard();
+                } else {
+                    loadProducts();
+                }
             }
         }, REFRESH_INTERVAL);
         
