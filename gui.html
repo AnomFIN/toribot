@@ -3,25 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tori Annataan Bot</title>
+    <title>🎁 Tori Annataan Bot - Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="background-logo" id="background-logo"></div>
-    <div class="container">
-        <header>
-            <h1>🎁 Tori Annataan Bot</h1>
-            <p class="subtitle" data-i18n="subtitle">Seurataan ilmaisia tuotteita Tori.fi palvelusta</p>
+    
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>🎁 ToriBot</h2>
+            <button class="sidebar-toggle" id="sidebar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#" class="nav-link active" data-page="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span data-i18n="dashboard">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="products">
+                    <i class="fas fa-th-large"></i>
+                    <span data-i18n="products">Tuotteet</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="products-list">
+                    <i class="fas fa-list"></i>
+                    <span data-i18n="products_list">Liistanäkymä</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="analytics">
+                    <i class="fas fa-chart-line"></i>
+                    <span data-i18n="analytics">Analytiikka</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span data-i18n="settings">Asetukset</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="language-switcher">
+                <select id="language-select-sidebar">
+                    <option value="fi">🇫🇮 FI</option>
+                    <option value="en">🇺🇸 EN</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <h1 id="page-title" data-i18n="dashboard">Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <button id="refresh-btn" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i>
+                    <span data-i18n="refresh">Päivitä</span>
+                </button>
+                <span class="last-update-header">
+                    <i class="fas fa-clock"></i>
+                    <span data-i18n="last_updated">Viimeksi päivitetty:</span>
+                    <span id="last-update-time" data-i18n="never">Ei koskaan</span>
+                </span>
+            </div>
         </header>
 
-        <nav class="tabs">
-            <button class="tab-btn active" data-tab="products" data-i18n="products">Tuotteet</button>
-            <button class="tab-btn" data-tab="settings" data-i18n="settings">Asetukset</button>
-        </nav>
-
-        <!-- Products Tab -->
-        <div class="tab-content active" id="products-tab">
-            <div class="stats">
+        <!-- Dashboard Page -->
+        <div class="page active" id="dashboard-page">
+            <div class="dashboard-grid">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-products">0</h3>
+                            <p data-i18n="total_products">Tuotteita yhteensä</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="valued-products">0</h3>
+                            <p data-i18n="valued_products">Arvostettuja tuotteita</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-euro-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-value">0€</h3>
+                            <p data-i18n="total_estimated_value">Arvioitu kokonaisarvo</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-images">0</h3>
+                            <p data-i18n="total_images">Kuvia ladattu</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h3 data-i18n="quick_actions">Pikavalinnat</h3>
+                    <div class="actions-grid">
+                        <button class="action-card" id="run-valuations-dash">
+                            <i class="fas fa-robot"></i>
+                            <span data-i18n="run_valuations">Suorita arvostukset</span>
+                        </button>
+                        <button class="action-card" id="fetch-images-dash">
+                            <i class="fas fa-download"></i>
+                            <span data-i18n="fetch_images">Hae kuvat</span>
+                        </button>
+                        <button class="action-card" id="export-data">
+                            <i class="fas fa-file-export"></i>
+                            <span data-i18n="export_data">Vie tiedot</span>
+                        </button>
+                        <button class="action-card" id="clear-old-data">
+                            <i class="fas fa-trash-alt"></i>
+                            <span data-i18n="clear_old">Siivoa vanhat</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Recent Products -->
+                <div class="recent-products">
+                    <h3 data-i18n="recent_products">Viimeisimmät tuotteet</h3>
+                    <div class="products-preview" id="recent-products-list">
+                        <div class="loading-card">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span data-i18n="loading">Ladataan...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- System Status -->
+                <div class="system-status">
+                    <h3 data-i18n="system_status">Järjestelmän tila</h3>
+                    <div class="status-items">
+                        <div class="status-item">
+                            <i class="fas fa-server status-icon"></i>
+                            <span data-i18n="bot_status">Botin tila:</span>
+                            <span class="status-value" id="bot-status">Käynnissä</span>
+                        </div>
+                        <div class="status-item">
+                            <i class="fas fa-wifi status-icon"></i>
+                            <span data-i18n="connection_status">Yhteys:</span>
+                            <span class="status-value" id="connection-status">Toimii</span>
+                        </div>
+                        <div class="status-item">
+                            <i class="fas fa-brain status-icon"></i>
+                            <span data-i18n="openai_status">OpenAI:</span>
+                            <span class="status-value" id="openai-status">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Products Grid Page -->
+        <div class="page" id="products-page">
+            <div class="page-header">
+                <div class="view-controls">
+                    <button class="btn btn-secondary" id="grid-view-btn">
+                        <i class="fas fa-th"></i>
+                        <span data-i18n="grid_view">Ruudukko</span>
+                    </button>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="product-search" placeholder="Hae tuotteita..." data-i18n-placeholder="search_products">
+                    </div>
+                    <select id="sort-products">
+                        <option value="newest" data-i18n-option="newest">Uusimmat ensin</option>
+                        <option value="oldest" data-i18n-option="oldest">Vanhimmat ensin</option>
+                        <option value="valued" data-i18n-option="valued">Arvostetuimmat</option>
+                        <option value="price-high" data-i18n-option="price_high">Korkein arvo</option>
+                        <option value="price-low" data-i18n-option="price_low">Matalin arvo</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="products-grid" id="products-grid">
+                <div class="loading-placeholder">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span data-i18n="loading_products">Ladataan tuotteita...</span>
+                </div>
+            </div>
+        </div>
                 <div class="stat-item">
                     <span class="stat-label" data-i18n="total_items">Tuotteita yhteensä:</span>
                     <span class="stat-value" id="total-count">0</span>
@@ -42,7 +233,46 @@
                 </div>
             </div>
 
-            <div class="table-container">
+        <!-- Analytics Page -->
+        <div class="page" id="analytics-page">
+            <div class="analytics-grid">
+                <div class="chart-card">
+                    <h3 data-i18n="products_over_time">Tuotteet ajan myötä</h3>
+                    <div class="chart-placeholder">
+                        <canvas id="products-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <h3 data-i18n="value_distribution">Arvojen jakauma</h3>
+                    <div class="chart-placeholder">
+                        <canvas id="value-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="analytics-stats">
+                    <h3 data-i18n="detailed_statistics">Yksityiskohtaiset tilastot</h3>
+                    <div class="analytics-list">
+                        <div class="analytics-item">
+                            <span data-i18n="avg_value">Keskiarvo:</span>
+                            <span id="avg-value">0€</span>
+                        </div>
+                        <div class="analytics-item">
+                            <span data-i18n="highest_value">Korkein arvo:</span>
+                            <span id="highest-value">0€</span>
+                        </div>
+                        <div class="analytics-item">
+                            <span data-i18n="most_common_location">Yleisin sijainti:</span>
+                            <span id="common-location">-</span>
+                        </div>
+                        <div class="analytics-item">
+                            <span data-i18n="success_rate">Arvostusprosentti:</span>
+                            <span id="success-rate">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
                 <table id="products-table">
                     <thead>
                         <tr>
@@ -69,8 +299,8 @@
             </div>
         </div>
 
-        <!-- Settings Tab -->
-        <div class="tab-content" id="settings-tab">
+        <!-- Settings Page -->
+        <div class="page" id="settings-page">
             <div class="settings-container">
                 <h2 data-i18n="bot_settings">Botin asetukset</h2>
                 
@@ -256,18 +486,131 @@
             </div>
         </div>
     </div>
+    
+    <!-- Mobile overlay -->
+    <div class="mobile-overlay" id="mobile-overlay"></div>
 
     <script>
         const REFRESH_INTERVAL = 30000;
-        let currentTab = 'products';
+        let currentPage = 'dashboard';
         let currentLanguage = 'fi';
+        let allProducts = [];
+        
+        // Navigation handling
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected page
+            const page = document.getElementById(pageId + '-page');
+            if (page) {
+                page.classList.add('active');
+                currentPage = pageId;
+                
+                // Update page title
+                const title = document.getElementById('page-title');
+                const key = pageId.replace('-', '_');
+                title.textContent = translations[currentLanguage][key] || pageId;
+                
+                // Add active class to corresponding nav link
+                const navLink = document.querySelector(`[data-page="${pageId}"]`);
+                if (navLink) {
+                    navLink.classList.add('active');
+                }
+                
+                // Load page-specific data
+                loadPageData(pageId);
+            }
+        }
+        
+        // Load page-specific data
+        function loadPageData(pageId) {
+            switch (pageId) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'products':
+                    loadProductsGrid();
+                    break;
+                case 'products-list':
+                    loadProductsList();
+                    break;
+                case 'analytics':
+                    loadAnalytics();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+            }
+        }
+        
+        // Navigation event listeners
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = link.dataset.page;
+                showPage(pageId);
+            });
+        });
+        
+        // Sidebar toggle
+        document.getElementById('sidebar-toggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            document.getElementById('main-content').classList.toggle('expanded');
+        });
+        
+        // Mobile overlay
+        document.getElementById('mobile-overlay').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.remove('mobile-open');
+            document.getElementById('mobile-overlay').classList.remove('active');
+        });
         
         // Translations
         const translations = {
             fi: {
-                subtitle: 'Seurataan ilmaisia tuotteita Tori.fi palvelusta',
+                dashboard: 'Dashboard',
                 products: 'Tuotteet',
+                products_list: 'Listanäkymä',
+                analytics: 'Analytiikka',
                 settings: 'Asetukset',
+                refresh: 'Päivitä',
+                total_products: 'Tuotteita yhteensä',
+                valued_products: 'Arvostettuja tuotteita',
+                total_estimated_value: 'Arvioitu kokonaisarvo',
+                total_images: 'Kuvia ladattu',
+                quick_actions: 'Pikavalinnat',
+                export_data: 'Vie tiedot',
+                clear_old: 'Siivoa vanhat',
+                recent_products: 'Viimeisimmät tuotteet',
+                system_status: 'Järjestelmän tila',
+                bot_status: 'Botin tila',
+                connection_status: 'Yhteys',
+                openai_status: 'OpenAI',
+                grid_view: 'Ruudukko',
+                list_view: 'Lista',
+                search_products: 'Hae tuotteita...',
+                newest: 'Uusimmat ensin',
+                oldest: 'Vanhimmat ensin',
+                valued: 'Arvostetuimmat',
+                price_high: 'Korkein arvo',
+                price_low: 'Matalin arvo',
+                actions: 'Toiminnot',
+                products_over_time: 'Tuotteet ajan myötä',
+                value_distribution: 'Arvojen jakauma',
+                detailed_statistics: 'Yksityiskohtaiset tilastot',
+                avg_value: 'Keskiarvo',
+                highest_value: 'Korkein arvo',
+                most_common_location: 'Yleisin sijainti',
+                success_rate: 'Arvostusprosentti',
+                loading: 'Ladataan...',
+                subtitle: 'Seurataan ilmaisia tuotteita Tori.fi palvelusta',
                 total_items: 'Tuotteita yhteensä:',
                 last_updated: 'Viimeksi päivitetty:',
                 never: 'Ei koskaan',
@@ -355,9 +698,42 @@
                 test_telegram_desc: 'Lähetä testivesti Telegramiin'
             },
             en: {
-                subtitle: 'Monitoring free items on Tori.fi',
+                dashboard: 'Dashboard',
                 products: 'Products',
+                products_list: 'List View',
+                analytics: 'Analytics',
                 settings: 'Settings',
+                refresh: 'Refresh',
+                total_products: 'Total Products',
+                valued_products: 'Valued Products',
+                total_estimated_value: 'Total Estimated Value',
+                total_images: 'Images Downloaded',
+                quick_actions: 'Quick Actions',
+                export_data: 'Export Data',
+                clear_old: 'Clear Old',
+                recent_products: 'Recent Products',
+                system_status: 'System Status',
+                bot_status: 'Bot Status',
+                connection_status: 'Connection',
+                openai_status: 'OpenAI',
+                grid_view: 'Grid',
+                list_view: 'List',
+                search_products: 'Search products...',
+                newest: 'Newest First',
+                oldest: 'Oldest First',
+                valued: 'Most Valued',
+                price_high: 'Highest Value',
+                price_low: 'Lowest Value',
+                actions: 'Actions',
+                products_over_time: 'Products Over Time',
+                value_distribution: 'Value Distribution',
+                detailed_statistics: 'Detailed Statistics',
+                avg_value: 'Average Value',
+                highest_value: 'Highest Value',
+                most_common_location: 'Most Common Location',
+                success_rate: 'Valuation Rate',
+                loading: 'Loading...',
+                subtitle: 'Monitoring free items on Tori.fi',
                 total_items: 'Total Items:',
                 last_updated: 'Last Updated:',
                 never: 'Never',
@@ -446,7 +822,94 @@
             }
         };
         
-        // Language switching
+        // Dashboard functions
+        async function loadDashboard() {
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allProducts = data.products;
+                    updateDashboardStats(allProducts);
+                    displayRecentProducts(allProducts.slice(0, 6));
+                    updateSystemStatus();
+                    
+                    const locale = currentLanguage === 'fi' ? 'fi-FI' : 'en-US';
+                    document.getElementById('last-update-time').textContent = new Date().toLocaleTimeString(locale);
+                } else {
+                    showError('Failed to load dashboard data');
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showError('Error loading dashboard');
+            }
+        }
+        
+        function updateDashboardStats(products) {
+            const totalProducts = products.length;
+            const valuedProducts = products.filter(p => p.valuation?.status === 'completed').length;
+            const totalImages = products.reduce((sum, p) => sum + (p.image_files?.length || 0), 0);
+            
+            let totalValue = 0;
+            products.forEach(p => {
+                if (p.valuation?.price_estimate) {
+                    totalValue += p.valuation.price_estimate;
+                }
+            });
+            
+            document.getElementById('total-products').textContent = totalProducts;
+            document.getElementById('valued-products').textContent = valuedProducts;
+            document.getElementById('total-value').textContent = totalValue + '€';
+            document.getElementById('total-images').textContent = totalImages;
+        }
+        
+        function displayRecentProducts(products) {
+            const container = document.getElementById('recent-products-list');
+            container.innerHTML = '';
+            
+            if (products.length === 0) {
+                container.innerHTML = '<div class="no-products"><i class="fas fa-inbox"></i><span data-i18n="no_products">Ei tuotteita vielä</span></div>';
+                return;
+            }
+            
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-preview-card';
+                
+                const image = product.image_files && product.image_files[0] 
+                    ? `/images/${product.image_files[0]}` 
+                    : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23e0e0e0"/><text x="50" y="50" text-anchor="middle" dy=".3em" fill="%23999">📦</text></svg>';
+                
+                productCard.innerHTML = `
+                    <div class="preview-image">
+                        <img src="${image}" alt="${product.title || 'Product'}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                        <div class="no-image" style="display:none"><i class="fas fa-image"></i></div>
+                    </div>
+                    <div class="preview-content">
+                        <h4>${product.title || 'Ei otsikkoa'}</h4>
+                        <p class="preview-location"><i class="fas fa-map-marker-alt"></i> ${product.location || 'Ei sijaintia'}</p>
+                        ${product.valuation?.price_estimate ? `<p class="preview-value"><i class="fas fa-euro-sign"></i> ${product.valuation.price_estimate}€</p>` : ''}
+                    </div>
+                `;
+                
+                productCard.addEventListener('click', () => {
+                    window.open(product.url, '_blank');
+                });
+                
+                container.appendChild(productCard);
+            });
+        }
+        
+        function updateSystemStatus() {
+            // These would be updated with real status checks
+            document.getElementById('bot-status').textContent = 'Käynnissä';
+            document.getElementById('connection-status').textContent = 'Toimii';
+            
+            // Check OpenAI status from settings
+            const settings = JSON.parse(localStorage.getItem('lastSettings') || '{}');
+            const openaiEnabled = settings.openai?.enabled && settings.openai?.api_key;
+            document.getElementById('openai-status').textContent = openaiEnabled ? 'Aktiivinen' : 'Pois käytöstä';
+        }
         function setLanguage(lang) {
             currentLanguage = lang;
             document.querySelectorAll('[data-i18n]').forEach(element => {
@@ -464,17 +927,137 @@
                 }
             });
             
+            // Update placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                   load and refresh
+        function refreshCurrentPage() {
+            loadPageData(currentPage);
+        }
+        
+        document.getElementById('refresh-btn').addEventListener('click', refreshCurrentPage);
+        
+        // Add remaining product view functions (simplified for now)
+        function loadProductsGrid() {
+            // Grid view implementation
+            loadProducts().then(() => {
+                displayProductsGrid(allProducts);
+            });
+        }
+        
+        function loadProductsList() {
+            // List view implementation  
+            loadProducts().then(() => {
+                displayProductsList(allProducts);
+            });
+        }
+        
+        function loadAnalytics() {
+            // Analytics implementation
+            if (allProducts.length === 0) {
+                loadProducts().then(() => {
+                    updateAnalytics(allProducts);
+                });
+            } else {
+                updateAnalytics(allProducts);
+            }
+        }
+        
+        function displayProductsGrid(products) {
+            const container = document.getElementById('products-grid');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (products.length === 0) {
+                container.innerHTML = '<div class="no-products"><i class="fas fa-inbox"></i><span>Ei tuotteita</span></div>';
+                return;
+            }
+            
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-image">
+                        ${product.image_files && product.image_files[0] 
+                            ? `<img src="/images/${product.image_files[0]}" alt="${product.title}">`
+                            : '<div class="no-image"><i class="fas fa-image"></i></div>'}
+                    </div>
+                    <div class="product-info">
+                        <h3>${product.title || 'Ei otsikkoa'}</h3>
+                        <p class="location"><i class="fas fa-map-marker-alt"></i> ${product.location || 'Ei sijaintia'}</p>
+                        ${product.valuation?.price_estimate ? `<p class="value"><i class="fas fa-euro-sign"></i> ${product.valuation.price_estimate}€</p>` : ''}
+                        <a href="${product.url}" target="_blank" class="view-btn">
+                            <i class="fas fa-external-link-alt"></i> Näytä
+                        </a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        function displayProductsList(products) {
+            displayProducts(products); // Use existing function
+        }
+        
+        function updateAnalytics(products) {
+            const valued = products.filter(p => p.valuation?.price_estimate);
+            const avgValue = valued.length > 0 
+                ? Math.round(valued.reduce((sum, p) => sum + p.valuation.price_estimate, 0) / valued.length)
+                : 0;
+            const maxValue = valued.length > 0 
+                ? Math.max(...valued.map(p => p.valuation.price_estimate))
+                : 0;
+            
+            document.getElementById('avg-value').textContent = avgValue + '€';
+            document.getElementById('highest-value').textContent = maxValue + '€';
+            
+            // Most common location
+            const locations = products.map(p => p.location).filter(l => l);
+            const locationCounts = {};
+            locations.forEach(loc => locationCounts[loc] = (locationCounts[loc] || 0) + 1);
+            const mostCommon = Object.keys(locationCounts).reduce((a, b) => locationCounts[a] > locationCounts[b] ? a : b, '-');
+            document.getElementById('common-location').textContent = mostCommon;
+            
+            // Success rate
+            const successRate = products.length > 0 ? Math.round((valued.length / products.length) * 100) : 0;
+            document.getElementById('success-rate').textContent = successRate + '%';
+        }
+        
+        // Initialize dashboard
+        showPage('dashboard'
+            });
+            
+            // Update page title if on current page
+            if (currentPage) {
+                const title = document.getElementById('page-title');
+                const key = currentPage.replace('-', '_');
+                if (translations[lang][key]) {
+                    title.textContent = translations[lang][key];
+                }
+            }
+            
             localStorage.setItem('language', lang);
         }
         
         // Load saved language preference
         const savedLanguage = localStorage.getItem('language') || 'fi';
         document.getElementById('language-select').value = savedLanguage;
+        document.getElementById('language-select-sidebar').value = savedLanguage;
         setLanguage(savedLanguage);
         
-        // Language change event
-        document.getElementById('language-select').addEventListener('change', (e) => {
-            setLanguage(e.target.value);
+        // Language change events
+        [document.getElementById('language-select'), document.getElementById('language-select-sidebar')].forEach(select => {
+            if (select) {
+                select.addEventListener('change', (e) => {
+                    setLanguage(e.target.value);
+                    // Sync both selectors
+                    [document.getElementById('language-select'), document.getElementById('language-select-sidebar')].forEach(s => {
+                        if (s && s !== e.target) s.value = e.target.value;
+                    });
+                });
+            }
         });
         
         // Logo functionality
