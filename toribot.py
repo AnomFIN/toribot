@@ -13,6 +13,7 @@ import os
 import signal
 import sys
 import random
+import copy
 from datetime import datetime
 from threading import Thread, Event, Lock
 from pathlib import Path
@@ -95,7 +96,7 @@ class SettingsManager:
     def _merge_with_defaults(self, loaded):
         """Merge loaded settings with defaults to handle missing keys"""
         # Use deep copy to avoid mutating DEFAULT_SETTINGS
-        result = json.loads(json.dumps(DEFAULT_SETTINGS))
+        result = copy.deepcopy(DEFAULT_SETTINGS)
         for key in loaded:
             if isinstance(loaded[key], dict) and key in result:
                 result[key].update(loaded[key])
