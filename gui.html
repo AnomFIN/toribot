@@ -1568,20 +1568,15 @@
                             
                             if (product.valuation.price_new) {
                                 const priceNewDiv = document.createElement('div');
-                                priceNewDiv.className = 'price-new';
+                                priceNewDiv.className = 'table-price-new';
                                 priceNewDiv.textContent = `Hinta uutena: ~${product.valuation.price_new}€`;
-                                priceNewDiv.style.color = '#999';
-                                priceNewDiv.style.fontSize = '0.9em';
                                 pricesDiv.appendChild(priceNewDiv);
                             }
                             
                             if (product.valuation.price_current) {
                                 const priceCurrentDiv = document.createElement('div');
-                                priceCurrentDiv.className = 'price-current';
+                                priceCurrentDiv.className = 'table-price-current';
                                 priceCurrentDiv.textContent = `Arvo nyt: ${product.valuation.price_current}€`;
-                                priceCurrentDiv.style.fontWeight = 'bold';
-                                priceCurrentDiv.style.color = '#28a745';
-                                priceCurrentDiv.style.fontSize = '1.1em';
                                 pricesDiv.appendChild(priceCurrentDiv);
                             }
                             

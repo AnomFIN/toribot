@@ -562,6 +562,19 @@ body {
     font-weight: 600;
 }
 
+.table-price-new {
+    margin: 2px 0;
+    font-size: 0.9em;
+    color: #999;
+}
+
+.table-price-current {
+    margin: 2px 0;
+    font-size: 1.1em;
+    color: #28a745;
+    font-weight: 600;
+}
+
 .system-status {
     grid-area: status;
 }
