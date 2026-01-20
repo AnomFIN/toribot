@@ -48,6 +48,7 @@ DEFAULT_SETTINGS = {
     "listing_url": "https://www.tori.fi/recommerce/forsale/search?sort=PUBLISHED_DESC&trade_type=2",
     "request_timeout_seconds": 15,
     "max_retries": 2,
+    "products_per_page": 50,  # Approximate number of products per page on Tori.fi
     "openai": {
         "api_key": "",
         "base_url": "https://api.openai.com/v1",
@@ -302,10 +303,18 @@ class ToriFetcher:
                     logger.error(f"All fetch attempts failed for {url}: {e}")
                     return None
     
-    def fetch_listing_page(self):
+    def fetch_listing_page(self, page=None):
         """Fetch main listing page"""
         settings = self.settings_manager.get_settings()
         url = settings.get("listing_url")
+        
+        # Add page parameter if specified
+        if page is not None and page > 1:
+            if '?' in url:
+                url = f"{url}&page={page}"
+            else:
+                url = f"{url}?page={page}"
+        
         timeout = settings.get("request_timeout_seconds", 15)
         
         self._add_jitter()
@@ -535,7 +544,9 @@ Anna arvio 4-5 lauseessa:
 3. Kunnon arvio ja keskeiset hyvät/huonot puolet
 4. Suositus: Kannattaako hakea? (Kyllä/Ei/Ehkä)
 
-Lisää lopuksi arvioitu nykyarvo numeromuodossa: ARVO: X€
+Lisää lopuksi molemmat arviot numeromuodossa:
+HINTA_UUTENA: X€
+ARVO_NYT: Y€
 
 Vastaa vain suomeksi, ole ytimekäs."""
             
@@ -552,19 +563,44 @@ Vastaa vain suomeksi, ole ytimekäs."""
             
             valuation_text = response.choices[0].message.content.strip()
             
-            # Extract numerical price value if present
-            price_value = None
-            price_match = re.search(r'ARVO:\s*(\d+)€?', valuation_text, re.IGNORECASE)
-            if price_match:
+            # Extract both price values
+            price_new = None
+            price_current = None
+            
+            # Try to extract "HINTA_UUTENA" value
+            price_new_match = re.search(r'HINTA_UUTENA:\s*(\d+)€?', valuation_text, re.IGNORECASE)
+            if price_new_match:
                 try:
-                    price_value = int(price_match.group(1))
+                    price_new = int(price_new_match.group(1))
                 except ValueError:
+                    # If parsing fails, leave price_new as None
                     pass
+            
+            # Try to extract "ARVO_NYT" value
+            price_current_match = re.search(r'ARVO_NYT:\s*(\d+)€?', valuation_text, re.IGNORECASE)
+            if price_current_match:
+                try:
+                    price_current = int(price_current_match.group(1))
+                except ValueError:
+                    # If parsing fails, leave price_current as None
+                    pass
+            
+            # Fallback to old "ARVO:" format for backwards compatibility
+            if price_current is None:
+                price_match = re.search(r'ARVO:\s*(\d+)€?', valuation_text, re.IGNORECASE)
+                if price_match:
+                    try:
+                        price_current = int(price_match.group(1))
+                    except ValueError:
+                        # If parsing fails, leave price_current as None
+                        pass
             
             return {
                 "status": "completed",
                 "text": valuation_text,
-                "price_estimate": price_value,
+                "price_new": price_new,
+                "price_current": price_current,
+                "price_estimate": price_current,  # Keep for backwards compatibility
                 "model": openai_settings.get("model"),
                 "timestamp": datetime.now().isoformat()
             }
@@ -652,19 +688,20 @@ class ToriBot:
             interval = settings.get("poll_interval_seconds", 60)
             self.stop_event.wait(interval)
     
-    def _poll_once(self):
+    def _poll_once(self, page=None):
         """Perform one polling cycle"""
-        logger.info("Polling for new items...")
+        page_info = f" (page {page})" if page else ""
+        logger.info(f"Polling for new items{page_info}...")
         
         # Fetch listing page
-        html = self.fetcher.fetch_listing_page()
+        html = self.fetcher.fetch_listing_page(page)
         if not html:
-            logger.warning("Failed to fetch listing page")
+            logger.warning(f"Failed to fetch listing page{page_info}")
             return
         
         # Extract product IDs
         product_ids = ProductExtractor.extract_product_ids(html)
-        logger.info(f"Found {len(product_ids)} product IDs")
+        logger.info(f"Found {len(product_ids)} product IDs{page_info}")
         
         # Check for new items
         new_count = 0
@@ -691,9 +728,9 @@ class ToriBot:
                 new_count += 1
         
         if new_count > 0:
-            logger.info(f"Added {new_count} new items")
+            logger.info(f"Added {new_count} new items{page_info}")
         else:
-            logger.info("No new items found")
+            logger.info(f"No new items found{page_info}")
     
     def _download_item_images(self, item_data):
         """Download images for an item"""
@@ -777,6 +814,36 @@ class ToriBot:
         
         Thread(target=self._run_valuations, daemon=True).start()
         return {"success": True, "message": "Valuation started"}
+    
+    def fetch_multiple_pages(self, num_products):
+        """Fetch products from multiple pages based on requested count
+        
+        Args:
+            num_products: Approximate number of products to fetch
+            
+        Returns:
+            dict: Success status and number of pages fetched
+            
+        Note:
+            - Uses ceiling division to calculate pages needed
+            - Continues fetching remaining pages even if one page fails
+            - Each page fetch is logged independently for tracking
+        """
+        settings = self.settings_manager.get_settings()
+        products_per_page = settings.get("products_per_page", 50)
+        num_pages = (num_products + products_per_page - 1) // products_per_page  # Ceiling division
+        
+        logger.info(f"Fetching approximately {num_products} products from {num_pages} pages...")
+        
+        for page_num in range(1, num_pages + 1):
+            try:
+                self._poll_once(page=page_num)
+                logger.info(f"Completed fetching page {page_num}/{num_pages}")
+            except Exception as e:
+                logger.error(f"Error fetching page {page_num}: {e}")
+        
+        logger.info(f"Multi-page fetch completed: processed {num_pages} pages")
+        return {"success": True, "pages_fetched": num_pages}
 
 
 # Flask Application
@@ -877,12 +944,23 @@ def fetch_products():
     logger.info("API call: /api/fetch")
     try:
         if bot:
-            # Force a fetch run
-            bot._poll_once()
-            # Count items after fetch
-            items = bot.database.get_all_items()
-            logger.info(f"Product fetch triggered successfully, total items: {len(items)}")
-            return jsonify({"success": True, "message": "Fetch completed", "count": len(items)})
+            data = request.json or {}
+            num_products = data.get('num_products', None)
+            
+            if num_products and num_products > 0:
+                # Multi-page fetch
+                logger.info(f"Multi-page fetch requested for ~{num_products} products")
+                def run_multi_page_fetch():
+                    bot.fetch_multiple_pages(num_products)
+                
+                Thread(target=run_multi_page_fetch, daemon=True).start()
+                return jsonify({"success": True, "message": f"Fetching ~{num_products} products in background", "multi_page": True})
+            else:
+                # Single page fetch (original behavior)
+                bot._poll_once()
+                items = bot.database.get_all_items()
+                logger.info(f"Product fetch triggered successfully, total items: {len(items)}")
+                return jsonify({"success": True, "message": "Fetch completed", "count": len(items)})
         else:
             return jsonify({"success": False, "error": "Bot not initialized"}), 500
     except Exception as e:
@@ -929,6 +1007,60 @@ def save_products():
             return jsonify({"success": False, "error": "Bot not initialized"}), 500
     except Exception as e:
         logger.error(f"Error saving products: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/refresh-all', methods=['POST'])
+def refresh_all():
+    """Refresh all existing items to check for updates"""
+    logger.info("API call: /api/refresh-all")
+    try:
+        if bot:
+            items = bot.database.get_all_items()
+            logger.info(f"Refreshing {len(items)} items in background")
+            
+            def refresh_all_items():
+                """Background task to refresh all items"""
+                for item in items:
+                    try:
+                        product_id = item.get('id')
+                        if not product_id:
+                            continue
+                        
+                        # Fetch latest data for this item
+                        item_html = bot.fetcher.fetch_item_page(product_id)
+                        if not item_html:
+                            logger.warning(f"Failed to fetch updated data for {product_id}")
+                            continue
+                        
+                        # Extract updated details
+                        updated_data = ProductExtractor.extract_product_details(item_html, product_id)
+                        
+                        # Refresh images if downloading is enabled
+                        settings = bot.settings_manager.get_settings()
+                        if settings.get("images", {}).get("download_enabled", True):
+                            image_urls = updated_data.get('images', [])
+                            if image_urls:
+                                bot._download_item_images(updated_data)
+                                logger.info(f"Downloaded/refreshed {len(image_urls)} images for {product_id}")
+                        
+                        # Update the item in database
+                        bot.database.add_item(product_id, updated_data)
+                        logger.info(f"Updated item {product_id}")
+                        
+                    except Exception as e:
+                        logger.error(f"Error refreshing item {item.get('id')}: {e}")
+                
+                logger.info(f"Completed refreshing {len(items)} items")
+            
+            # Run refresh in background thread
+            Thread(target=refresh_all_items, daemon=True).start()
+            
+            return jsonify({"success": True, "message": f"Refreshing {len(items)} items in background", "count": len(items)})
+        else:
+            return jsonify({"success": False, "error": "Bot not initialized"}), 500
+    except Exception as e:
+        logger.error(f"Error triggering refresh: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 
