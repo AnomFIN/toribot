@@ -1033,14 +1033,13 @@ def refresh_all():
                         # Extract updated details
                         updated_data = ProductExtractor.extract_product_details(item_html, product_id)
                         
-                        # Check if images changed and download new ones
+                        # Refresh images if downloading is enabled
                         settings = bot.settings_manager.get_settings()
                         if settings.get("images", {}).get("download_enabled", True):
-                            old_image_count = len(item.get('image_files', []))
-                            new_image_count = len(updated_data.get('image_urls', []))
-                            if new_image_count > old_image_count:
+                            image_urls = updated_data.get('image_urls', [])
+                            if image_urls:
                                 bot._download_item_images(updated_data)
-                                logger.info(f"Downloaded {new_image_count - old_image_count} new images for {product_id}")
+                                logger.info(f"Downloaded/refreshed {len(image_urls)} images for {product_id}")
                         
                         # Update the item in database
                         bot.database.add_item(product_id, updated_data)
