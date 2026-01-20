@@ -7,34 +7,35 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="background-logo" id="background-logo"></div>
     <div class="container">
         <header>
             <h1>🎁 Tori Annataan Bot</h1>
-            <p class="subtitle">Monitoring free items on Tori.fi</p>
+            <p class="subtitle" data-i18n="subtitle">Seurataan ilmaisia tuotteita Tori.fi palvelusta</p>
         </header>
 
         <nav class="tabs">
-            <button class="tab-btn active" data-tab="products">Products</button>
-            <button class="tab-btn" data-tab="settings">Settings</button>
+            <button class="tab-btn active" data-tab="products" data-i18n="products">Tuotteet</button>
+            <button class="tab-btn" data-tab="settings" data-i18n="settings">Asetukset</button>
         </nav>
 
         <!-- Products Tab -->
         <div class="tab-content active" id="products-tab">
             <div class="stats">
                 <div class="stat-item">
-                    <span class="stat-label">Total Items:</span>
+                    <span class="stat-label" data-i18n="total_items">Tuotteita yhteensä:</span>
                     <span class="stat-value" id="total-count">0</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Last Updated:</span>
-                    <span class="stat-value" id="last-update">Never</span>
+                    <span class="stat-label" data-i18n="last_updated">Viimeksi päivitetty:</span>
+                    <span class="stat-value" id="last-update" data-i18n="never">Ei koskaan</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Auto-refresh:</span>
+                    <span class="stat-label" data-i18n="auto_refresh">Automaattipäivitys:</span>
                     <span class="stat-value">30s</span>
                 </div>
                 <div class="stat-item">
-                    <button id="valuate-btn" class="action-btn">🤖 Run Valuations</button>
+                    <button id="valuate-btn" class="action-btn" data-i18n="run_valuations">🤖 Suorita arvostukset</button>
                 </div>
             </div>
 
@@ -42,113 +43,197 @@
                 <table id="products-table">
                     <thead>
                         <tr>
-                            <th>Images</th>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <th>Location</th>
-                            <th>Seller</th>
-                            <th>Valuation</th>
-                            <th>Added</th>
-                            <th>Link</th>
+                            <th data-i18n="images">Kuvat</th>
+                            <th data-i18n="title">Otsikko</th>
+                            <th data-i18n="description">Kuvaus</th>
+                            <th data-i18n="location">Sijainti</th>
+                            <th data-i18n="seller">Myyjä</th>
+                            <th data-i18n="valuation">Arvostus</th>
+                            <th data-i18n="added">Lisätty</th>
+                            <th data-i18n="link">Linkki</th>
                         </tr>
                     </thead>
                     <tbody id="products-body">
                         <tr>
-                            <td colspan="8" class="loading">Loading products...</td>
+                            <td colspan="8" class="loading" data-i18n="loading_products">Ladataan tuotteita...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
             <div class="no-products" id="no-products" style="display: none;">
-                <p>No products found yet. The bot will start monitoring shortly.</p>
+                <p data-i18n="no_products">Tuotteita ei löytynyt vielä. Botti aloittaa seurannan pian.</p>
             </div>
         </div>
 
         <!-- Settings Tab -->
         <div class="tab-content" id="settings-tab">
             <div class="settings-container">
-                <h2>Bot Settings</h2>
+                <h2 data-i18n="bot_settings">Botin asetukset</h2>
                 
                 <div class="settings-section">
-                    <h3>📊 General Settings</h3>
+                    <h3>📊 <span data-i18n="general_settings">Yleiset asetukset</span></h3>
                     <div class="form-group">
-                        <label>Poll Interval (seconds):</label>
-                        <input type="number" id="poll_interval" min="10" value="60">
-                        <small>How often to check for new items (min: 10s)</small>
+                        <label data-i18n="language">Kieli:</label>
+                        <select id="language-select">
+                            <option value="fi">Suomi</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>🎨 <span data-i18n="logo_settings">Logon asetukset</span></h3>
+                    <div class="form-group">
+                        <label data-i18n="logo_file">Logotiedosto:</label>
+                        <input type="file" id="logo-file" accept="image/*">
+                        <small data-i18n="logo_file_desc">Valitse taustakuvaksi käytettävä logo (.png, .jpg, .svg)</small>
                     </div>
                     <div class="form-group">
-                        <label>Request Timeout (seconds):</label>
+                        <label data-i18n="logo_opacity">Läpinäkyvyys:</label>
+                        <input type="range" id="logo-opacity" min="0" max="1" step="0.01" value="0.1">
+                        <span class="range-value" id="opacity-value">0.1</span>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="logo_blur">Sumennus:</label>
+                        <input type="range" id="logo-blur" min="0" max="20" step="0.5" value="0">
+                        <span class="range-value" id="blur-value">0px</span>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="logo_position">Sijainti:</label>
+                        <select id="logo-position">
+                            <option value="center" data-i18n-option="center">Keskellä</option>
+                            <option value="top left" data-i18n-option="top_left">Vasemmalla ylhäällä</option>
+                            <option value="top right" data-i18n-option="top_right">Oikealla ylhäällä</option>
+                            <option value="bottom left" data-i18n-option="bottom_left">Vasemmalla alhaalla</option>
+                            <option value="bottom right" data-i18n-option="bottom_right">Oikealla alhaalla</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="logo_size">Koko:</label>
+                        <select id="logo-size">
+                            <option value="contain" data-i18n-option="contain">Mahtuu kokonaan</option>
+                            <option value="cover" data-i18n-option="cover">Peittää alueen</option>
+                            <option value="50%" data-i18n-option="small">Pieni (50%)</option>
+                            <option value="75%" data-i18n-option="medium">Keskikokoinen (75%)</option>
+                            <option value="100%" data-i18n-option="large">Suuri (100%)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>� <span data-i18n="tori_login_settings">Tori.fi kirjautuminen</span></h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="tori_login_enabled">
+                            <span data-i18n="enable_tori_login">Aktivoi automaattinen kirjautuminen</span>
+                        </label>
+                        <small data-i18n="tori_login_desc">Botin kirjautuminen Tori.fi-palveluun parantaa hakutuloksia</small>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="tori_username">Käyttäjätunnus/Sähköposti:</label>
+                        <input type="text" id="tori_username" placeholder="kayttaja@example.com" autocomplete="username">
+                        <small data-i18n="tori_username_desc">Tori.fi-tilisi käyttäjätunnus tai sähköpostiosoite</small>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="tori_password">Salasana:</label>
+                        <input type="password" id="tori_password" placeholder="••••••••" autocomplete="current-password">
+                        <small data-i18n="tori_password_desc">Tori.fi-tilisi salasana (tallennetaan turvallisesti)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="tori_remember_session">
+                            <span data-i18n="remember_session">Muista kirjautuminen</span>
+                        </label>
+                        <small data-i18n="remember_session_desc">Säästää istunnon uudelleenkäyttöä varten</small>
+                    </div>
+                    <div class="form-group">
+                        <button id="test-login-btn" class="secondary-btn" type="button">
+                            <span data-i18n="test_login">🧪 Testaa kirjautuminen</span>
+                        </button>
+                        <small data-i18n="test_login_desc">Testaa kirjautumistiedot ennen tallennusta</small>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>�📊 <span data-i18n="general_settings">Yleiset asetukset</span></h3>
+                    <div class="form-group">
+                        <label data-i18n="poll_interval">Tarkistusväli (sekunnit):</label>
+                        <input type="number" id="poll_interval" min="10" value="60">
+                        <small data-i18n="poll_interval_desc">Kuinka usein tarkistetaan uusia tuotteita (min: 10s)</small>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="request_timeout">Pyyntöjen aikakatkaisu (sekunnit):</label>
                         <input type="number" id="timeout" min="1" value="15">
                     </div>
                     <div class="form-group">
-                        <label>Max Retries:</label>
+                        <label data-i18n="max_retries">Uudelleenyritysten maksimimäärä:</label>
                         <input type="number" id="max_retries" min="0" max="5" value="2">
                     </div>
                     <div class="form-group">
-                        <label>Listing URL:</label>
+                        <label data-i18n="listing_url">Listauksen URL:</label>
                         <input type="text" id="listing_url" style="width: 100%;">
                     </div>
                 </div>
 
                 <div class="settings-section">
-                    <h3>🖼️ Image Settings</h3>
+                    <h3>🖼️ <span data-i18n="image_settings">Kuvien asetukset</span></h3>
                     <div class="form-group">
                         <label>
                             <input type="checkbox" id="images_enabled" checked>
-                            Enable Image Download
+                            <span data-i18n="enable_image_download">Aktivoi kuvien lataus</span>
                         </label>
                     </div>
                     <div class="form-group">
-                        <label>Max Images Per Item:</label>
+                        <label data-i18n="max_images">Kuvia tuotetta kohden enintään:</label>
                         <input type="number" id="max_images" min="1" max="10" value="5">
                     </div>
                 </div>
 
                 <div class="settings-section">
-                    <h3>🤖 OpenAI Settings</h3>
+                    <h3>🤖 <span data-i18n="openai_settings">OpenAI asetukset</span></h3>
                     <div class="form-group">
                         <label>
                             <input type="checkbox" id="openai_enabled">
-                            Enable OpenAI Valuations
+                            <span data-i18n="enable_valuations">Aktivoi OpenAI arvostukset</span>
                         </label>
                     </div>
                     <div class="form-group">
-                        <label>API Key:</label>
+                        <label data-i18n="api_key">API-avain:</label>
                         <input type="password" id="openai_key" placeholder="sk-...">
-                        <small>Stored securely in settings.json</small>
+                        <small data-i18n="api_key_desc">Tallennetaan turvallisesti settings.json tiedostoon</small>
                     </div>
                     <div class="form-group">
-                        <label>Model:</label>
+                        <label data-i18n="model">Malli:</label>
                         <input type="text" id="openai_model" value="gpt-4o-mini">
                     </div>
                     <div class="form-group">
-                        <label>Base URL:</label>
+                        <label data-i18n="base_url">Perus-URL:</label>
                         <input type="text" id="openai_base_url" value="https://api.openai.com/v1">
                     </div>
                     <div class="form-group">
-                        <label>Valuation Interval (minutes):</label>
+                        <label data-i18n="valuation_interval">Arvostusväli (minuutit):</label>
                         <input type="number" id="valuation_interval" min="10" value="60">
-                        <small>How often to run automatic valuations</small>
+                        <small data-i18n="valuation_interval_desc">Kuinka usein automaattiset arvostukset suoritetaan</small>
                     </div>
                 </div>
 
                 <div class="settings-section">
-                    <h3>🌐 Server Settings</h3>
+                    <h3>🌐 <span data-i18n="server_settings">Palvelimen asetukset</span></h3>
                     <div class="form-group">
-                        <label>Host:</label>
+                        <label data-i18n="host">Isäntä:</label>
                         <input type="text" id="server_host" value="127.0.0.1">
                     </div>
                     <div class="form-group">
-                        <label>Port:</label>
+                        <label data-i18n="port">Portti:</label>
                         <input type="number" id="server_port" min="1024" max="65535" value="8787">
-                        <small>Requires restart to take effect</small>
+                        <small data-i18n="restart_required">Vaatii uudelleenkäynnistyksen</small>
                     </div>
                 </div>
 
                 <div class="button-group">
-                    <button id="save-settings-btn" class="save-btn">💾 Save Settings</button>
-                    <button id="load-settings-btn" class="secondary-btn">🔄 Reload Settings</button>
+                    <button id="save-settings-btn" class="save-btn" data-i18n="save_settings">💾 Tallenna asetukset</button>
+                    <button id="load-settings-btn" class="secondary-btn" data-i18n="reload_settings">🔄 Lataa asetukset uudelleen</button>
                 </div>
 
                 <div id="settings-message" class="message"></div>
@@ -159,6 +244,296 @@
     <script>
         const REFRESH_INTERVAL = 30000;
         let currentTab = 'products';
+        let currentLanguage = 'fi';
+        
+        // Translations
+        const translations = {
+            fi: {
+                subtitle: 'Seurataan ilmaisia tuotteita Tori.fi palvelusta',
+                products: 'Tuotteet',
+                settings: 'Asetukset',
+                total_items: 'Tuotteita yhteensä:',
+                last_updated: 'Viimeksi päivitetty:',
+                never: 'Ei koskaan',
+                auto_refresh: 'Automaattipäivitys:',
+                run_valuations: '🤖 Suorita arvostukset',
+                images: 'Kuvat',
+                title: 'Otsikko',
+                description: 'Kuvaus',
+                location: 'Sijainti',
+                seller: 'Myyjä',
+                valuation: 'Arvostus',
+                added: 'Lisätty',
+                link: 'Linkki',
+                loading_products: 'Ladataan tuotteita...',
+                no_products: 'Tuotteita ei löytynyt vielä. Botti aloittaa seurannan pian.',
+                bot_settings: 'Botin asetukset',
+                general_settings: 'Yleiset asetukset',
+                language: 'Kieli:',
+                poll_interval: 'Tarkistusväli (sekunnit):',
+                poll_interval_desc: 'Kuinka usein tarkistetaan uusia tuotteita (min: 10s)',
+                request_timeout: 'Pyyntöjen aikakatkaisu (sekunnit):',
+                max_retries: 'Uudelleenyritysten maksimimäärä:',
+                listing_url: 'Listauksen URL:',
+                image_settings: 'Kuvien asetukset',
+                enable_image_download: 'Aktivoi kuvien lataus',
+                max_images: 'Kuvia tuotetta kohden enintään:',
+                openai_settings: 'OpenAI asetukset',
+                enable_valuations: 'Aktivoi OpenAI arvostukset',
+                api_key: 'API-avain:',
+                api_key_desc: 'Tallennetaan turvallisesti settings.json tiedostoon',
+                model: 'Malli:',
+                base_url: 'Perus-URL:',
+                valuation_interval: 'Arvostusväli (minuutit):',
+                valuation_interval_desc: 'Kuinka usein automaattiset arvostukset suoritetaan',
+                server_settings: 'Palvelimen asetukset',
+                host: 'Isäntä:',
+                port: 'Portti:',
+                restart_required: 'Vaatii uudelleenkäynnistyksen',
+                save_settings: '💾 Tallenna asetukset',
+                reload_settings: '🔄 Lataa asetukset uudelleen',
+                view: 'Näytä',
+                no_images: 'Ei kuvia',
+                logo_settings: 'Logon asetukset',
+                logo_file: 'Logotiedosto:',
+                logo_file_desc: 'Valitse taustakuvaksi käytettävä logo (.png, .jpg, .svg)',
+                logo_opacity: 'Läpinäkyvyys:',
+                logo_blur: 'Sumennus:',
+                logo_position: 'Sijainti:',
+                logo_size: 'Koko:',
+                center: 'Keskellä',
+                top_left: 'Vasemmalla ylhäällä',
+                top_right: 'Oikealla ylhäällä',
+                bottom_left: 'Vasemmalla alhaalla',
+                bottom_right: 'Oikealla alhaalla',
+                contain: 'Mahtuu kokonaan',
+                cover: 'Peittää alueen',
+                small: 'Pieni (50%)',
+                medium: 'Keskikokoinen (75%)',
+                large: 'Suuri (100%)',
+                tori_login_settings: 'Tori.fi kirjautuminen',
+                enable_tori_login: 'Aktivoi automaattinen kirjautuminen',
+                tori_login_desc: 'Botin kirjautuminen Tori.fi-palveluun parantaa hakutuloksia',
+                tori_username: 'Käyttäjätunnus/Sähköposti:',
+                tori_username_desc: 'Tori.fi-tilisi käyttäjätunnus tai sähköpostiosoite',
+                tori_password: 'Salasana:',
+                tori_password_desc: 'Tori.fi-tilisi salasana (tallennetaan turvallisesti)',
+                remember_session: 'Muista kirjautuminen',
+                remember_session_desc: 'Säästää istunnon uudelleenkäyttöä varten',
+                test_login: '🧪 Testaa kirjautuminen',
+                test_login_desc: 'Testaa kirjautumistiedot ennen tallennusta'
+            },
+            en: {
+                subtitle: 'Monitoring free items on Tori.fi',
+                products: 'Products',
+                settings: 'Settings',
+                total_items: 'Total Items:',
+                last_updated: 'Last Updated:',
+                never: 'Never',
+                auto_refresh: 'Auto-refresh:',
+                run_valuations: '🤖 Run Valuations',
+                images: 'Images',
+                title: 'Title',
+                description: 'Description',
+                location: 'Location',
+                seller: 'Seller',
+                valuation: 'Valuation',
+                added: 'Added',
+                link: 'Link',
+                loading_products: 'Loading products...',
+                no_products: 'No products found yet. The bot will start monitoring shortly.',
+                bot_settings: 'Bot Settings',
+                general_settings: 'General Settings',
+                language: 'Language:',
+                poll_interval: 'Poll Interval (seconds):',
+                poll_interval_desc: 'How often to check for new items (min: 10s)',
+                request_timeout: 'Request Timeout (seconds):',
+                max_retries: 'Max Retries:',
+                listing_url: 'Listing URL:',
+                image_settings: 'Image Settings',
+                enable_image_download: 'Enable Image Download',
+                max_images: 'Max Images Per Item:',
+                openai_settings: 'OpenAI Settings',
+                enable_valuations: 'Enable OpenAI Valuations',
+                api_key: 'API Key:',
+                api_key_desc: 'Stored securely in settings.json',
+                model: 'Model:',
+                base_url: 'Base URL:',
+                valuation_interval: 'Valuation Interval (minutes):',
+                valuation_interval_desc: 'How often to run automatic valuations',
+                server_settings: 'Server Settings',
+                host: 'Host:',
+                port: 'Port:',
+                restart_required: 'Requires restart to take effect',
+                save_settings: '💾 Save Settings',
+                reload_settings: '🔄 Reload Settings',
+                view: 'View',
+                no_images: 'No images',
+                logo_settings: 'Logo Settings',
+                logo_file: 'Logo File:',
+                logo_file_desc: 'Select logo image to use as background (.png, .jpg, .svg)',
+                logo_opacity: 'Opacity:',
+                logo_blur: 'Blur:',
+                logo_position: 'Position:',
+                logo_size: 'Size:',
+                center: 'Center',
+                top_left: 'Top Left',
+                top_right: 'Top Right',
+                bottom_left: 'Bottom Left',
+                bottom_right: 'Bottom Right',
+                contain: 'Contain',
+                cover: 'Cover',
+                small: 'Small (50%)',
+                medium: 'Medium (75%)',
+                large: 'Large (100%)',
+                tori_login_settings: 'Tori.fi Login',
+                enable_tori_login: 'Enable automatic login',
+                tori_login_desc: 'Bot login to Tori.fi improves search results',
+                tori_username: 'Username/Email:',
+                tori_username_desc: 'Your Tori.fi account username or email address',
+                tori_password: 'Password:',
+                tori_password_desc: 'Your Tori.fi account password (stored securely)',
+                remember_session: 'Remember login session',
+                remember_session_desc: 'Saves session for reuse',
+                test_login: '🧪 Test Login',
+                test_login_desc: 'Test credentials before saving'
+            }
+        };
+        
+        // Language switching
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update select option texts
+            document.querySelectorAll('[data-i18n-option]').forEach(option => {
+                const key = option.getAttribute('data-i18n-option');
+                if (translations[lang] && translations[lang][key]) {
+                    option.textContent = translations[lang][key];
+                }
+            });
+            
+            localStorage.setItem('language', lang);
+        }
+        
+        // Load saved language preference
+        const savedLanguage = localStorage.getItem('language') || 'fi';
+        document.getElementById('language-select').value = savedLanguage;
+        setLanguage(savedLanguage);
+        
+        // Language change event
+        document.getElementById('language-select').addEventListener('change', (e) => {
+            setLanguage(e.target.value);
+        });
+        
+        // Logo functionality
+        const logoElement = document.getElementById('background-logo');
+        const opacitySlider = document.getElementById('logo-opacity');
+        const blurSlider = document.getElementById('logo-blur');
+        const positionSelect = document.getElementById('logo-position');
+        const sizeSelect = document.getElementById('logo-size');
+        const logoFileInput = document.getElementById('logo-file');
+        const opacityValue = document.getElementById('opacity-value');
+        const blurValue = document.getElementById('blur-value');
+        
+        // Load saved logo settings
+        function loadLogoSettings() {
+            const logoSettings = JSON.parse(localStorage.getItem('logoSettings') || '{}');
+            
+            if (logoSettings.opacity !== undefined) {
+                opacitySlider.value = logoSettings.opacity;
+                opacityValue.textContent = logoSettings.opacity;
+            }
+            
+            if (logoSettings.blur !== undefined) {
+                blurSlider.value = logoSettings.blur;
+                blurValue.textContent = logoSettings.blur + 'px';
+            }
+            
+            if (logoSettings.position) {
+                positionSelect.value = logoSettings.position;
+            }
+            
+            if (logoSettings.size) {
+                sizeSelect.value = logoSettings.size;
+            }
+            
+            if (logoSettings.imageData) {
+                logoElement.style.backgroundImage = `url(${logoSettings.imageData})`;
+            }
+            
+            updateLogoStyle();
+        }
+        
+        // Update logo style
+        function updateLogoStyle() {
+            const opacity = opacitySlider.value;
+            const blur = blurSlider.value;
+            const position = positionSelect.value;
+            const size = sizeSelect.value;
+            
+            logoElement.style.opacity = opacity;
+            logoElement.style.filter = `blur(${blur}px)`;
+            logoElement.style.backgroundPosition = position;
+            logoElement.style.backgroundSize = size;
+        }
+        
+        // Save logo settings
+        function saveLogoSettings() {
+            const logoSettings = {
+                opacity: opacitySlider.value,
+                blur: blurSlider.value,
+                position: positionSelect.value,
+                size: sizeSelect.value,
+                imageData: logoElement.style.backgroundImage.match(/url\(["']?([^"']*)["']?\)/)?.[1] || ''
+            };
+            localStorage.setItem('logoSettings', JSON.stringify(logoSettings));
+        }
+        
+        // Event listeners for logo controls
+        opacitySlider.addEventListener('input', () => {
+            opacityValue.textContent = opacitySlider.value;
+            updateLogoStyle();
+            saveLogoSettings();
+        });
+        
+        blurSlider.addEventListener('input', () => {
+            blurValue.textContent = blurSlider.value + 'px';
+            updateLogoStyle();
+            saveLogoSettings();
+        });
+        
+        positionSelect.addEventListener('change', () => {
+            updateLogoStyle();
+            saveLogoSettings();
+        });
+        
+        sizeSelect.addEventListener('change', () => {
+            updateLogoStyle();
+            saveLogoSettings();
+        });
+        
+        logoFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imageData = e.target.result;
+                    logoElement.style.backgroundImage = `url(${imageData})`;
+                    updateLogoStyle();
+                    saveLogoSettings();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Initialize logo settings
+        loadLogoSettings();
         
         // Tab switching
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -188,13 +563,15 @@
                 
                 if (data.success) {
                     displayProducts(data.products);
-                    document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+                    const locale = currentLanguage === 'fi' ? 'fi-FI' : 'en-US';
+                    document.getElementById('last-update').textContent = new Date().toLocaleTimeString(locale);
                 } else {
                     showError('Failed to load products');
                 }
             } catch (error) {
                 console.error('Error loading products:', error);
-                showError('Error loading products. Check if server is running.');
+                const errorMsg = currentLanguage === 'fi' ? 'Virhe tuotteiden latauksessa. Tarkista, että palvelin on käynnissä.' : 'Error loading products. Check if server is running.';
+                showError(errorMsg);
             }
         }
         
@@ -242,7 +619,7 @@
                     }
                     imagesCell.appendChild(imgContainer);
                 } else {
-                    imagesCell.textContent = 'No images';
+                    imagesCell.textContent = translations[currentLanguage].no_images;
                     imagesCell.className = 'images-cell no-images';
                 }
                 row.appendChild(imagesCell);
@@ -302,7 +679,8 @@
                 timeCell.className = 'timestamp-cell';
                 if (product.discovered_at) {
                     const date = new Date(product.discovered_at);
-                    timeCell.textContent = date.toLocaleString();
+                    const locale = currentLanguage === 'fi' ? 'fi-FI' : 'en-US';
+                    timeCell.textContent = date.toLocaleString(locale);
                 }
                 row.appendChild(timeCell);
                 
@@ -312,7 +690,7 @@
                 const link = document.createElement('a');
                 link.href = product.url;
                 link.target = '_blank';
-                link.textContent = 'View';
+                link.textContent = translations[currentLanguage].view;
                 link.className = 'view-link';
                 linkCell.appendChild(link);
                 row.appendChild(linkCell);
@@ -330,11 +708,13 @@
                 if (data.success) {
                     populateSettings(data.settings);
                 } else {
-                    showSettingsMessage('Failed to load settings', 'error');
+                    const errorMsg = currentLanguage === 'fi' ? 'Asetusten lataus epäonnistui' : 'Failed to load settings';
+                    showSettingsMessage(errorMsg, 'error');
                 }
             } catch (error) {
                 console.error('Error loading settings:', error);
-                showSettingsMessage('Error loading settings', 'error');
+                const errorMsg = currentLanguage === 'fi' ? 'Virhe asetusten latauksessa' : 'Error loading settings';
+                showSettingsMessage(errorMsg, 'error');
             }
         }
         
@@ -355,6 +735,14 @@
             
             document.getElementById('server_host').value = s.server?.host || '127.0.0.1';
             document.getElementById('server_port').value = s.server?.port || 8787;
+            
+            // Tori login settings
+            document.getElementById('tori_login_enabled').checked = s.tori_login?.enabled ?? false;
+            document.getElementById('tori_username').value = s.tori_login?.username || '';
+            // Don't populate password field for security
+            document.getElementById('tori_remember_session').checked = s.tori_login?.remember_session ?? true;
+            
+            // Load logo settings are handled separately by loadLogoSettings()
         }
         
         // Save settings
@@ -377,12 +765,22 @@
                 server: {
                     host: document.getElementById('server_host').value,
                     port: parseInt(document.getElementById('server_port').value)
+                },
+                tori_login: {
+                    enabled: document.getElementById('tori_login_enabled').checked,
+                    username: document.getElementById('tori_username').value.trim(),
+                    remember_session: document.getElementById('tori_remember_session').checked
                 }
             };
             
             const apiKey = document.getElementById('openai_key').value.trim();
             if (apiKey && apiKey !== '***MASKED***') {
                 settings.openai.api_key = apiKey;
+            }
+            
+            const toriPassword = document.getElementById('tori_password').value.trim();
+            if (toriPassword && toriPassword !== '') {
+                settings.tori_login.password = toriPassword;
             }
             
             try {
@@ -395,44 +793,59 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showSettingsMessage('✅ Settings saved successfully!', 'success');
+                    const successMsg = currentLanguage === 'fi' ? '✅ Asetukset tallennettu onnistuneesti!' : '✅ Settings saved successfully!';
+                    showSettingsMessage(successMsg, 'success');
                     document.getElementById('openai_key').value = '';
+                    document.getElementById('tori_password').value = '';
                 } else {
-                    showSettingsMessage('❌ Failed: ' + (data.error || 'Unknown error'), 'error');
+                    const errorPrefix = currentLanguage === 'fi' ? '❌ Epäonnistui: ' : '❌ Failed: ';
+                    showSettingsMessage(errorPrefix + (data.error || 'Unknown error'), 'error');
                 }
             } catch (error) {
                 console.error('Error saving settings:', error);
-                showSettingsMessage('❌ Error saving settings', 'error');
+                const errorMsg = currentLanguage === 'fi' ? '❌ Virhe asetusten tallennuksessa' : '❌ Error saving settings';
+                showSettingsMessage(errorMsg, 'error');
             }
         });
+        
         
         // Reload settings
         document.getElementById('load-settings-btn').addEventListener('click', () => {
             loadSettings();
-            showSettingsMessage('Settings reloaded', 'info');
+            const msg = currentLanguage === 'fi' ? 'Asetukset ladattu uudelleen' : 'Settings reloaded';
+            showSettingsMessage(msg, 'info');
         });
         
         // Trigger valuation
         document.getElementById('valuate-btn').addEventListener('click', async () => {
             const btn = document.getElementById('valuate-btn');
             btn.disabled = true;
-            btn.textContent = '⏳ Running...';
+            const runningText = currentLanguage === 'fi' ? '⏳ Suoritetaan...' : '⏳ Running...';
+            const originalText = btn.textContent;
+            btn.textContent = runningText;
             
             try {
                 const response = await fetch('/api/valuate', {method: 'POST'});
                 const data = await response.json();
                 
                 if (data.success) {
-                    alert('✅ Valuations started! Check back in a few minutes.');
+                    const successMsg = currentLanguage === 'fi' ? 
+                        '✅ Arvostukset aloitettu! Tarkista tilanne muutaman minuutin kuluttua.' :
+                        '✅ Valuations started! Check back in a few minutes.';
+                    alert(successMsg);
                 } else {
-                    alert('❌ ' + (data.message || data.error || 'Failed'));
+                    const errorPrefix = currentLanguage === 'fi' ? '❌ ' : '❌ ';
+                    alert(errorPrefix + (data.message || data.error || (currentLanguage === 'fi' ? 'Epäonnistui' : 'Failed')));
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('❌ Error triggering valuations');
+                const errorMsg = currentLanguage === 'fi' ? 
+                    '❌ Virhe arvostusten käynnistämisessä' :
+                    '❌ Error triggering valuations';
+                alert(errorMsg);
             } finally {
                 btn.disabled = false;
-                btn.textContent = '🤖 Run Valuations';
+                btn.textContent = originalText;
             }
         });
         
