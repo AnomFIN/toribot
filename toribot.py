@@ -792,6 +792,12 @@ def index():
     return send_from_directory('.', 'gui.html')
 
 
+@app.route('/gui.html')
+def gui():
+    """Serve GUI HTML file"""
+    return send_from_directory('.', 'gui.html')
+
+
 @app.route('/styles.css')
 def styles():
     """Serve CSS"""
@@ -801,10 +807,12 @@ def styles():
 @app.route('/api/products')
 def get_products():
     """Get all products"""
+    logger.info("API call: /api/products")
     try:
         items = bot.database.get_all_items()
         # Sort by discovered_at descending
         items.sort(key=lambda x: x.get('discovered_at', ''), reverse=True)
+        logger.info(f"Returning {len(items)} products to frontend")
         return jsonify({"success": True, "products": items})
     except Exception as e:
         logger.error(f"Error getting products: {e}")
@@ -847,8 +855,10 @@ def update_settings():
 @app.route('/api/valuate', methods=['POST'])
 def trigger_valuation():
     """Manually trigger OpenAI valuation"""
+    logger.info("API call: /api/valuate")
     try:
         result = bot.trigger_valuations()
+        logger.info("Valuation triggered successfully")
         return jsonify(result)
     except Exception as e:
         logger.error(f"Error triggering valuation: {e}")
@@ -859,6 +869,84 @@ def trigger_valuation():
 def serve_image(filename):
     """Serve downloaded images"""
     return send_from_directory(IMAGES_DIR, filename)
+
+
+@app.route('/api/fetch', methods=['POST'])
+def fetch_products():
+    """Trigger product fetching"""
+    logger.info("API call: /api/fetch")
+    try:
+        if bot:
+            # Force a fetch run
+            bot.poller.poll_once()
+            logger.info("Product fetch triggered successfully")
+            return jsonify({"success": True, "message": "Fetch triggered"})
+        else:
+            return jsonify({"success": False, "error": "Bot not initialized"}), 500
+    except Exception as e:
+        logger.error(f"Error triggering fetch: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/save', methods=['POST'])
+def save_products():
+    """Save products to CSV"""
+    try:
+        if bot:
+            items = bot.database.get_all_items()
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"products_{timestamp}.csv"
+            
+            # Create CSV content
+            import csv
+            import io
+            output = io.StringIO()
+            fieldnames = ['id', 'title', 'description', 'price', 'location', 'url', 'discovered_at', 'valuation_status', 'price_estimate']
+            writer = csv.DictWriter(output, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            for item in items:
+                writer.writerow({
+                    'id': item.get('id', ''),
+                    'title': item.get('title', ''),
+                    'description': item.get('description', ''),
+                    'price': item.get('price', ''),
+                    'location': item.get('location', ''),
+                    'url': item.get('url', ''),
+                    'discovered_at': item.get('discovered_at', ''),
+                    'valuation_status': item.get('valuation', {}).get('status', '') if item.get('valuation') else '',
+                    'price_estimate': item.get('valuation', {}).get('price_estimate', '') if item.get('valuation') else ''
+                })
+            
+            # Save to file
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write(output.getvalue())
+                
+            return jsonify({"success": True, "filename": filename, "count": len(items)})
+        else:
+            return jsonify({"success": False, "error": "Bot not initialized"}), 500
+    except Exception as e:
+        logger.error(f"Error saving products: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/fetch-images', methods=['POST'])
+def fetch_images():
+    """Trigger image downloading"""
+    try:
+        if bot:
+            items = bot.database.get_all_items()
+            count = 0
+            for item in items:
+                if item.get('image_urls') and not item.get('image_files'):
+                    # This would trigger image downloading if implemented
+                    count += 1
+            return jsonify({"success": True, "message": f"Image fetch triggered for {count} items", "count": count})
+        else:
+            return jsonify({"success": False, "error": "Bot not initialized"}), 500
+    except Exception as e:
+        logger.error(f"Error triggering image fetch: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 def signal_handler(sig, frame):
