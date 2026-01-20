@@ -573,6 +573,7 @@ Vastaa vain suomeksi, ole ytimekäs."""
                 try:
                     price_new = int(price_new_match.group(1))
                 except ValueError:
+                    # If parsing fails, leave price_new as None
                     pass
             
             # Try to extract "ARVO_NYT" value
@@ -581,6 +582,7 @@ Vastaa vain suomeksi, ole ytimekäs."""
                 try:
                     price_current = int(price_current_match.group(1))
                 except ValueError:
+                    # If parsing fails, leave price_current as None
                     pass
             
             # Fallback to old "ARVO:" format for backwards compatibility
@@ -590,6 +592,7 @@ Vastaa vain suomeksi, ole ytimekäs."""
                     try:
                         price_current = int(price_match.group(1))
                     except ValueError:
+                        # If parsing fails, leave price_current as None
                         pass
             
             return {
@@ -1036,7 +1039,7 @@ def refresh_all():
                         # Refresh images if downloading is enabled
                         settings = bot.settings_manager.get_settings()
                         if settings.get("images", {}).get("download_enabled", True):
-                            image_urls = updated_data.get('image_urls', [])
+                            image_urls = updated_data.get('images', [])
                             if image_urls:
                                 bot._download_item_images(updated_data)
                                 logger.info(f"Downloaded/refreshed {len(image_urls)} images for {product_id}")

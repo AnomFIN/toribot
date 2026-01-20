@@ -254,7 +254,7 @@
                 </div>
                 <div class="stat-item">
                     <span class="stat-label" data-i18n="auto_refresh">Automaattipäivitys:</span>
-                    <span class="stat-value">30s</span>
+                    <span class="stat-value">5min</span>
                 </div>
                 <div class="stat-item">
                     <button id="valuate-btn" class="action-btn" data-i18n="run_valuations">🤖 Suorita arvostukset</button>
@@ -522,7 +522,7 @@
     <div class="mobile-overlay" id="mobile-overlay"></div>
 
     <script>
-        const REFRESH_INTERVAL = 30000;
+        const REFRESH_INTERVAL = 300000; // 5 minutes
         let currentPage = 'dashboard';
         let currentLanguage = 'fi';
         let currentTab = 'products';
@@ -2086,50 +2086,57 @@
                 });
             }
             
-            // Reactive search input
+            // Reactive search input with debouncing
             const searchInput = document.getElementById('product-search-input');
             if (searchInput) {
+                let searchTimeout;
                 searchInput.addEventListener('input', (e) => {
                     const searchTerm = e.target.value.trim().toLowerCase();
                     
-                    // Only search if 3 or more characters
-                    if (searchTerm.length >= 3) {
-                        const filteredProducts = allProducts.filter(product => {
-                            const title = (product.title || '').toLowerCase();
-                            const description = (product.description || '').toLowerCase();
-                            const location = (product.location || '').toLowerCase();
-                            const seller = (product.seller || '').toLowerCase();
+                    // Clear previous timeout
+                    clearTimeout(searchTimeout);
+                    
+                    // Debounce: wait 300ms before executing search
+                    searchTimeout = setTimeout(() => {
+                        // Only search if 3 or more characters
+                        if (searchTerm.length >= 3) {
+                            const filteredProducts = allProducts.filter(product => {
+                                const title = (product.title || '').toLowerCase();
+                                const description = (product.description || '').toLowerCase();
+                                const location = (product.location || '').toLowerCase();
+                                const seller = (product.seller || '').toLowerCase();
+                                
+                                return title.includes(searchTerm) || 
+                                       description.includes(searchTerm) || 
+                                       location.includes(searchTerm) || 
+                                       seller.includes(searchTerm);
+                            });
                             
-                            return title.includes(searchTerm) || 
-                                   description.includes(searchTerm) || 
-                                   location.includes(searchTerm) || 
-                                   seller.includes(searchTerm);
-                        });
-                        
-                        // Update the display based on current page
-                        if (currentPage === 'dashboard') {
-                            displayRecentProducts(filteredProducts.slice(0, 6));
-                        } else if (currentPage === 'products') {
-                            displayProductsGrid(filteredProducts);
-                        } else if (currentPage === 'products-list') {
-                            displayProducts(filteredProducts);
+                            // Update the display based on current page
+                            if (currentPage === 'dashboard') {
+                                displayRecentProducts(filteredProducts.slice(0, 6));
+                            } else if (currentPage === 'products') {
+                                displayProductsGrid(filteredProducts);
+                            } else if (currentPage === 'products-list') {
+                                displayProducts(filteredProducts);
+                            }
+                            
+                            // Show search result count
+                            const countMsg = currentLanguage === 'fi' ? 
+                                `Löytyi ${filteredProducts.length} tuotetta` :
+                                `Found ${filteredProducts.length} products`;
+                            console.log(countMsg);
+                        } else if (searchTerm.length === 0) {
+                            // Reset to show all products
+                            if (currentPage === 'dashboard') {
+                                displayRecentProducts(allProducts.slice(0, 6));
+                            } else if (currentPage === 'products') {
+                                displayProductsGrid(allProducts);
+                            } else if (currentPage === 'products-list') {
+                                displayProducts(allProducts);
+                            }
                         }
-                        
-                        // Show search result count
-                        const countMsg = currentLanguage === 'fi' ? 
-                            `Löytyi ${filteredProducts.length} tuotetta` :
-                            `Found ${filteredProducts.length} products`;
-                        console.log(countMsg);
-                    } else if (searchTerm.length === 0) {
-                        // Reset to show all products
-                        if (currentPage === 'dashboard') {
-                            displayRecentProducts(allProducts.slice(0, 6));
-                        } else if (currentPage === 'products') {
-                            displayProductsGrid(allProducts);
-                        } else if (currentPage === 'products-list') {
-                            displayProducts(allProducts);
-                        }
-                    }
+                    }, 300); // 300ms debounce delay
                 });
             }
             
@@ -2174,7 +2181,7 @@
             }
         }, REFRESH_INTERVAL);
         
-        console.log('Tori Annataan Bot GUI loaded. Auto-refresh: 30s');
+        console.log('Tori Annataan Bot GUI loaded. Auto-refresh: 5min');
     </script>
 </body>
 </html>
