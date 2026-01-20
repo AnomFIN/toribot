@@ -552,26 +552,28 @@
             }
         }
         
-        // Navigation event listeners
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const pageId = link.dataset.page;
-                showPage(pageId);
+        // Navigation event listeners - will be set up in DOMContentLoaded
+        function setupNavigationListeners() {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.dataset.page;
+                    showPage(pageId);
+                });
             });
-        });
-        
-        // Sidebar toggle
-        document.getElementById('sidebar-toggle').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-            document.getElementById('main-content').classList.toggle('expanded');
-        });
-        
-        // Mobile overlay
-        document.getElementById('mobile-overlay').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.remove('mobile-open');
-            document.getElementById('mobile-overlay').classList.remove('active');
-        });
+            
+            // Sidebar toggle
+            document.getElementById('sidebar-toggle').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('collapsed');
+                document.getElementById('main-content').classList.toggle('expanded');
+            });
+            
+            // Mobile overlay
+            document.getElementById('mobile-overlay').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.remove('mobile-open');
+                document.getElementById('mobile-overlay').classList.remove('active');
+            });
+        }
         
         // Translations
         const translations = {
@@ -1934,8 +1936,13 @@
             setTimeout(() => msgEl.style.display = 'none', 5000);
         }
         
-        // Dashboard action buttons event listeners
+        
+        // Initialize page when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
+            // Set up navigation listeners
+            setupNavigationListeners();
+            
+            // Dashboard action buttons event listeners
             // Fetch products button
             const fetchBtn = document.getElementById('fetch-btn');
             if (fetchBtn) {
@@ -2015,14 +2022,13 @@
                     }
                 });
             }
-        });
-        
-        // Initialize page when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
+            
             // Load saved language preference
             const savedLanguage = localStorage.getItem('language') || 'fi';
-            document.getElementById('language-select').value = savedLanguage;
-            document.getElementById('language-select-sidebar').value = savedLanguage;
+            const languageSelectEl = document.getElementById('language-select');
+            const languageSelectSidebarEl = document.getElementById('language-select-sidebar');
+            if (languageSelectEl) languageSelectEl.value = savedLanguage;
+            if (languageSelectSidebarEl) languageSelectSidebarEl.value = savedLanguage;
             setLanguage(savedLanguage);
             
             // Show dashboard by default
