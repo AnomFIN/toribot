@@ -428,7 +428,7 @@ class ProductExtractor:
             image_patterns = [
                 r'"image"\s*:\s*"(https://[^"]+)"',
                 r'"imageUrl"\s*:\s*"(https://[^"]+)"',
-                r'src="(https://[^"]*tori[^"]*\.(jpg|jpeg|png|webp)[^"]*)"|src="(https://[^"]*image[^"]*\.(jpg|jpeg|png|webp)[^"]*)"
+                r'src="(https://[^"]*tori[^"]*\.(jpg|jpeg|png|webp)[^"]*)"|src="(https://[^"]*image[^"]*\.(jpg|jpeg|png|webp)[^"]*)"'
             ]
             
             for pattern in image_patterns:
