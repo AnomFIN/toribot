@@ -37,6 +37,9 @@
                 <div class="stat-item">
                     <button id="valuate-btn" class="action-btn" data-i18n="run_valuations">🤖 Suorita arvostukset</button>
                 </div>
+                <div class="stat-item">
+                    <button id="fetch-images-btn" class="action-btn" data-i18n="fetch_images">🖼️ Hae kuvat</button>
+                </div>
             </div>
 
             <div class="table-container">
@@ -87,7 +90,20 @@
                     <div class="form-group">
                         <label data-i18n="logo_file">Logotiedosto:</label>
                         <input type="file" id="logo-file" accept="image/*">
+                        <button type="button" id="clear-logo-btn" class="secondary-btn" style="margin-top: 10px;">
+                            <span data-i18n="clear_logo">🗑️ Poista logo</span>
+                        </button>
                         <small data-i18n="logo_file_desc">Valitse taustakuvaksi käytettävä logo (.png, .jpg, .svg)</small>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="logo_url">Tai anna kuvan URL-osoite:</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="url" id="logo-url" placeholder="https://example.com/logo.png" style="flex: 1;">
+                            <button type="button" id="load-logo-url-btn" class="secondary-btn">
+                                <span data-i18n="load_url">📥 Lataa</span>
+                            </button>
+                        </div>
+                        <small data-i18n="logo_url_desc">Lataa logo suoraan URL-osoitteesta</small>
                     </div>
                     <div class="form-group">
                         <label data-i18n="logo_opacity">Läpinäkyvyys:</label>
@@ -257,6 +273,7 @@
                 never: 'Ei koskaan',
                 auto_refresh: 'Automaattipäivitys:',
                 run_valuations: '🤖 Suorita arvostukset',
+                fetch_images: '🖼️ Hae kuvat',
                 images: 'Kuvat',
                 title: 'Otsikko',
                 description: 'Kuvaus',
@@ -297,6 +314,9 @@
                 logo_settings: 'Logon asetukset',
                 logo_file: 'Logotiedosto:',
                 logo_file_desc: 'Valitse taustakuvaksi käytettävä logo (.png, .jpg, .svg)',
+                logo_url: 'Tai anna kuvan URL-osoite:',
+                logo_url_desc: 'Lataa logo suoraan URL-osoitteesta',
+                load_url: '📥 Lataa',
                 logo_opacity: 'Läpinäkyvyys:',
                 logo_blur: 'Sumennus:',
                 logo_position: 'Sijainti:',
@@ -311,6 +331,7 @@
                 small: 'Pieni (50%)',
                 medium: 'Keskikokoinen (75%)',
                 large: 'Suuri (100%)',
+                clear_logo: '🗑️ Poista logo',
                 tori_login_settings: 'Tori.fi kirjautuminen',
                 enable_tori_login: 'Aktivoi automaattinen kirjautuminen',
                 tori_login_desc: 'Botin kirjautuminen Tori.fi-palveluun parantaa hakutuloksia',
@@ -332,6 +353,7 @@
                 never: 'Never',
                 auto_refresh: 'Auto-refresh:',
                 run_valuations: '🤖 Run Valuations',
+                fetch_images: '🖼️ Fetch Images',
                 images: 'Images',
                 title: 'Title',
                 description: 'Description',
@@ -372,6 +394,9 @@
                 logo_settings: 'Logo Settings',
                 logo_file: 'Logo File:',
                 logo_file_desc: 'Select logo image to use as background (.png, .jpg, .svg)',
+                logo_url: 'Or enter image URL:',
+                logo_url_desc: 'Load logo directly from URL',
+                load_url: '📥 Load',
                 logo_opacity: 'Opacity:',
                 logo_blur: 'Blur:',
                 logo_position: 'Position:',
@@ -386,6 +411,7 @@
                 small: 'Small (50%)',
                 medium: 'Medium (75%)',
                 large: 'Large (100%)',
+                clear_logo: '🗑️ Clear Logo',
                 tori_login_settings: 'Tori.fi Login',
                 enable_tori_login: 'Enable automatic login',
                 tori_login_desc: 'Bot login to Tori.fi improves search results',
@@ -438,6 +464,8 @@
         const positionSelect = document.getElementById('logo-position');
         const sizeSelect = document.getElementById('logo-size');
         const logoFileInput = document.getElementById('logo-file');
+        const logoUrlInput = document.getElementById('logo-url');
+        const loadUrlBtn = document.getElementById('load-logo-url-btn');
         const opacityValue = document.getElementById('opacity-value');
         const blurValue = document.getElementById('blur-value');
         
@@ -465,6 +493,9 @@
             
             if (logoSettings.imageData) {
                 logoElement.style.backgroundImage = `url(${logoSettings.imageData})`;
+                logoElement.classList.add('has-image');
+            } else {
+                logoElement.classList.remove('has-image');
             }
             
             updateLogoStyle();
@@ -485,14 +516,19 @@
         
         // Save logo settings
         function saveLogoSettings() {
+            const backgroundImage = logoElement.style.backgroundImage;
+            const imageData = backgroundImage ? backgroundImage.match(/url\(["']?([^"']*)["']?\)/)?.[1] || '' : '';
+            
             const logoSettings = {
                 opacity: opacitySlider.value,
                 blur: blurSlider.value,
                 position: positionSelect.value,
                 size: sizeSelect.value,
-                imageData: logoElement.style.backgroundImage.match(/url\(["']?([^"']*)["']?\)/)?.[1] || ''
+                imageData: imageData
             };
+            
             localStorage.setItem('logoSettings', JSON.stringify(logoSettings));
+            console.log('Logo settings saved:', logoSettings);
         }
         
         // Event listeners for logo controls
@@ -521,15 +557,245 @@
         logoFileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    const errorMsg = currentLanguage === 'fi' ? 
+                        'Valitse kelvollinen kuvatiedosto (.png, .jpg, .gif, .svg)' : 
+                        'Please select a valid image file (.png, .jpg, .gif, .svg)';
+                    alert(errorMsg);
+                    return;
+                }
+                
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    const imageData = e.target.result;
-                    logoElement.style.backgroundImage = `url(${imageData})`;
-                    updateLogoStyle();
-                    saveLogoSettings();
+                    try {
+                        const imageData = e.target.result;
+                        logoElement.style.backgroundImage = `url(${imageData})`;
+                        logoElement.classList.add('has-image');
+                        updateLogoStyle();
+                        saveLogoSettings();
+                        
+                        const successMsg = currentLanguage === 'fi' ? 
+                            'Logo ladattu onnistuneesti!' : 
+                            'Logo uploaded successfully!';
+                        console.log(successMsg);
+                    } catch (error) {
+                        console.error('Error loading image:', error);
+                        const errorMsg = currentLanguage === 'fi' ? 
+                            'Virhe kuvan latauksessa' : 
+                            'Error loading image';
+                        alert(errorMsg);
+                    }
+                };
+                reader.onerror = () => {
+                    const errorMsg = currentLanguage === 'fi' ? 
+                        'Virhe tiedoston lukemisessa' : 
+                        'Error reading file';
+                    alert(errorMsg);
                 };
                 reader.readAsDataURL(file);
             }
+        });
+        
+        // Load logo from URL
+        loadUrlBtn.addEventListener('click', async () => {
+            const url = logoUrlInput.value.trim();
+            
+            if (!url) {
+                const errorMsg = currentLanguage === 'fi' ? 
+                    'Anna kelvollinen URL-osoite' : 
+                    'Please enter a valid URL';
+                alert(errorMsg);
+                return;
+            }
+            
+            if (!url.startsWith('https://') && !url.startsWith('http://')) {
+                const errorMsg = currentLanguage === 'fi' ? 
+                    'URL-osoitteen tulee alkaa http:// tai https://' : 
+                    'URL must start with http:// or https://';
+                alert(errorMsg);
+                return;
+            }
+            
+            const originalText = loadUrlBtn.textContent;
+            const loadingText = currentLanguage === 'fi' ? '⏳ Ladataan...' : '⏳ Loading...';
+            
+            loadUrlBtn.disabled = true;
+            loadUrlBtn.textContent = loadingText;
+            
+            try {
+                // Use proxy approach for CORS issues
+                const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
+                
+                const response = await fetch(proxyUrl);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch image');
+                }
+                
+                const blob = await response.blob();
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    const imageData = e.target.result;
+                    logoElement.style.backgroundImage = `url(${imageData})`;
+                    logoElement.classList.add('has-image');
+                    updateLogoStyle();
+                    saveLogoSettings();
+                    
+                    const successMsg = currentLanguage === 'fi' ? 
+                        'Logo ladattu URL:sta onnistuneesti!' : 
+                        'Logo loaded from URL successfully!';
+                    alert(successMsg);
+                    logoUrlInput.value = '';
+                    
+                    loadUrlBtn.disabled = false;
+                    loadUrlBtn.textContent = originalText;
+                };
+                
+                reader.onerror = () => {
+                    const errorMsg = currentLanguage === 'fi' ? 
+                        'Virhe kuvan käsittelyssä' : 
+                        'Error processing image';
+                    alert(errorMsg);
+                    
+                    loadUrlBtn.disabled = false;
+                    loadUrlBtn.textContent = originalText;
+                };
+                
+                reader.readAsDataURL(blob);
+                
+            } catch (error) {
+                console.error('Error loading logo from URL:', error);
+                
+                // Fallback: try direct URL (may work for some images)
+                try {
+                    logoElement.style.backgroundImage = `url(${url})`;
+                    logoElement.classList.add('has-image');
+                    updateLogoStyle();
+                    saveLogoSettings();
+                    
+                    const successMsg = currentLanguage === 'fi' ? 
+                        'Logo asetettu (ei tallennettu paikallisesti)' : 
+                        'Logo set (not saved locally)';
+                    alert(successMsg);
+                    logoUrlInput.value = '';
+                } catch (fallbackError) {
+                    const errorMsg = currentLanguage === 'fi' ? 
+                        'Kuvan lataus epäonnistui. Tarkista URL-osoite.' : 
+                        'Failed to load image. Please check the URL.';
+                    alert(errorMsg);
+                }
+                
+                loadUrlBtn.disabled = false;
+                loadUrlBtn.textContent = originalText;
+            }
+        });
+        loadUrlBtn.addEventListener('click', async () => {
+            const url = logoUrlInput.value.trim();
+            
+            if (!url) {
+                const errorMsg = currentLanguage === 'fi' ? 
+                    'Anna kelvollinen URL-osoite' : 
+                    'Please enter a valid URL';
+                alert(errorMsg);
+                return;
+            }
+            
+            if (!url.startsWith('https://') && !url.startsWith('http://')) {
+                const errorMsg = currentLanguage === 'fi' ? 
+                    'URL-osoitteen tulee alkaa http:// tai https://' : 
+                    'URL must start with http:// or https://';
+                alert(errorMsg);
+                return;
+            }
+            
+            const originalText = loadUrlBtn.textContent;
+            const loadingText = currentLanguage === 'fi' ? '⏳ Ladataan...' : '⏳ Loading...';
+            
+            loadUrlBtn.disabled = true;
+            loadUrlBtn.textContent = loadingText;
+            
+            try {
+                // Test if image loads
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                
+                img.onload = () => {
+                    try {
+                        // Create canvas to convert to base64
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        
+                        ctx.drawImage(img, 0, 0);
+                        const imageData = canvas.toDataURL('image/png');
+                        
+                        logoElement.style.backgroundImage = `url(${imageData})`;
+                        logoElement.classList.add('has-image');
+                        updateLogoStyle();
+                        saveLogoSettings();
+                        
+                        const successMsg = currentLanguage === 'fi' ? 
+                            'Logo ladattu URL:sta onnistuneesti!' : 
+                            'Logo loaded from URL successfully!';
+                        alert(successMsg);
+                        logoUrlInput.value = '';
+                    } catch (error) {
+                        console.error('Canvas error:', error);
+                        // Fallback: use URL directly
+                        logoElement.style.backgroundImage = `url(${url})`;
+                        logoElement.classList.add('has-image');
+                        updateLogoStyle();
+                        saveLogoSettings();
+                        
+                        const successMsg = currentLanguage === 'fi' ? 
+                            'Logo ladattu URL:sta!' : 
+                            'Logo loaded from URL!';
+                        alert(successMsg);
+                        logoUrlInput.value = '';
+                    }
+                    
+                    loadUrlBtn.disabled = false;
+                    loadUrlBtn.textContent = originalText;
+                };
+                
+                img.onerror = () => {
+                    const errorMsg = currentLanguage === 'fi' ? 
+                        'Kuvan lataus epäonnistui. Tarkista URL-osoite.' : 
+                        'Failed to load image. Please check the URL.';
+                    alert(errorMsg);
+                    
+                    loadUrlBtn.disabled = false;
+                    loadUrlBtn.textContent = originalText;
+                };
+                
+                img.src = url;
+                
+            } catch (error) {
+                console.error('Error loading logo from URL:', error);
+                const errorMsg = currentLanguage === 'fi' ? 
+                    'Virhe kuvan latauksessa URL:sta' : 
+                    'Error loading image from URL';
+                alert(errorMsg);
+                
+                loadUrlBtn.disabled = false;
+                loadUrlBtn.textContent = originalText;
+            }
+        });
+        
+        // Clear logo button
+        document.getElementById('clear-logo-btn').addEventListener('click', () => {
+            logoElement.style.backgroundImage = '';
+            logoElement.classList.remove('has-image');
+            logoFileInput.value = '';
+            saveLogoSettings();
+            
+            const successMsg = currentLanguage === 'fi' ? 
+                'Logo poistettu' : 
+                'Logo cleared';
+            console.log(successMsg);
         });
         
         // Initialize logo settings
