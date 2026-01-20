@@ -1119,7 +1119,7 @@ def main():
     settings = bot.settings_manager.get_settings()
     server_settings = settings.get("server", {})
     host = server_settings.get("host", "127.0.0.1")
-    port = server_settings.get("port", 8787)
+    port = server_settings.get("port", 8789)
     
     logger.info(f"Starting Flask server on http://{host}:{port}")
     logger.info("Open http://127.0.0.1:8789 in your browser")

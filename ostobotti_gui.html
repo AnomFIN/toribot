@@ -503,7 +503,7 @@
                     </div>
                     <div class="form-group">
                         <label data-i18n="port">Portti:</label>
-                        <input type="number" id="server_port" min="1024" max="65535" value="8787">
+                        <input type="number" id="server_port" min="1024" max="65535" value="8789">
                         <small data-i18n="restart_required">Vaatii uudelleenkäynnistyksen</small>
                     </div>
                 </div>
@@ -1679,7 +1679,7 @@
             document.getElementById('valuation_interval').value = s.openai?.valuation_interval_minutes || 60;
             
             document.getElementById('server_host').value = s.server?.host || '127.0.0.1';
-            document.getElementById('server_port').value = s.server?.port || 8787;
+            document.getElementById('server_port').value = s.server?.port || 8789;
             
             // Tori login settings
             document.getElementById('tori_login_enabled').checked = s.tori_login?.enabled ?? false;
@@ -2181,7 +2181,7 @@
             }
         }, REFRESH_INTERVAL);
         
-        console.log('Tori Annataan Bot GUI loaded. Auto-refresh: 5min');
+        console.log('Tori Ostobotti GUI loaded. Auto-refresh: 5min');
     </script>
 </body>
 </html>
