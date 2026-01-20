@@ -1285,6 +1285,25 @@
             }
         });
         
+        // Clear logo button functionality
+        const clearLogoBtn = document.getElementById('clear-logo-btn');
+        if (clearLogoBtn) {
+            clearLogoBtn.addEventListener('click', () => {
+                if (logoElement) {
+                    logoElement.style.backgroundImage = '';
+                    logoElement.classList.remove('has-image');
+                }
+                
+                if (typeof logoFileInput !== 'undefined' && logoFileInput) {
+                    logoFileInput.value = '';
+                }
+                
+                if (typeof saveLogoSettings === 'function') {
+                    saveLogoSettings();
+                }
+            });
+        }
+        
         // Initialize logo settings
         loadLogoSettings();
     } // End of initializeLogoFunctionality
