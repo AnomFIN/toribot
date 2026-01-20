@@ -1007,6 +1007,61 @@ def save_products():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@app.route('/api/refresh-all', methods=['POST'])
+def refresh_all():
+    """Refresh all existing items to check for updates"""
+    logger.info("API call: /api/refresh-all")
+    try:
+        if bot:
+            items = bot.database.get_all_items()
+            logger.info(f"Refreshing {len(items)} items in background")
+            
+            def refresh_all_items():
+                """Background task to refresh all items"""
+                for item in items:
+                    try:
+                        product_id = item.get('id')
+                        if not product_id:
+                            continue
+                        
+                        # Fetch latest data for this item
+                        item_html = bot.fetcher.fetch_item_page(product_id)
+                        if not item_html:
+                            logger.warning(f"Failed to fetch updated data for {product_id}")
+                            continue
+                        
+                        # Extract updated details
+                        updated_data = ProductExtractor.extract_product_details(item_html, product_id)
+                        
+                        # Check if images changed and download new ones
+                        settings = bot.settings_manager.get_settings()
+                        if settings.get("images", {}).get("download_enabled", True):
+                            old_image_count = len(item.get('image_files', []))
+                            new_image_count = len(updated_data.get('image_urls', []))
+                            if new_image_count > old_image_count:
+                                bot._download_item_images(updated_data)
+                                logger.info(f"Downloaded {new_image_count - old_image_count} new images for {product_id}")
+                        
+                        # Update the item in database
+                        bot.database.add_item(product_id, updated_data)
+                        logger.info(f"Updated item {product_id}")
+                        
+                    except Exception as e:
+                        logger.error(f"Error refreshing item {item.get('id')}: {e}")
+                
+                logger.info(f"Completed refreshing {len(items)} items")
+            
+            # Run refresh in background thread
+            Thread(target=refresh_all_items, daemon=True).start()
+            
+            return jsonify({"success": True, "message": f"Refreshing {len(items)} items in background", "count": len(items)})
+        else:
+            return jsonify({"success": False, "error": "Bot not initialized"}), 500
+    except Exception as e:
+        logger.error(f"Error triggering refresh: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 @app.route('/api/fetch-images', methods=['POST'])
 def fetch_images():
     """Trigger image downloading"""

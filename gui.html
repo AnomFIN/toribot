@@ -147,6 +147,22 @@
                             <i class="fas fa-images"></i>
                             <span data-i18n="fetch_images">Hae kuvat</span>
                         </button>
+                        <button class="action-card" id="refresh-all-btn">
+                            <i class="fas fa-sync"></i>
+                            <span data-i18n="refresh_all_data">Hae tiedot uudelleen</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Search section -->
+                    <div class="search-section">
+                        <h4 data-i18n="search_products_title">Hae tuotteista</h4>
+                        <div class="search-input-container">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="product-search-input" placeholder="Kirjoita vähintään 3 merkkiä..." data-i18n-placeholder="search_placeholder">
+                        </div>
+                        <small data-i18n="search_desc">
+                            Haku päivittyy automaattisesti kun kirjoitat
+                        </small>
                     </div>
                     
                     <!-- Multi-page fetch section -->
@@ -707,6 +723,10 @@
                 fetch_more_products: 'Listaa lisää tuotteita',
                 fetch_more_button: 'Hae lisää',
                 fetch_more_desc: 'Esim. 150 tuotetta = 3 sivua (~50 tuotetta/sivu)',
+                refresh_all_data: 'Hae tiedot uudelleen',
+                search_products_title: 'Hae tuotteista',
+                search_placeholder: 'Kirjoita vähintään 3 merkkiä...',
+                search_desc: 'Haku päivittyy automaattisesti kun kirjoitat',
                 telegram_settings: 'Telegram-ilmoitukset',
                 enable_telegram: 'Aktivoi Telegram-ilmoitukset',
                 telegram_desc: 'Lähetä ilmoitus Telegramiin kun uusi tuote löytyy',
@@ -833,6 +853,10 @@
                 fetch_more_products: 'List More Products',
                 fetch_more_button: 'Fetch More',
                 fetch_more_desc: 'E.g. 150 products = 3 pages (~50 products/page)',
+                refresh_all_data: 'Refresh All Data',
+                search_products_title: 'Search Products',
+                search_placeholder: 'Type at least 3 characters...',
+                search_desc: 'Search updates automatically as you type',
                 telegram_settings: 'Telegram Notifications',
                 enable_telegram: 'Enable Telegram notifications',
                 telegram_desc: 'Send notification to Telegram when new product is found',
@@ -2017,6 +2041,94 @@
                     } finally {
                         btn.disabled = false;
                         btn.textContent = originalText;
+                    }
+                });
+            }
+            
+            // Refresh all data button
+            const refreshAllBtn = document.getElementById('refresh-all-btn');
+            if (refreshAllBtn) {
+                refreshAllBtn.addEventListener('click', async () => {
+                    const btn = refreshAllBtn;
+                    btn.disabled = true;
+                    const runningText = currentLanguage === 'fi' ? '⏳ Päivitetään...' : '⏳ Refreshing...';
+                    const originalText = btn.textContent;
+                    btn.textContent = runningText;
+                    
+                    try {
+                        const response = await fetch('/api/refresh-all', {method: 'POST'});
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            const successMsg = currentLanguage === 'fi' ? 
+                                `✅ Päivitetään ${data.count || 0} tuotteen tiedot taustalla. Tarkista tilanne hetken kuluttua.` :
+                                `✅ Refreshing ${data.count || 0} products in background. Check back in a moment.`;
+                            showMessage(successMsg, 'success');
+                            
+                            // Refresh dashboard after a delay
+                            setTimeout(() => {
+                                if (currentPage === 'dashboard') {
+                                    loadDashboard();
+                                }
+                            }, 3000);
+                        } else {
+                            const errorMsg = data.message || data.error || (currentLanguage === 'fi' ? 'Epäonnistui' : 'Failed');
+                            showMessage(errorMsg, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error refreshing all data:', error);
+                        const errorMsg = currentLanguage === 'fi' ? 'Virhe tietojen päivityksessä' : 'Error refreshing data';
+                        showMessage(errorMsg, 'error');
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                    }
+                });
+            }
+            
+            // Reactive search input
+            const searchInput = document.getElementById('product-search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.trim().toLowerCase();
+                    
+                    // Only search if 3 or more characters
+                    if (searchTerm.length >= 3) {
+                        const filteredProducts = allProducts.filter(product => {
+                            const title = (product.title || '').toLowerCase();
+                            const description = (product.description || '').toLowerCase();
+                            const location = (product.location || '').toLowerCase();
+                            const seller = (product.seller || '').toLowerCase();
+                            
+                            return title.includes(searchTerm) || 
+                                   description.includes(searchTerm) || 
+                                   location.includes(searchTerm) || 
+                                   seller.includes(searchTerm);
+                        });
+                        
+                        // Update the display based on current page
+                        if (currentPage === 'dashboard') {
+                            displayRecentProducts(filteredProducts.slice(0, 6));
+                        } else if (currentPage === 'products') {
+                            displayProductsGrid(filteredProducts);
+                        } else if (currentPage === 'products-list') {
+                            displayProducts(filteredProducts);
+                        }
+                        
+                        // Show search result count
+                        const countMsg = currentLanguage === 'fi' ? 
+                            `Löytyi ${filteredProducts.length} tuotetta` :
+                            `Found ${filteredProducts.length} products`;
+                        console.log(countMsg);
+                    } else if (searchTerm.length === 0) {
+                        // Reset to show all products
+                        if (currentPage === 'dashboard') {
+                            displayRecentProducts(allProducts.slice(0, 6));
+                        } else if (currentPage === 'products') {
+                            displayProductsGrid(allProducts);
+                        } else if (currentPage === 'products-list') {
+                            displayProducts(allProducts);
+                        }
                     }
                 });
             }

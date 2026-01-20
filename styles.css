@@ -449,6 +449,52 @@ body {
     opacity: 0.7;
 }
 
+.search-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.search-section h4 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.1em;
+}
+
+.search-input-container {
+    position: relative;
+    margin-top: 10px;
+}
+
+.search-input-container i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.search-input-container input[type="text"] {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.search-input-container input[type="text"]:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.search-section small {
+    display: block;
+    margin-top: 8px;
+    opacity: 0.7;
+}
+
 .recent-products {
     grid-area: recent;
 }
