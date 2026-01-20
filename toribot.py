@@ -48,6 +48,7 @@ DEFAULT_SETTINGS = {
     "listing_url": "https://www.tori.fi/recommerce/forsale/search?sort=PUBLISHED_DESC&trade_type=2",
     "request_timeout_seconds": 15,
     "max_retries": 2,
+    "products_per_page": 50,  # Approximate number of products per page on Tori.fi
     "openai": {
         "api_key": "",
         "base_url": "https://api.openai.com/v1",
@@ -789,18 +790,15 @@ class ToriBot:
     
     def fetch_multiple_pages(self, num_products):
         """Fetch products from multiple pages based on requested count"""
-        # Assuming ~50 products per page
-        products_per_page = 50
+        settings = self.settings_manager.get_settings()
+        products_per_page = settings.get("products_per_page", 50)
         num_pages = (num_products + products_per_page - 1) // products_per_page  # Ceiling division
         
         logger.info(f"Fetching approximately {num_products} products from {num_pages} pages...")
         
-        total_new = 0
         for page_num in range(1, num_pages + 1):
             try:
                 self._poll_once(page=page_num)
-                # Get count of items added (we'll track this differently)
-                # For now, just log the page completion
                 logger.info(f"Completed fetching page {page_num}/{num_pages}")
             except Exception as e:
                 logger.error(f"Error fetching page {page_num}: {e}")
@@ -913,7 +911,10 @@ def fetch_products():
             if num_products and num_products > 0:
                 # Multi-page fetch
                 logger.info(f"Multi-page fetch requested for ~{num_products} products")
-                Thread(target=lambda: bot.fetch_multiple_pages(num_products), daemon=True).start()
+                def run_multi_page_fetch():
+                    bot.fetch_multiple_pages(num_products)
+                
+                Thread(target=run_multi_page_fetch, daemon=True).start()
                 return jsonify({"success": True, "message": f"Fetching ~{num_products} products in background", "multi_page": True})
             else:
                 # Single page fetch (original behavior)

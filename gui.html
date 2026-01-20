@@ -150,17 +150,16 @@
                     </div>
                     
                     <!-- Multi-page fetch section -->
-                    <div class="multi-page-fetch" style="margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                    <div class="multi-page-fetch">
                         <h4 data-i18n="fetch_more_products">Listaa lisää tuotteita</h4>
-                        <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
-                            <input type="number" id="num-products-input" placeholder="150" min="50" step="50" value="150" 
-                                   style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ddd; font-size: 14px;">
-                            <button class="action-card" id="fetch-multi-btn" style="flex: 1;">
+                        <div class="multi-page-fetch-controls">
+                            <input type="number" id="num-products-input" placeholder="150" min="50" step="50" value="150">
+                            <button class="action-card" id="fetch-multi-btn">
                                 <i class="fas fa-list"></i>
                                 <span data-i18n="fetch_more_button">Hae lisää</span>
                             </button>
                         </div>
-                        <small style="display: block; margin-top: 8px; opacity: 0.7;" data-i18n="fetch_more_desc">
+                        <small data-i18n="fetch_more_desc">
                             Esim. 150 tuotetta = 3 sivua (~50 tuotetta/sivu)
                         </small>
                     </div>
