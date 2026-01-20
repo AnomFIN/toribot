@@ -21,12 +21,11 @@ from html import unescape
 # Third-party imports
 try:
     from flask import Flask, jsonify, request, send_from_directory
-    from flask_cors import CORS
     import requests
     from PIL import Image
     from io import BytesIO
 except ImportError as e:
-    print(f"Error: Missing required package. Install with: pip install flask flask-cors requests pillow openai")
+    print(f"Error: Missing required package. Install with: pip install flask requests pillow openai")
     sys.exit(1)
 
 # Setup logging
@@ -95,7 +94,8 @@ class SettingsManager:
     
     def _merge_with_defaults(self, loaded):
         """Merge loaded settings with defaults to handle missing keys"""
-        result = DEFAULT_SETTINGS.copy()
+        # Use deep copy to avoid mutating DEFAULT_SETTINGS
+        result = json.loads(json.dumps(DEFAULT_SETTINGS))
         for key in loaded:
             if isinstance(loaded[key], dict) and key in result:
                 result[key].update(loaded[key])
