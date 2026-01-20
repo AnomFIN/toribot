@@ -341,6 +341,18 @@ td {
     overflow-y: auto;
 }
 
+.price-estimate {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: bold;
+    margin-top: 5px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
 /* Timestamp cell */
 .timestamp-cell {
     white-space: nowrap;

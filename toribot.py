@@ -62,6 +62,12 @@ DEFAULT_SETTINGS = {
     "server": {
         "host": "127.0.0.1",
         "port": 8787
+    },
+    "tori_login": {
+        "enabled": False,
+        "username": "",
+        "password": "",
+        "remember_session": True
     }
 }
 
@@ -228,6 +234,50 @@ class ToriFetcher:
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         })
+        self.logged_in = False
+    
+    def login_if_configured(self):
+        """Attempt login if credentials are configured"""
+        settings = self.settings_manager.get_settings()
+        tori_login = settings.get("tori_login", {})
+        
+        if not tori_login.get("enabled", False):
+            return False
+            
+        username = tori_login.get("username", "").strip()
+        password = tori_login.get("password", "").strip()
+        
+        if not username or not password:
+            logger.warning("Tori login enabled but credentials missing")
+            return False
+            
+        try:
+            # First get login page for any tokens/csrf
+            login_page = self.session.get("https://www.tori.fi/")
+            
+            # Attempt login (this is a simplified version - actual implementation would need proper form handling)
+            login_data = {
+                'username': username,
+                'password': password
+            }
+            
+            response = self.session.post(
+                "https://www.tori.fi/api/auth/login",
+                json=login_data,
+                timeout=15
+            )
+            
+            if response.status_code == 200:
+                self.logged_in = True
+                logger.info("Successfully logged in to Tori.fi")
+                return True
+            else:
+                logger.warning(f"Login failed with status {response.status_code}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Login error: {e}")
+            return False
     
     def _add_jitter(self):
         """Add random jitter 0-3 seconds"""
@@ -336,27 +386,61 @@ class ProductExtractor:
             if not description:
                 errors.append("Failed to extract description")
             
-            # Location
+            # Location - improved extraction with multiple patterns
             location = None
-            match = re.search(r'"location"\s*:\s*"([^"]+)"', html, re.IGNORECASE)
-            if match:
-                location = ProductExtractor._clean_text(match.group(1))
-            else:
+            location_patterns = [
+                r'"location"\s*:\s*"([^"]+)"',
+                r'<span[^>]*location[^>]*>([^<]+)</span>',
+                r'class="[^"]*location[^"]*"[^>]*>([^<]+)<',
+                r'"address"[^}]*"locality"\s*:\s*"([^"]+)"'
+            ]
+            for pattern in location_patterns:
+                match = re.search(pattern, html, re.IGNORECASE)
+                if match:
+                    location = ProductExtractor._clean_text(match.group(1))
+                    break
+            if not location:
                 errors.append("Failed to extract location")
             
-            # Seller
+            # Seller - improved extraction with multiple patterns
             seller = None
-            match = re.search(r'"seller"[^}]*"name"\s*:\s*"([^"]+)"', html, re.IGNORECASE)
-            if match:
-                seller = ProductExtractor._clean_text(match.group(1))
-            else:
-                errors.append("Failed to extract seller")
+            seller_patterns = [
+                r'"seller"[^}]*"name"\s*:\s*"([^"]+)"',
+                r'"sellerName"\s*:\s*"([^"]+)"',
+                r'<span[^>]*seller[^>]*>([^<]+)</span>',
+                r'class="[^"]*seller[^"]*"[^>]*>([^<]+)<',
+                r'"advertiser"[^}]*"name"\s*:\s*"([^"]+)"'
+            ]
+            for pattern in seller_patterns:
+                match = re.search(pattern, html, re.IGNORECASE)
+                if match:
+                    seller = ProductExtractor._clean_text(match.group(1))
+                    break
+            if not seller:
+                # Try to extract from different parts of the page if logged in
+                if "logged" in html.lower() or "profile" in html.lower():
+                    errors.append("Seller info available but extraction failed (logged in user)")
+                else:
+                    errors.append("Seller info not available (login required)")
             
-            # Images
+            # Images - improved extraction with multiple patterns
             images = []
-            img_pattern = r'"image"\s*:\s*"(https://[^"]+)"'
-            img_matches = re.findall(img_pattern, html, re.IGNORECASE)
-            images = list(set(img_matches))[:5]  # Max 5 unique images
+            image_patterns = [
+                r'"image"\s*:\s*"(https://[^"]+)"',
+                r'"imageUrl"\s*:\s*"(https://[^"]+)"',
+                r'src="(https://[^"]*tori[^"]*\.(jpg|jpeg|png|webp)[^"]*)"|src="(https://[^"]*image[^"]*\.(jpg|jpeg|png|webp)[^"]*)"
+            ]
+            
+            for pattern in image_patterns:
+                img_matches = re.findall(pattern, html, re.IGNORECASE)
+                for match_groups in img_matches:
+                    # Handle different regex group structures
+                    img_url = match_groups[0] if isinstance(match_groups, tuple) else match_groups
+                    if img_url and img_url.startswith('https://'):
+                        images.append(img_url)
+            
+            # Remove duplicates and limit to 5
+            images = list(set(images))[:5]
             
             if not images:
                 errors.append("No images found")
@@ -438,36 +522,49 @@ class OpenAIValuator:
             )
             
             # Prepare prompt
-            prompt = f"""Analyze this free item listing from Tori.fi and provide a brief valuation:
+            prompt = f"""Analysoi tämä ilmainen tuote Tori.fi palvelusta ja anna lyhyt arvio suomeksi:
 
-Title: {item.get('title', 'N/A')}
-Description: {item.get('description', 'N/A')}
-Location: {item.get('location', 'N/A')}
+Otsikko: {item.get('title', 'Ei tietoa')}
+Kuvaus: {item.get('description', 'Ei kuvausta')}
+Sijainti: {item.get('location', 'Ei sijaintia')}
+Myyjä: {item.get('seller', 'Ei myyjätietoa')}
 
-Provide:
-1. Estimated market value (if sold)
-2. Condition assessment
-3. Key pros/cons
-4. Worth picking up? (Yes/No/Maybe)
+Anna arvio 4-5 lauseessa:
+1. Arvio hinnasta uutena (€)
+2. Arvio nykyisestä arvosta käytettynä (€)
+3. Kunnon arvio ja keskeiset hyvät/huonot puolet
+4. Suositus: Kannattaako hakea? (Kyllä/Ei/Ehkä)
 
-Be concise (max 100 words)."""
+Lisää lopuksi arvioitu nykyarvo numeromuodossa: ARVO: X€
+
+Vastaa vain suomeksi, ole ytimekäs."""
             
             # Call API
             response = client.chat.completions.create(
                 model=openai_settings.get("model", "gpt-4o-mini"),
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant that evaluates free items."},
+                    {"role": "system", "content": "Olet hyödyllinen avustaja joka arvioi ilmaisia tuotteita suomeksi. Anna realistisia hinta-arvioita euroina."},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=200,
+                max_tokens=300,
                 temperature=0.7
             )
             
             valuation_text = response.choices[0].message.content.strip()
             
+            # Extract numerical price value if present
+            price_value = None
+            price_match = re.search(r'ARVO:\s*(\d+)€?', valuation_text, re.IGNORECASE)
+            if price_match:
+                try:
+                    price_value = int(price_match.group(1))
+                except ValueError:
+                    pass
+            
             return {
                 "status": "completed",
                 "text": valuation_text,
+                "price_estimate": price_value,
                 "model": openai_settings.get("model"),
                 "timestamp": datetime.now().isoformat()
             }
@@ -499,6 +596,10 @@ class ToriBot:
         # Ensure directories exist
         Path(DEBUG_DIR).mkdir(exist_ok=True)
         Path(IMAGES_DIR).mkdir(exist_ok=True)
+        
+        # Attempt login if configured
+        if self.fetcher.login_if_configured():
+            logger.info("Tori.fi login successful - enhanced data extraction available")
     
     def start(self):
         """Start the bot"""

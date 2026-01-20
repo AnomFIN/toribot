@@ -949,6 +949,17 @@
                         div.className = 'valuation-text';
                         div.textContent = product.valuation.text;
                         valCell.appendChild(div);
+                        
+                        // Add price estimate if available
+                        if (product.valuation.price_estimate) {
+                            const priceDiv = document.createElement('div');
+                            priceDiv.className = 'price-estimate';
+                            priceDiv.textContent = `Arvio: ${product.valuation.price_estimate}€`;
+                            priceDiv.style.fontWeight = 'bold';
+                            priceDiv.style.color = '#28a745';
+                            priceDiv.style.marginTop = '5px';
+                            valCell.appendChild(priceDiv);
+                        }
                     } else if (product.valuation.status === 'error') {
                         valCell.textContent = '❌ Error';
                         valCell.title = product.valuation.message || 'Unknown error';
