@@ -61,7 +61,7 @@ DEFAULT_SETTINGS = {
     },
     "server": {
         "host": "127.0.0.1",
-        "port": 8787
+        "port": 8788
     },
     "tori_login": {
         "enabled": False,
@@ -982,7 +982,7 @@ def main():
     port = server_settings.get("port", 8787)
     
     logger.info(f"Starting Flask server on http://{host}:{port}")
-    logger.info("Open http://127.0.0.1:8787 in your browser")
+    logger.info("Open http://127.0.0.1:8788 in your browser")
     logger.info("Press CTRL+C to stop")
     
     try:
