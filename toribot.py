@@ -302,10 +302,18 @@ class ToriFetcher:
                     logger.error(f"All fetch attempts failed for {url}: {e}")
                     return None
     
-    def fetch_listing_page(self):
+    def fetch_listing_page(self, page=None):
         """Fetch main listing page"""
         settings = self.settings_manager.get_settings()
         url = settings.get("listing_url")
+        
+        # Add page parameter if specified
+        if page is not None and page > 1:
+            if '?' in url:
+                url = f"{url}&page={page}"
+            else:
+                url = f"{url}?page={page}"
+        
         timeout = settings.get("request_timeout_seconds", 15)
         
         self._add_jitter()
@@ -652,19 +660,20 @@ class ToriBot:
             interval = settings.get("poll_interval_seconds", 60)
             self.stop_event.wait(interval)
     
-    def _poll_once(self):
+    def _poll_once(self, page=None):
         """Perform one polling cycle"""
-        logger.info("Polling for new items...")
+        page_info = f" (page {page})" if page else ""
+        logger.info(f"Polling for new items{page_info}...")
         
         # Fetch listing page
-        html = self.fetcher.fetch_listing_page()
+        html = self.fetcher.fetch_listing_page(page)
         if not html:
-            logger.warning("Failed to fetch listing page")
+            logger.warning(f"Failed to fetch listing page{page_info}")
             return
         
         # Extract product IDs
         product_ids = ProductExtractor.extract_product_ids(html)
-        logger.info(f"Found {len(product_ids)} product IDs")
+        logger.info(f"Found {len(product_ids)} product IDs{page_info}")
         
         # Check for new items
         new_count = 0
@@ -691,9 +700,9 @@ class ToriBot:
                 new_count += 1
         
         if new_count > 0:
-            logger.info(f"Added {new_count} new items")
+            logger.info(f"Added {new_count} new items{page_info}")
         else:
-            logger.info("No new items found")
+            logger.info(f"No new items found{page_info}")
     
     def _download_item_images(self, item_data):
         """Download images for an item"""
@@ -777,6 +786,27 @@ class ToriBot:
         
         Thread(target=self._run_valuations, daemon=True).start()
         return {"success": True, "message": "Valuation started"}
+    
+    def fetch_multiple_pages(self, num_products):
+        """Fetch products from multiple pages based on requested count"""
+        # Assuming ~50 products per page
+        products_per_page = 50
+        num_pages = (num_products + products_per_page - 1) // products_per_page  # Ceiling division
+        
+        logger.info(f"Fetching approximately {num_products} products from {num_pages} pages...")
+        
+        total_new = 0
+        for page_num in range(1, num_pages + 1):
+            try:
+                self._poll_once(page=page_num)
+                # Get count of items added (we'll track this differently)
+                # For now, just log the page completion
+                logger.info(f"Completed fetching page {page_num}/{num_pages}")
+            except Exception as e:
+                logger.error(f"Error fetching page {page_num}: {e}")
+        
+        logger.info(f"Multi-page fetch completed: processed {num_pages} pages")
+        return {"success": True, "pages_fetched": num_pages}
 
 
 # Flask Application
@@ -877,12 +907,20 @@ def fetch_products():
     logger.info("API call: /api/fetch")
     try:
         if bot:
-            # Force a fetch run
-            bot._poll_once()
-            # Count items after fetch
-            items = bot.database.get_all_items()
-            logger.info(f"Product fetch triggered successfully, total items: {len(items)}")
-            return jsonify({"success": True, "message": "Fetch completed", "count": len(items)})
+            data = request.json or {}
+            num_products = data.get('num_products', None)
+            
+            if num_products and num_products > 0:
+                # Multi-page fetch
+                logger.info(f"Multi-page fetch requested for ~{num_products} products")
+                Thread(target=lambda: bot.fetch_multiple_pages(num_products), daemon=True).start()
+                return jsonify({"success": True, "message": f"Fetching ~{num_products} products in background", "multi_page": True})
+            else:
+                # Single page fetch (original behavior)
+                bot._poll_once()
+                items = bot.database.get_all_items()
+                logger.info(f"Product fetch triggered successfully, total items: {len(items)}")
+                return jsonify({"success": True, "message": "Fetch completed", "count": len(items)})
         else:
             return jsonify({"success": False, "error": "Bot not initialized"}), 500
     except Exception as e:

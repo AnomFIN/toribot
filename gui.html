@@ -148,6 +148,22 @@
                             <span data-i18n="fetch_images">Hae kuvat</span>
                         </button>
                     </div>
+                    
+                    <!-- Multi-page fetch section -->
+                    <div class="multi-page-fetch" style="margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h4 data-i18n="fetch_more_products">Listaa lisää tuotteita</h4>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+                            <input type="number" id="num-products-input" placeholder="150" min="50" step="50" value="150" 
+                                   style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ddd; font-size: 14px;">
+                            <button class="action-card" id="fetch-multi-btn" style="flex: 1;">
+                                <i class="fas fa-list"></i>
+                                <span data-i18n="fetch_more_button">Hae lisää</span>
+                            </button>
+                        </div>
+                        <small style="display: block; margin-top: 8px; opacity: 0.7;" data-i18n="fetch_more_desc">
+                            Esim. 150 tuotetta = 3 sivua (~50 tuotetta/sivu)
+                        </small>
+                    </div>
                 </div>
                 
                 <!-- Recent Products -->
@@ -689,6 +705,9 @@
                 remember_session_desc: 'Säästää istunnon uudelleenkäyttöä varten',
                 test_login: '🧪 Testaa kirjautuminen',
                 test_login_desc: 'Testaa kirjautumistiedot ennen tallennusta',
+                fetch_more_products: 'Listaa lisää tuotteita',
+                fetch_more_button: 'Hae lisää',
+                fetch_more_desc: 'Esim. 150 tuotetta = 3 sivua (~50 tuotetta/sivu)',
                 telegram_settings: 'Telegram-ilmoitukset',
                 enable_telegram: 'Aktivoi Telegram-ilmoitukset',
                 telegram_desc: 'Lähetä ilmoitus Telegramiin kun uusi tuote löytyy',
@@ -812,6 +831,9 @@
                 remember_session_desc: 'Saves session for reuse',
                 test_login: '🧪 Test Login',
                 test_login_desc: 'Test credentials before saving',
+                fetch_more_products: 'List More Products',
+                fetch_more_button: 'Fetch More',
+                fetch_more_desc: 'E.g. 150 products = 3 pages (~50 products/page)',
                 telegram_settings: 'Telegram Notifications',
                 enable_telegram: 'Enable Telegram notifications',
                 telegram_desc: 'Send notification to Telegram when new product is found',
@@ -1914,6 +1936,62 @@
                     } catch (error) {
                         console.error('Error fetching images:', error);
                         const errorMsg = currentLanguage === 'fi' ? 'Virhe kuvien haussa' : 'Error fetching images';
+                        showMessage(errorMsg, 'error');
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                    }
+                });
+            }
+            
+            // Fetch multiple pages button
+            const fetchMultiBtn = document.getElementById('fetch-multi-btn');
+            if (fetchMultiBtn) {
+                fetchMultiBtn.addEventListener('click', async () => {
+                    const btn = fetchMultiBtn;
+                    const numProductsInput = document.getElementById('num-products-input');
+                    const numProducts = parseInt(numProductsInput.value) || 150;
+                    
+                    if (numProducts < 50) {
+                        const errorMsg = currentLanguage === 'fi' ? 
+                            'Anna vähintään 50 tuotetta' : 
+                            'Please enter at least 50 products';
+                        showMessage(errorMsg, 'error');
+                        return;
+                    }
+                    
+                    btn.disabled = true;
+                    const runningText = currentLanguage === 'fi' ? '⏳ Haetaan...' : '⏳ Fetching...';
+                    const originalText = btn.textContent;
+                    btn.textContent = runningText;
+                    
+                    try {
+                        const response = await fetch('/api/fetch', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({num_products: numProducts})
+                        });
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            const successMsg = currentLanguage === 'fi' ? 
+                                `✅ Haetaan ~${numProducts} tuotetta taustalla. Tarkista tilanne hetken kuluttua.` :
+                                `✅ Fetching ~${numProducts} products in background. Check back in a moment.`;
+                            showMessage(successMsg, 'success');
+                            
+                            // Refresh products after a delay
+                            setTimeout(() => {
+                                if (currentPage === 'dashboard') {
+                                    loadDashboard();
+                                }
+                            }, 5000);
+                        } else {
+                            const errorMsg = data.message || data.error || (currentLanguage === 'fi' ? 'Epäonnistui' : 'Failed');
+                            showMessage(errorMsg, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching multiple pages:', error);
+                        const errorMsg = currentLanguage === 'fi' ? 'Virhe usean sivun haussa' : 'Error fetching multiple pages';
                         showMessage(errorMsg, 'error');
                     } finally {
                         btn.disabled = false;
