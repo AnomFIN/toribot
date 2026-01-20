@@ -789,7 +789,19 @@ class ToriBot:
         return {"success": True, "message": "Valuation started"}
     
     def fetch_multiple_pages(self, num_products):
-        """Fetch products from multiple pages based on requested count"""
+        """Fetch products from multiple pages based on requested count
+        
+        Args:
+            num_products: Approximate number of products to fetch
+            
+        Returns:
+            dict: Success status and number of pages fetched
+            
+        Note:
+            - Uses ceiling division to calculate pages needed
+            - Continues fetching remaining pages even if one page fails
+            - Each page fetch is logged independently for tracking
+        """
         settings = self.settings_manager.get_settings()
         products_per_page = settings.get("products_per_page", 50)
         num_pages = (num_products + products_per_page - 1) // products_per_page  # Ceiling division
