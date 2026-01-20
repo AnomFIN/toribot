@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Tori Ostobotti - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="background-logo" id="background-logo"></div>
+    
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>💰 Ostobotti</h2>
+            <button class="sidebar-toggle" id="sidebar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#" class="nav-link active" data-page="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span data-i18n="dashboard">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="products">
+                    <i class="fas fa-th-large"></i>
+                    <span data-i18n="products">Tuotteet</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="products-list">
+                    <i class="fas fa-list"></i>
+                    <span data-i18n="products_list">Liistanäkymä</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="analytics">
+                    <i class="fas fa-chart-line"></i>
+                    <span data-i18n="analytics">Analytiikka</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span data-i18n="settings">Asetukset</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="language-switcher">
+                <select id="language-select-sidebar">
+                    <option value="fi">🇫🇮 FI</option>
+                    <option value="en">🇺🇸 EN</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <h1 id="page-title" data-i18n="dashboard">Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <button id="refresh-btn" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i>
+                    <span data-i18n="refresh">Päivitä</span>
+                </button>
+                <span class="last-update-header">
+                    <i class="fas fa-clock"></i>
+                    <span data-i18n="last_updated">Viimeksi päivitetty:</span>
+                    <span id="last-update-time" data-i18n="never">Ei koskaan</span>
+                </span>
+            </div>
+        </header>
+
+        <!-- Dashboard Page -->
+        <div class="page active" id="dashboard-page">
+            <div class="dashboard-grid">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-products">0</h3>
+                            <p data-i18n="total_products">Tuotteita yhteensä</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="valued-products">0</h3>
+                            <p data-i18n="valued_products">Arvostettuja tuotteita</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-euro-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-value">0€</h3>
+                            <p data-i18n="total_estimated_value">Arvioitu kokonaisarvo</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-images">0</h3>
+                            <p data-i18n="total_images">Kuvia ladattu</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h3 data-i18n="quick_actions">Pikavalinnat</h3>
+                    <div class="actions-grid">
+                        <button class="action-card" id="fetch-btn">
+                            <i class="fas fa-download"></i>
+                            <span data-i18n="fetch_products">Hae tuotteet</span>
+                        </button>
+                        <button class="action-card" id="save-btn">
+                            <i class="fas fa-save"></i>
+                            <span data-i18n="save_products">Tallenna CSV</span>
+                        </button>
+                        <button class="action-card" id="run-valuations-dash">
+                            <i class="fas fa-robot"></i>
+                            <span data-i18n="run_valuations">Suorita arvostukset</span>
+                        </button>
+                        <button class="action-card" id="fetch-images-dash">
+                            <i class="fas fa-images"></i>
+                            <span data-i18n="fetch_images">Hae kuvat</span>
+                        </button>
+                        <button class="action-card" id="refresh-all-btn">
+                            <i class="fas fa-sync"></i>
+                            <span data-i18n="refresh_all_data">Hae tiedot uudelleen</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Search section -->
+                    <div class="search-section">
+                        <h4 data-i18n="search_products_title">Hae tuotteista</h4>
+                        <div class="search-input-container">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="product-search-input" placeholder="Kirjoita vähintään 3 merkkiä..." data-i18n-placeholder="search_placeholder">
+                        </div>
+                        <small data-i18n="search_desc">
+                            Haku päivittyy automaattisesti kun kirjoitat
+                        </small>
+                    </div>
+                    
+                    <!-- Multi-page fetch section -->
+                    <div class="multi-page-fetch">
+                        <h4 data-i18n="fetch_more_products">Listaa lisää tuotteita</h4>
+                        <div class="multi-page-fetch-controls">
+                            <input type="number" id="num-products-input" placeholder="150" min="50" step="50" value="150">
+                            <button class="action-card" id="fetch-multi-btn">
+                                <i class="fas fa-list"></i>
+                                <span data-i18n="fetch_more_button">Hae lisää</span>
+                            </button>
+                        </div>
+                        <small data-i18n="fetch_more_desc">
+                            Esim. 150 tuotetta = 3 sivua (~50 tuotetta/sivu)
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- Recent Products -->
+                <div class="recent-products">
+                    <h3 data-i18n="recent_products">Viimeisimmät tuotteet</h3>
+                    <div class="products-preview" id="recent-products-list">
+                        <div class="loading-card">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span data-i18n="loading">Ladataan...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- System Status -->
+                <div class="system-status">
+                    <h3 data-i18n="system_status">Järjestelmän tila</h3>
+                    <div class="status-items">
+                        <div class="status-item">
+                            <i class="fas fa-server status-icon"></i>
+                            <span data-i18n="bot_status">Botin tila:</span>
+                            <span class="status-value" id="bot-status">Käynnissä</span>
+                        </div>
+                        <div class="status-item">
+                            <i class="fas fa-wifi status-icon"></i>
+                            <span data-i18n="connection_status">Yhteys:</span>
+                            <span class="status-value" id="connection-status">Toimii</span>
+                        </div>
+                        <div class="status-item">
+                            <i class="fas fa-brain status-icon"></i>
+                            <span data-i18n="openai_status">OpenAI:</span>
+                            <span class="status-value" id="openai-status">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Products Grid Page -->
+        <div class="page" id="products-page">
+            <div class="page-header">
+                <div class="view-controls">
+                    <button class="btn btn-secondary" id="grid-view-btn">
+                        <i class="fas fa-th"></i>
+                        <span data-i18n="grid_view">Ruudukko</span>
+                    </button>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="product-search" placeholder="Hae tuotteita..." data-i18n-placeholder="search_products">
+                    </div>
+                    <select id="sort-products">
+                        <option value="newest" data-i18n-option="newest">Uusimmat ensin</option>
+                        <option value="oldest" data-i18n-option="oldest">Vanhimmat ensin</option>
+                        <option value="valued" data-i18n-option="valued">Arvostetuimmat</option>
+                        <option value="price-high" data-i18n-option="price_high">Korkein arvo</option>
+                        <option value="price-low" data-i18n-option="price_low">Matalin arvo</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="products-grid" id="products-grid">
+                <div class="loading-placeholder">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span data-i18n="loading_products">Ladataan tuotteita...</span>
+                </div>
+            </div>
+        </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="total_items">Tuotteita yhteensä:</span>
+                    <span class="stat-value" id="total-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="last_updated">Viimeksi päivitetty:</span>
+                    <span class="stat-value" id="last-update" data-i18n="never">Ei koskaan</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="auto_refresh">Automaattipäivitys:</span>
+                    <span class="stat-value">5min</span>
+                </div>
+                <div class="stat-item">
+                    <button id="valuate-btn" class="action-btn" data-i18n="run_valuations">🤖 Suorita arvostukset</button>
+                </div>
+                <div class="stat-item">
+                    <button id="fetch-images-btn" class="action-btn" data-i18n="fetch_images">🖼️ Hae kuvat</button>
+                </div>
+            </div>
+
+        <!-- Analytics Page -->
+        <div class="page" id="analytics-page">
+            <div class="analytics-grid">
+                <div class="chart-card">
+                    <h3 data-i18n="products_over_time">Tuotteet ajan myötä</h3>
+                    <div class="chart-placeholder">
+                        <canvas id="products-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <h3 data-i18n="value_distribution">Arvojen jakauma</h3>
+                    <div class="chart-placeholder">
+                        <canvas id="value-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="analytics-stats">
+                    <h3 data-i18n="detailed_statistics">Yksityiskohtaiset tilastot</h3>
+                    <div class="analytics-list">
+                        <div class="analytics-item">
+                            <span data-i18n="avg_value">Keskiarvo:</span>
+                            <span id="avg-value">0€</span>
+                        </div>
+                        <div class="analytics-item">
+                            <span data-i18n="highest_value">Korkein arvo:</span>
+                            <span id="highest-value">0€</span>
+                        </div>
+                        <div class="analytics-item">
+                            <span data-i18n="most_common_location">Yleisin sijainti:</span>
+                            <span id="common-location">-</span>
+                        </div>
+                        <div class="analytics-item">
+                            <span data-i18n="success_rate">Arvostusprosentti:</span>
+                            <span id="success-rate">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+                <table id="products-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="images">Kuvat</th>
+                            <th data-i18n="title">Otsikko</th>
+                            <th data-i18n="description">Kuvaus</th>
+                            <th data-i18n="location">Sijainti</th>
+                            <th data-i18n="seller">Myyjä</th>
+                            <th data-i18n="valuation">Arvostus</th>
+                            <th data-i18n="added">Lisätty</th>
+                            <th data-i18n="link">Linkki</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-body">
+                        <tr>
+                            <td colspan="8" class="loading" data-i18n="loading_products">Ladataan tuotteita...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="no-products" id="no-products" style="display: none;">
+                <p data-i18n="no_products">Tuotteita ei löytynyt vielä. Botti aloittaa seurannan pian.</p>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div class="page" id="settings-page">
+            <div class="settings-container">
+                <h2 data-i18n="bot_settings">Botin asetukset</h2>
+                
+                <div class="settings-section">
+                    <h3>📊 <span data-i18n="general_settings">Yleiset asetukset</span></h3>
+                    <div class="form-group">
+                        <label data-i18n="language">Kieli:</label>
+                        <select id="language-select">
+                            <option value="fi">Suomi</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>🎨 <span data-i18n="logo_settings">Logon asetukset</span></h3>
+                    <div class="form-group">
+                        <label data-i18n="logo_file">Logotiedosto:</label>
+                        <input type="file" id="logo-file" accept="image/*">
+                        <button type="button" id="clear-logo-btn" class="secondary-btn" style="margin-top: 10px;">
+                            <span data-i18n="clear_logo">🗑️ Poista logo</span>
+                        </button>
+                        <small data-i18n="logo_file_desc">Valitse taustakuvaksi käytettävä logo (.png, .jpg, .svg)</small>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="logo_url">Tai anna kuvan URL-osoite:</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="url" id="logo-url" placeholder="https://example.com/logo.png" style="flex: 1;">
+                            <button type="button" id="load-logo-url-btn" class="secondary-btn">
+                                <span data-i18n="load_url">📥 Lataa</span>
+                            </button>
+                        </div>
+                        <small data-i18n="logo_url_desc">Lataa logo suoraan URL-osoitteesta</small>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="logo_opacity">Läpinäkyvyys:</label>
+                        <input type="range" id="logo-opacity" min="0" max="1" step="0.01" value="0.1">
+                        <span class="range-value" id="opacity-value">0.1</span>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="logo_blur">Sumennus:</label>
+                        <input type="range" id="logo-blur" min="0" max="20" step="0.5" value="0">
+                        <span class="range-value" id="blur-value">0px</span>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="logo_position">Sijainti:</label>
+                        <select id="logo-position">
+                            <option value="center" data-i18n-option="center">Keskellä</option>
+                            <option value="top left" data-i18n-option="top_left">Vasemmalla ylhäällä</option>
+                            <option value="top right" data-i18n-option="top_right">Oikealla ylhäällä</option>
+                            <option value="bottom left" data-i18n-option="bottom_left">Vasemmalla alhaalla</option>
+                            <option value="bottom right" data-i18n-option="bottom_right">Oikealla alhaalla</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="logo_size">Koko:</label>
+                        <select id="logo-size">
+                            <option value="contain" data-i18n-option="contain">Mahtuu kokonaan</option>
+                            <option value="cover" data-i18n-option="cover">Peittää alueen</option>
+                            <option value="50%" data-i18n-option="small">Pieni (50%)</option>
+                            <option value="75%" data-i18n-option="medium">Keskikokoinen (75%)</option>
+                            <option value="100%" data-i18n-option="large">Suuri (100%)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>� <span data-i18n="tori_login_settings">Tori.fi kirjautuminen</span></h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="tori_login_enabled">
+                            <span data-i18n="enable_tori_login">Aktivoi automaattinen kirjautuminen</span>
+                        </label>
+                        <small data-i18n="tori_login_desc">Botin kirjautuminen Tori.fi-palveluun parantaa hakutuloksia</small>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="tori_username">Käyttäjätunnus/Sähköposti:</label>
+                        <input type="text" id="tori_username" placeholder="kayttaja@example.com" autocomplete="username">
+                        <small data-i18n="tori_username_desc">Tori.fi-tilisi käyttäjätunnus tai sähköpostiosoite</small>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="tori_password">Salasana:</label>
+                        <input type="password" id="tori_password" placeholder="••••••••" autocomplete="current-password">
+                        <small data-i18n="tori_password_desc">Tori.fi-tilisi salasana (tallennetaan turvallisesti)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="tori_remember_session">
+                            <span data-i18n="remember_session">Muista kirjautuminen</span>
+                        </label>
+                        <small data-i18n="remember_session_desc">Säästää istunnon uudelleenkäyttöä varten</small>
+                    </div>
+                    <div class="form-group">
+                        <button id="test-login-btn" class="secondary-btn" type="button">
+                            <span data-i18n="test_login">🧪 Testaa kirjautuminen</span>
+                        </button>
+                        <small data-i18n="test_login_desc">Testaa kirjautumistiedot ennen tallennusta</small>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>�📊 <span data-i18n="general_settings">Yleiset asetukset</span></h3>
+                    <div class="form-group">
+                        <label data-i18n="poll_interval">Tarkistusväli (sekunnit):</label>
+                        <input type="number" id="poll_interval" min="10" value="60">
+                        <small data-i18n="poll_interval_desc">Kuinka usein tarkistetaan uusia tuotteita (min: 10s)</small>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="request_timeout">Pyyntöjen aikakatkaisu (sekunnit):</label>
+                        <input type="number" id="timeout" min="1" value="15">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="max_retries">Uudelleenyritysten maksimimäärä:</label>
+                        <input type="number" id="max_retries" min="0" max="5" value="2">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="listing_url">Listauksen URL:</label>
+                        <input type="text" id="listing_url" style="width: 100%;">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>🖼️ <span data-i18n="image_settings">Kuvien asetukset</span></h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="images_enabled" checked>
+                            <span data-i18n="enable_image_download">Aktivoi kuvien lataus</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="max_images">Kuvia tuotetta kohden enintään:</label>
+                        <input type="number" id="max_images" min="1" max="10" value="5">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>🤖 <span data-i18n="openai_settings">OpenAI asetukset</span></h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="openai_enabled">
+                            <span data-i18n="enable_valuations">Aktivoi OpenAI arvostukset</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="api_key">API-avain:</label>
+                        <input type="password" id="openai_key" placeholder="sk-...">
+                        <small data-i18n="api_key_desc">Tallennetaan turvallisesti settings.json tiedostoon</small>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="model">Malli:</label>
+                        <input type="text" id="openai_model" value="gpt-4o-mini">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="base_url">Perus-URL:</label>
+                        <input type="text" id="openai_base_url" value="https://api.openai.com/v1">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="valuation_interval">Arvostusväli (minuutit):</label>
+                        <input type="number" id="valuation_interval" min="10" value="60">
+                        <small data-i18n="valuation_interval_desc">Kuinka usein automaattiset arvostukset suoritetaan</small>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>🌐 <span data-i18n="server_settings">Palvelimen asetukset</span></h3>
+                    <div class="form-group">
+                        <label data-i18n="host">Isäntä:</label>
+                        <input type="text" id="server_host" value="127.0.0.1">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="port">Portti:</label>
+                        <input type="number" id="server_port" min="1024" max="65535" value="8787">
+                        <small data-i18n="restart_required">Vaatii uudelleenkäynnistyksen</small>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="save-settings-btn" class="save-btn" data-i18n="save_settings">💾 Tallenna asetukset</button>
+                    <button id="load-settings-btn" class="secondary-btn" data-i18n="reload_settings">🔄 Lataa asetukset uudelleen</button>
+                </div>
+
+                <div id="settings-message" class="message"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile overlay -->
+    <div class="mobile-overlay" id="mobile-overlay"></div>
+
+    <script>
+        const REFRESH_INTERVAL = 300000; // 5 minutes
+        let currentPage = 'dashboard';
+        let currentLanguage = 'fi';
+        let currentTab = 'products';
+        let allProducts = [];
+        
+        // Navigation handling
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected page
+            const page = document.getElementById(pageId + '-page');
+            if (page) {
+                page.classList.add('active');
+                currentPage = pageId;
+                
+                // Update page title
+                const title = document.getElementById('page-title');
+                const key = pageId.replace('-', '_');
+                title.textContent = translations[currentLanguage][key] || pageId;
+                
+                // Add active class to corresponding nav link
+                const navLink = document.querySelector(`[data-page="${pageId}"]`);
+                if (navLink) {
+                    navLink.classList.add('active');
+                }
+                
+                // Load page-specific data
+                loadPageData(pageId);
+            }
+        }
+        
+        // Load page-specific data
+        function loadPageData(pageId) {
+            switch (pageId) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'products':
+                    loadProductsGrid();
+                    break;
+                case 'products-list':
+                    loadProductsList();
+                    break;
+                case 'analytics':
+                    loadAnalytics();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+            }
+        }
+        
+        // Navigation event listeners - will be set up in DOMContentLoaded
+        function setupNavigationListeners() {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.dataset.page;
+                    showPage(pageId);
+                });
+            });
+            
+            // Sidebar toggle
+            document.getElementById('sidebar-toggle').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('collapsed');
+                document.getElementById('main-content').classList.toggle('expanded');
+            });
+            
+            // Mobile overlay
+            document.getElementById('mobile-overlay').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.remove('mobile-open');
+                document.getElementById('mobile-overlay').classList.remove('active');
+            });
+        }
+        
+        // Translations
+        const translations = {
+            fi: {
+                dashboard: 'Dashboard',
+                products: 'Tuotteet',
+                products_list: 'Listanäkymä',
+                analytics: 'Analytiikka',
+                settings: 'Asetukset',
+                refresh: 'Päivitä',
+                total_products: 'Tuotteita yhteensä',
+                valued_products: 'Arvostettuja tuotteita',
+                total_estimated_value: 'Arvioitu kokonaisarvo',
+                total_images: 'Kuvia ladattu',
+                quick_actions: 'Pikavalinnat',
+                export_data: 'Vie tiedot',
+                clear_old: 'Siivoa vanhat',
+                recent_products: 'Viimeisimmät tuotteet',
+                system_status: 'Järjestelmän tila',
+                bot_status: 'Botin tila',
+                connection_status: 'Yhteys',
+                openai_status: 'OpenAI',
+                grid_view: 'Ruudukko',
+                list_view: 'Lista',
+                search_products: 'Hae tuotteita...',
+                newest: 'Uusimmat ensin',
+                oldest: 'Vanhimmat ensin',
+                valued: 'Arvostetuimmat',
+                price_high: 'Korkein arvo',
+                price_low: 'Matalin arvo',
+                actions: 'Toiminnot',
+                products_over_time: 'Tuotteet ajan myötä',
+                value_distribution: 'Arvojen jakauma',
+                detailed_statistics: 'Yksityiskohtaiset tilastot',
+                avg_value: 'Keskiarvo',
+                highest_value: 'Korkein arvo',
+                most_common_location: 'Yleisin sijainti',
+                success_rate: 'Arvostusprosentti',
+                loading: 'Ladataan...',
+                subtitle: 'Seurataan ostoilmoituksia Tori.fi palvelusta',
+                total_items: 'Tuotteita yhteensä:',
+                last_updated: 'Viimeksi päivitetty:',
+                never: 'Ei koskaan',
+                auto_refresh: 'Automaattipäivitys:',
+                run_valuations: '🤖 Suorita arvostukset',
+                fetch_images: '🖼️ Hae kuvat',
+                images: 'Kuvat',
+                title: 'Otsikko',
+                description: 'Kuvaus',
+                location: 'Sijainti',
+                seller: 'Myyjä',
+                valuation: 'Arvostus',
+                added: 'Lisätty',
+                link: 'Linkki',
+                loading_products: 'Ladataan tuotteita...',
+                no_products: 'Ostoilmoituksia ei löytynyt vielä. Botti aloittaa seurannan pian.',
+                bot_settings: 'Botin asetukset',
+                general_settings: 'Yleiset asetukset',
+                language: 'Kieli:',
+                poll_interval: 'Tarkistusväli (sekunnit):',
+                poll_interval_desc: 'Kuinka usein tarkistetaan uusia tuotteita (min: 10s)',
+                request_timeout: 'Pyyntöjen aikakatkaisu (sekunnit):',
+                max_retries: 'Uudelleenyritysten maksimimäärä:',
+                listing_url: 'Listauksen URL:',
+                image_settings: 'Kuvien asetukset',
+                enable_image_download: 'Aktivoi kuvien lataus',
+                max_images: 'Kuvia tuotetta kohden enintään:',
+                openai_settings: 'OpenAI asetukset',
+                enable_valuations: 'Aktivoi OpenAI arvostukset',
+                api_key: 'API-avain:',
+                api_key_desc: 'Tallennetaan turvallisesti settings.json tiedostoon',
+                model: 'Malli:',
+                base_url: 'Perus-URL:',
+                valuation_interval: 'Arvostusväli (minuutit):',
+                valuation_interval_desc: 'Kuinka usein automaattiset arvostukset suoritetaan',
+                server_settings: 'Palvelimen asetukset',
+                host: 'Isäntä:',
+                port: 'Portti:',
+                restart_required: 'Vaatii uudelleenkäynnistyksen',
+                save_settings: '💾 Tallenna asetukset',
+                reload_settings: '🔄 Lataa asetukset uudelleen',
+                view: 'Näytä',
+                no_images: 'Ei kuvia',
+                logo_settings: 'Logon asetukset',
+                logo_file: 'Logotiedosto:',
+                logo_file_desc: 'Valitse taustakuvaksi käytettävä logo (.png, .jpg, .svg)',
+                logo_url: 'Tai anna kuvan URL-osoite:',
+                logo_url_desc: 'Lataa logo suoraan URL-osoitteesta',
+                load_url: '📥 Lataa',
+                logo_opacity: 'Läpinäkyvyys:',
+                logo_blur: 'Sumennus:',
+                logo_position: 'Sijainti:',
+                logo_size: 'Koko:',
+                center: 'Keskellä',
+                top_left: 'Vasemmalla ylhäällä',
+                top_right: 'Oikealla ylhäällä',
+                bottom_left: 'Vasemmalla alhaalla',
+                bottom_right: 'Oikealla alhaalla',
+                contain: 'Mahtuu kokonaan',
+                cover: 'Peittää alueen',
+                small: 'Pieni (50%)',
+                medium: 'Keskikokoinen (75%)',
+                large: 'Suuri (100%)',
+                clear_logo: '🗑️ Poista logo',
+                tori_login_settings: 'Tori.fi kirjautuminen',
+                enable_tori_login: 'Aktivoi automaattinen kirjautuminen',
+                tori_login_desc: 'Botin kirjautuminen Tori.fi-palveluun parantaa hakutuloksia',
+                tori_username: 'Käyttäjätunnus/Sähköposti:',
+                tori_username_desc: 'Tori.fi-tilisi käyttäjätunnus tai sähköpostiosoite',
+                tori_password: 'Salasana:',
+                tori_password_desc: 'Tori.fi-tilisi salasana (tallennetaan turvallisesti)',
+                remember_session: 'Muista kirjautuminen',
+                remember_session_desc: 'Säästää istunnon uudelleenkäyttöä varten',
+                test_login: '🧪 Testaa kirjautuminen',
+                test_login_desc: 'Testaa kirjautumistiedot ennen tallennusta',
+                fetch_more_products: 'Listaa lisää tuotteita',
+                fetch_more_button: 'Hae lisää',
+                fetch_more_desc: 'Esim. 150 tuotetta = 3 sivua (~50 tuotetta/sivu)',
+                refresh_all_data: 'Hae tiedot uudelleen',
+                search_products_title: 'Hae tuotteista',
+                search_placeholder: 'Kirjoita vähintään 3 merkkiä...',
+                search_desc: 'Haku päivittyy automaattisesti kun kirjoitat',
+                telegram_settings: 'Telegram-ilmoitukset',
+                enable_telegram: 'Aktivoi Telegram-ilmoitukset',
+                telegram_desc: 'Lähetä ilmoitus Telegramiin kun uusi tuote löytyy',
+                telegram_token: 'Bot Token:',
+                telegram_token_desc: 'Luo bot @BotFatherissa ja kopioi token tähän',
+                telegram_chat_id: 'Chat ID:',
+                telegram_chat_desc: 'Kanavan, ryhmän tai henkilökohtaisen chatin tunniste',
+                telegram_include_images: 'Sisällytä kuvat ilmoituksiin',
+                test_telegram: '🧪 Testaa Telegram-yhteys',
+                test_telegram_desc: 'Lähetä testivesti Telegramiin'
+            },
+            en: {
+                dashboard: 'Dashboard',
+                products: 'Products',
+                products_list: 'List View',
+                analytics: 'Analytics',
+                settings: 'Settings',
+                refresh: 'Refresh',
+                total_products: 'Total Products',
+                valued_products: 'Valued Products',
+                total_estimated_value: 'Total Estimated Value',
+                total_images: 'Images Downloaded',
+                quick_actions: 'Quick Actions',
+                export_data: 'Export Data',
+                clear_old: 'Clear Old',
+                recent_products: 'Recent Products',
+                system_status: 'System Status',
+                bot_status: 'Bot Status',
+                connection_status: 'Connection',
+                openai_status: 'OpenAI',
+                grid_view: 'Grid',
+                list_view: 'List',
+                search_products: 'Search products...',
+                newest: 'Newest First',
+                oldest: 'Oldest First',
+                valued: 'Most Valued',
+                price_high: 'Highest Value',
+                price_low: 'Lowest Value',
+                actions: 'Actions',
+                products_over_time: 'Products Over Time',
+                value_distribution: 'Value Distribution',
+                detailed_statistics: 'Detailed Statistics',
+                avg_value: 'Average Value',
+                highest_value: 'Highest Value',
+                most_common_location: 'Most Common Location',
+                success_rate: 'Valuation Rate',
+                loading: 'Loading...',
+                subtitle: 'Monitoring buying requests on Tori.fi',
+                total_items: 'Total Items:',
+                last_updated: 'Last Updated:',
+                never: 'Never',
+                auto_refresh: 'Auto-refresh:',
+                run_valuations: '🤖 Run Valuations',
+                fetch_images: '🖼️ Fetch Images',
+                images: 'Images',
+                title: 'Title',
+                description: 'Description',
+                location: 'Location',
+                seller: 'Seller',
+                valuation: 'Valuation',
+                added: 'Added',
+                link: 'Link',
+                loading_products: 'Loading products...',
+                no_products: 'No buying requests found yet. The bot will start monitoring shortly.',
+                bot_settings: 'Bot Settings',
+                general_settings: 'General Settings',
+                language: 'Language:',
+                poll_interval: 'Poll Interval (seconds):',
+                poll_interval_desc: 'How often to check for new items (min: 10s)',
+                request_timeout: 'Request Timeout (seconds):',
+                max_retries: 'Max Retries:',
+                listing_url: 'Listing URL:',
+                image_settings: 'Image Settings',
+                enable_image_download: 'Enable Image Download',
+                max_images: 'Max Images Per Item:',
+                openai_settings: 'OpenAI Settings',
+                enable_valuations: 'Enable OpenAI Valuations',
+                api_key: 'API Key:',
+                api_key_desc: 'Stored securely in settings.json',
+                model: 'Model:',
+                base_url: 'Base URL:',
+                valuation_interval: 'Valuation Interval (minutes):',
+                valuation_interval_desc: 'How often to run automatic valuations',
+                server_settings: 'Server Settings',
+                host: 'Host:',
+                port: 'Port:',
+                restart_required: 'Requires restart to take effect',
+                save_settings: '💾 Save Settings',
+                reload_settings: '🔄 Reload Settings',
+                view: 'View',
+                no_images: 'No images',
+                logo_settings: 'Logo Settings',
+                logo_file: 'Logo File:',
+                logo_file_desc: 'Select logo image to use as background (.png, .jpg, .svg)',
+                logo_url: 'Or enter image URL:',
+                logo_url_desc: 'Load logo directly from URL',
+                load_url: '📥 Load',
+                logo_opacity: 'Opacity:',
+                logo_blur: 'Blur:',
+                logo_position: 'Position:',
+                logo_size: 'Size:',
+                center: 'Center',
+                top_left: 'Top Left',
+                top_right: 'Top Right',
+                bottom_left: 'Bottom Left',
+                bottom_right: 'Bottom Right',
+                contain: 'Contain',
+                cover: 'Cover',
+                small: 'Small (50%)',
+                medium: 'Medium (75%)',
+                large: 'Large (100%)',
+                clear_logo: '🗑️ Clear Logo',
+                tori_login_settings: 'Tori.fi Login',
+                enable_tori_login: 'Enable automatic login',
+                tori_login_desc: 'Bot login to Tori.fi improves search results',
+                tori_username: 'Username/Email:',
+                tori_username_desc: 'Your Tori.fi account username or email address',
+                tori_password: 'Password:',
+                tori_password_desc: 'Your Tori.fi account password (stored securely)',
+                remember_session: 'Remember login session',
+                remember_session_desc: 'Saves session for reuse',
+                test_login: '🧪 Test Login',
+                test_login_desc: 'Test credentials before saving',
+                fetch_more_products: 'List More Products',
+                fetch_more_button: 'Fetch More',
+                fetch_more_desc: 'E.g. 150 products = 3 pages (~50 products/page)',
+                refresh_all_data: 'Refresh All Data',
+                search_products_title: 'Search Products',
+                search_placeholder: 'Type at least 3 characters...',
+                search_desc: 'Search updates automatically as you type',
+                telegram_settings: 'Telegram Notifications',
+                enable_telegram: 'Enable Telegram notifications',
+                telegram_desc: 'Send notification to Telegram when new product is found',
+                telegram_token: 'Bot Token:',
+                telegram_token_desc: 'Create bot with @BotFather and copy token here',
+                telegram_chat_id: 'Chat ID:',
+                telegram_chat_desc: 'Channel, group or private chat identifier',
+                telegram_include_images: 'Include images in notifications',
+                test_telegram: '🧪 Test Telegram Connection',
+                test_telegram_desc: 'Send test message to Telegram'
+            }
+        };
+        
+        // Dashboard functions
+        async function loadDashboard() {
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allProducts = data.products;
+                    updateDashboardStats(allProducts);
+                    displayRecentProducts(allProducts.slice(0, 6));
+                    updateSystemStatus();
+                    
+                    const locale = currentLanguage === 'fi' ? 'fi-FI' : 'en-US';
+                    document.getElementById('last-update-time').textContent = new Date().toLocaleTimeString(locale);
+                } else {
+                    showError('Failed to load dashboard data');
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showError('Error loading dashboard');
+            }
+        }
+        
+        function updateDashboardStats(products) {
+            const totalProducts = products.length;
+            const valuedProducts = products.filter(p => p.valuation?.status === 'completed').length;
+            const totalImages = products.reduce((sum, p) => sum + (p.image_files?.length || 0), 0);
+            
+            let totalValue = 0;
+            products.forEach(p => {
+                if (p.valuation?.price_estimate) {
+                    totalValue += p.valuation.price_estimate;
+                }
+            });
+            
+            document.getElementById('total-products').textContent = totalProducts;
+            document.getElementById('valued-products').textContent = valuedProducts;
+            document.getElementById('total-value').textContent = totalValue + '€';
+            document.getElementById('total-images').textContent = totalImages;
+        }
+        
+        function displayRecentProducts(products) {
+            const container = document.getElementById('recent-products-list');
+            container.innerHTML = '';
+            
+            if (products.length === 0) {
+                container.innerHTML = '<div class="no-products"><i class="fas fa-inbox"></i><span data-i18n="no_products">Ei tuotteita vielä</span></div>';
+                return;
+            }
+            
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-preview-card';
+                
+                const image = product.image_files && product.image_files[0] 
+                    ? `/images/${product.image_files[0]}` 
+                    : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23e0e0e0"/><text x="50" y="50" text-anchor="middle" dy=".3em" fill="%23999">📦</text></svg>';
+                
+                productCard.innerHTML = `
+                    <div class="preview-image">
+                        <img src="${image}" alt="${product.title || 'Product'}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                        <div class="no-image" style="display:none"><i class="fas fa-image"></i></div>
+                    </div>
+                    <div class="preview-content">
+                        <h4>${product.title || 'Ei otsikkoa'}</h4>
+                        <p class="preview-location"><i class="fas fa-map-marker-alt"></i> ${product.location || 'Ei sijaintia'}</p>
+                        ${product.valuation?.price_new || product.valuation?.price_current ? `
+                            <div class="preview-prices">
+                                ${product.valuation?.price_new ? `<p class="preview-price-new">Hinta uutena: ~${product.valuation.price_new}€</p>` : ''}
+                                ${product.valuation?.price_current ? `<p class="preview-price-current">Arvo nyt: ${product.valuation.price_current}€</p>` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                productCard.addEventListener('click', () => {
+                    window.open(product.url, '_blank');
+                });
+                
+                container.appendChild(productCard);
+            });
+        }
+        
+        function updateSystemStatus() {
+            // These would be updated with real status checks
+            document.getElementById('bot-status').textContent = 'Käynnissä';
+            document.getElementById('connection-status').textContent = 'Toimii';
+            
+            // Check OpenAI status from settings
+            const settings = JSON.parse(localStorage.getItem('lastSettings') || '{}');
+            const openaiEnabled = settings.openai?.enabled && settings.openai?.api_key;
+            document.getElementById('openai-status').textContent = openaiEnabled ? 'Aktiivinen' : 'Pois käytöstä';
+        }
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update select option texts
+            document.querySelectorAll('[data-i18n-option]').forEach(option => {
+                const key = option.getAttribute('data-i18n-option');
+                if (translations[lang] && translations[lang][key]) {
+                    option.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+            
+            // Update page title if on current page
+            if (currentPage) {
+                const title = document.getElementById('page-title');
+                const key = currentPage.replace('-', '_');
+                if (translations[currentLanguage][key]) {
+                    title.textContent = translations[currentLanguage][key];
+                }
+            }
+            
+            localStorage.setItem('language', currentLanguage);
+        }
+        
+        // Refresh current page
+        function refreshCurrentPage() {
+            loadPageData(currentPage);
+        }
+        
+        // Refresh button listener - added in DOMContentLoaded
+        
+        // Add remaining product view functions (simplified for now)
+        function loadProductsGrid() {
+            // Grid view implementation
+            loadProducts().then(() => {
+                displayProductsGrid(allProducts);
+            });
+        }
+        
+        function loadProductsList() {
+            // List view implementation  
+            loadProducts().then(() => {
+                displayProductsList(allProducts);
+            });
+        }
+        
+        function loadAnalytics() {
+            // Analytics implementation
+            if (allProducts.length === 0) {
+                loadProducts().then(() => {
+                    updateAnalytics(allProducts);
+                });
+            } else {
+                updateAnalytics(allProducts);
+            }
+        }
+        
+        function displayProductsGrid(products) {
+            const container = document.getElementById('products-grid');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (products.length === 0) {
+                container.innerHTML = '<div class="no-products"><i class="fas fa-inbox"></i><span>Ei tuotteita</span></div>';
+                return;
+            }
+            
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-image">
+                        ${product.image_files && product.image_files[0] 
+                            ? `<img src="/images/${product.image_files[0]}" alt="${product.title}">`
+                            : '<div class="no-image"><i class="fas fa-image"></i></div>'}
+                    </div>
+                    <div class="product-info">
+                        <h3>${product.title || 'Ei otsikkoa'}</h3>
+                        <p class="location"><i class="fas fa-map-marker-alt"></i> ${product.location || 'Ei sijaintia'}</p>
+                        ${product.valuation?.price_new || product.valuation?.price_current ? `
+                            <div class="product-prices">
+                                ${product.valuation?.price_new ? `<p class="price-new">Hinta uutena: ~${product.valuation.price_new}€</p>` : ''}
+                                ${product.valuation?.price_current ? `<p class="price-current">Arvo nyt: ${product.valuation.price_current}€</p>` : ''}
+                            </div>
+                        ` : ''}
+                        <a href="${product.url}" target="_blank" class="view-btn">
+                            <i class="fas fa-external-link-alt"></i> Näytä
+                        </a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        function displayProductsList(products) {
+            displayProducts(products); // Use existing function
+        }
+        
+        function updateAnalytics(products) {
+            const valued = products.filter(p => p.valuation?.price_estimate);
+            const avgValue = valued.length > 0 
+                ? Math.round(valued.reduce((sum, p) => sum + p.valuation.price_estimate, 0) / valued.length)
+                : 0;
+            const maxValue = valued.length > 0 
+                ? Math.max(...valued.map(p => p.valuation.price_estimate))
+                : 0;
+            
+            document.getElementById('avg-value').textContent = avgValue + '€';
+            document.getElementById('highest-value').textContent = maxValue + '€';
+            
+            // Most common location
+            const locations = products.map(p => p.location).filter(l => l);
+            const locationCounts = {};
+            locations.forEach(loc => locationCounts[loc] = (locationCounts[loc] || 0) + 1);
+            const mostCommon = Object.keys(locationCounts).reduce((a, b) => locationCounts[a] > locationCounts[b] ? a : b, '-');
+            document.getElementById('common-location').textContent = mostCommon;
+            
+            // Success rate
+            const successRate = products.length > 0 ? Math.round((valued.length / products.length) * 100) : 0;
+            document.getElementById('success-rate').textContent = successRate + '%';
+        }
+        
+        // Load saved language preference and initialize - moved to DOMContentLoaded
+        // (See consolidated initialization at the end of the script)
+        
+        // Logo functionality - to be initialized on DOMContentLoaded
+        function initializeLogoFunctionality() {
+            const logoElement = document.getElementById('background-logo');
+            const opacitySlider = document.getElementById('logo-opacity');
+            const blurSlider = document.getElementById('logo-blur');
+            const positionSelect = document.getElementById('logo-position');
+            const sizeSelect = document.getElementById('logo-size');
+            const logoFileInput = document.getElementById('logo-file');
+            const logoUrlInput = document.getElementById('logo-url');
+            const loadUrlBtn = document.getElementById('load-logo-url-btn');
+            const opacityValue = document.getElementById('opacity-value');
+            const blurValue = document.getElementById('blur-value');
+            
+            // Skip if elements don't exist
+            if (!logoElement || !opacitySlider) return;
+        
+        // Load saved logo settings
+        function loadLogoSettings() {
+            const logoSettings = JSON.parse(localStorage.getItem('logoSettings') || '{}');
+            
+            if (logoSettings.opacity !== undefined) {
+                opacitySlider.value = logoSettings.opacity;
+                opacityValue.textContent = logoSettings.opacity;
+            }
+            
+            if (logoSettings.blur !== undefined) {
+                blurSlider.value = logoSettings.blur;
+                blurValue.textContent = logoSettings.blur + 'px';
+            }
+            
+            if (logoSettings.position) {
+                positionSelect.value = logoSettings.position;
+            }
+            
+            if (logoSettings.size) {
+                sizeSelect.value = logoSettings.size;
+            }
+            
+            if (logoSettings.imageData) {
+                logoElement.style.backgroundImage = `url(${logoSettings.imageData})`;
+                logoElement.classList.add('has-image');
+            } else {
+                logoElement.classList.remove('has-image');
+            }
+            
+            updateLogoStyle();
+        }
+        
+        // Update logo style
+        function updateLogoStyle() {
+            const opacity = opacitySlider.value;
+            const blur = blurSlider.value;
+            const position = positionSelect.value;
+            const size = sizeSelect.value;
+            
+            logoElement.style.opacity = opacity;
+            logoElement.style.filter = `blur(${blur}px)`;
+            logoElement.style.backgroundPosition = position;
+            logoElement.style.backgroundSize = size;
+        }
+        
+        // Save logo settings
+        function saveLogoSettings() {
+            const backgroundImage = logoElement.style.backgroundImage;
+            const imageData = backgroundImage ? backgroundImage.match(/url\(["']?([^"']*)["']?\)/)?.[1] || '' : '';
+            
+            const logoSettings = {
+                opacity: opacitySlider.value,
+                blur: blurSlider.value,
+                position: positionSelect.value,
+                size: sizeSelect.value,
+                imageData: imageData
+            };
+            
+            localStorage.setItem('logoSettings', JSON.stringify(logoSettings));
+            console.log('Logo settings saved:', logoSettings);
+        }
+        
+        // Event listeners for logo controls
+        opacitySlider.addEventListener('input', () => {
+            opacityValue.textContent = opacitySlider.value;
+            updateLogoStyle();
+            saveLogoSettings();
+        });
+        
+        blurSlider.addEventListener('input', () => {
+            blurValue.textContent = blurSlider.value + 'px';
+            updateLogoStyle();
+            saveLogoSettings();
+        });
+        
+        positionSelect.addEventListener('change', () => {
+            updateLogoStyle();
+            saveLogoSettings();
+        });
+        
+        sizeSelect.addEventListener('change', () => {
+            updateLogoStyle();
+            saveLogoSettings();
+        });
+        
+        logoFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    const errorMsg = currentLanguage === 'fi' ? 
+                        'Valitse kelvollinen kuvatiedosto (.png, .jpg, .gif, .svg)' : 
+                        'Please select a valid image file (.png, .jpg, .gif, .svg)';
+                    alert(errorMsg);
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const imageData = e.target.result;
+                        logoElement.style.backgroundImage = `url(${imageData})`;
+                        logoElement.classList.add('has-image');
+                        updateLogoStyle();
+                        saveLogoSettings();
+                        
+                        const successMsg = currentLanguage === 'fi' ? 
+                            'Logo ladattu onnistuneesti!' : 
+                            'Logo uploaded successfully!';
+                        console.log(successMsg);
+                    } catch (error) {
+                        console.error('Error loading image:', error);
+                        const errorMsg = currentLanguage === 'fi' ? 
+                            'Virhe kuvan latauksessa' : 
+                            'Error loading image';
+                        alert(errorMsg);
+                    }
+                };
+                reader.onerror = () => {
+                    const errorMsg = currentLanguage === 'fi' ? 
+                        'Virhe tiedoston lukemisessa' : 
+                        'Error reading file';
+                    alert(errorMsg);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Load logo from URL
+        loadUrlBtn.addEventListener('click', async () => {
+            const url = logoUrlInput.value.trim();
+            
+            if (!url) {
+                const errorMsg = currentLanguage === 'fi' ? 
+                    'Anna kelvollinen URL-osoite' : 
+                    'Please enter a valid URL';
+                alert(errorMsg);
+                return;
+            }
+            
+            if (!url.startsWith('https://') && !url.startsWith('http://')) {
+                const errorMsg = currentLanguage === 'fi' ? 
+                    'URL-osoitteen tulee alkaa http:// tai https://' : 
+                    'URL must start with http:// or https://';
+                alert(errorMsg);
+                return;
+            }
+            
+            const originalText = loadUrlBtn.textContent;
+            const loadingText = currentLanguage === 'fi' ? '⏳ Ladataan...' : '⏳ Loading...';
+            
+            loadUrlBtn.disabled = true;
+            loadUrlBtn.textContent = loadingText;
+            
+            try {
+                // Use proxy approach for CORS issues
+                const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
+                
+                const response = await fetch(proxyUrl);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch image');
+                }
+                
+                const blob = await response.blob();
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    const imageData = e.target.result;
+                    logoElement.style.backgroundImage = `url(${imageData})`;
+                    logoElement.classList.add('has-image');
+                    updateLogoStyle();
+                    saveLogoSettings();
+                    
+                    const successMsg = currentLanguage === 'fi' ? 
+                        'Logo ladattu URL:sta onnistuneesti!' : 
+                        'Logo loaded from URL successfully!';
+                    alert(successMsg);
+                    logoUrlInput.value = '';
+                    
+                    loadUrlBtn.disabled = false;
+                    loadUrlBtn.textContent = originalText;
+                };
+                
+                reader.onerror = () => {
+                    const errorMsg = currentLanguage === 'fi' ? 
+                        'Virhe kuvan käsittelyssä' : 
+                        'Error processing image';
+                    alert(errorMsg);
+                    
+                    loadUrlBtn.disabled = false;
+                    loadUrlBtn.textContent = originalText;
+                };
+                
+                reader.readAsDataURL(blob);
+                
+            } catch (error) {
+                console.error('Error loading logo from URL:', error);
+                
+                // Fallback: try direct URL (may work for some images)
+                try {
+                    logoElement.style.backgroundImage = `url(${url})`;
+                    logoElement.classList.add('has-image');
+                    updateLogoStyle();
+                    saveLogoSettings();
+                    
+                    const successMsg = currentLanguage === 'fi' ? 
+                        'Logo asetettu (ei tallennettu paikallisesti)' : 
+                        'Logo set (not saved locally)';
+                    alert(successMsg);
+                    logoUrlInput.value = '';
+                } catch (fallbackError) {
+                    const errorMsg = currentLanguage === 'fi' ? 
+                        'Kuvan lataus epäonnistui. Tarkista URL-osoite.' : 
+                        'Failed to load image. Please check the URL.';
+                    alert(errorMsg);
+                }
+                
+                loadUrlBtn.disabled = false;
+                loadUrlBtn.textContent = originalText;
+            }
+        });
+        
+        // Clear logo button functionality
+        const clearLogoBtn = document.getElementById('clear-logo-btn');
+        if (clearLogoBtn) {
+            clearLogoBtn.addEventListener('click', () => {
+                if (logoElement) {
+                    logoElement.style.backgroundImage = '';
+                    logoElement.classList.remove('has-image');
+                }
+                
+                if (typeof logoFileInput !== 'undefined' && logoFileInput) {
+                    logoFileInput.value = '';
+                }
+                
+                if (typeof saveLogoSettings === 'function') {
+                    saveLogoSettings();
+                }
+            });
+        }
+        
+        // Initialize logo settings
+        loadLogoSettings();
+    } // End of initializeLogoFunctionality
+        
+        // Tab switching code removed - not used in current navigation structure
+        
+        // Load products
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayProducts(data.products);
+                    const locale = currentLanguage === 'fi' ? 'fi-FI' : 'en-US';
+                    document.getElementById('last-update').textContent = new Date().toLocaleTimeString(locale);
+                } else {
+                    showError('Failed to load products');
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+                const errorMsg = currentLanguage === 'fi' ? 'Virhe tuotteiden latauksessa. Tarkista, että palvelin on käynnissä.' : 'Error loading products. Check if server is running.';
+                showError(errorMsg);
+            }
+        }
+
+        // Fetch products from Tori.fi
+        async function fetchToriProducts() {
+            const btn = document.getElementById('fetch-btn');
+            const originalText = btn ? btn.textContent : '';
+            
+            try {
+                if (btn) {
+                    btn.disabled = true;
+                    btn.textContent = currentLanguage === 'fi' ? 'Haetaan...' : 'Fetching...';
+                }
+                
+                const response = await fetch('/api/fetch', { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    loadProducts(); // Reload products after fetch
+                    const message = currentLanguage === 'fi' ? 
+                        `Haettu ${result.count || 0} tuotetta onnistuneesti!` : 
+                        `Successfully fetched ${result.count || 0} products!`;
+                    showMessage(message, 'success');
+                } else {
+                    const errorMsg = result.error || (currentLanguage === 'fi' ? 'Haku epäonnistui' : 'Fetch failed');
+                    showMessage(errorMsg, 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                const errorMsg = currentLanguage === 'fi' ? 'Virhe tuotteiden haussa' : 'Error fetching products';
+                showMessage(errorMsg, 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+            }
+        }
+
+        // Save products to CSV
+        async function saveToriProducts() {
+            const btn = document.getElementById('save-btn');
+            const originalText = btn ? btn.textContent : '';
+            
+            try {
+                if (btn) {
+                    btn.disabled = true;
+                    btn.textContent = currentLanguage === 'fi' ? 'Tallennetaan...' : 'Saving...';
+                }
+                
+                const response = await fetch('/api/save', { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    const message = currentLanguage === 'fi' ? 
+                        `Tallennettu ${result.filename}` : 
+                        `Saved as ${result.filename}`;
+                    showMessage(message, 'success');
+                } else {
+                    const errorMsg = result.error || (currentLanguage === 'fi' ? 'Tallennus epäonnistui' : 'Save failed');
+                    showMessage(errorMsg, 'error');
+                }
+            } catch (error) {
+                console.error('Error saving products:', error);
+                const errorMsg = currentLanguage === 'fi' ? 'Virhe tuotteiden tallennuksessa' : 'Error saving products';
+                showMessage(errorMsg, 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+            }
+        }
+
+        // Show message function
+        function showMessage(message, type) {
+            // Try to find an existing message area or create one
+            let messageEl = document.getElementById('message-area');
+            if (!messageEl) {
+                messageEl = document.createElement('div');
+                messageEl.id = 'message-area';
+                messageEl.style.cssText = `
+                    position: fixed; 
+                    top: 20px; 
+                    right: 20px; 
+                    padding: 15px 20px; 
+                    border-radius: 8px; 
+                    color: white; 
+                    font-weight: bold; 
+                    z-index: 10000; 
+                    min-width: 300px; 
+                    text-align: center;
+                    transition: all 0.3s ease;
+                `;
+                document.body.appendChild(messageEl);
+            }
+            
+            messageEl.textContent = message;
+            messageEl.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
+            messageEl.style.display = 'block';
+            messageEl.style.opacity = '1';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                messageEl.style.opacity = '0';
+                setTimeout(() => {
+                    if (messageEl.parentNode) {
+                        messageEl.parentNode.removeChild(messageEl);
+                    }
+                }, 300);
+            }, 5000);
+        }
+        
+        // Display products
+        function displayProducts(products) {
+            const tbody = document.getElementById('products-body');
+            const noProducts = document.getElementById('no-products');
+            const totalCount = document.getElementById('total-count');
+            
+            totalCount.textContent = products.length;
+            
+            if (products.length === 0) {
+                tbody.innerHTML = '';
+                noProducts.style.display = 'block';
+                return;
+            }
+            
+            noProducts.style.display = 'none';
+            tbody.innerHTML = '';
+            
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                
+                // Images
+                const imagesCell = document.createElement('td');
+                imagesCell.className = 'images-cell';
+                if (product.image_files && product.image_files.length > 0) {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = 'image-gallery';
+                    product.image_files.forEach((filename, idx) => {
+                        if (idx < 3) {
+                            const img = document.createElement('img');
+                            img.src = `/images/${filename}`;
+                            img.className = 'product-thumbnail';
+                            img.alt = product.title || 'Product';
+                            img.onerror = () => img.style.display = 'none';
+                            imgContainer.appendChild(img);
+                        }
+                    });
+                    if (product.image_files.length > 3) {
+                        const more = document.createElement('span');
+                        more.className = 'more-images';
+                        more.textContent = `+${product.image_files.length - 3}`;
+                        imgContainer.appendChild(more);
+                    }
+                    imagesCell.appendChild(imgContainer);
+                } else {
+                    imagesCell.textContent = translations[currentLanguage].no_images;
+                    imagesCell.className = 'images-cell no-images';
+                }
+                row.appendChild(imagesCell);
+                
+                // Title
+                const titleCell = document.createElement('td');
+                titleCell.className = 'title-cell';
+                titleCell.textContent = product.title || 'N/A';
+                if (product.errors && product.errors.length > 0) {
+                    const badge = document.createElement('span');
+                    badge.className = 'error-badge';
+                    badge.title = product.errors.join(', ');
+                    badge.textContent = '⚠️';
+                    titleCell.appendChild(badge);
+                }
+                row.appendChild(titleCell);
+                
+                // Description
+                const descCell = document.createElement('td');
+                descCell.className = 'description-cell';
+                descCell.textContent = product.description || 'N/A';
+                descCell.title = product.description || '';
+                row.appendChild(descCell);
+                
+                // Location
+                const locCell = document.createElement('td');
+                locCell.textContent = product.location || 'N/A';
+                row.appendChild(locCell);
+                
+                // Seller
+                const sellerCell = document.createElement('td');
+                sellerCell.textContent = product.seller || 'N/A';
+                row.appendChild(sellerCell);
+                
+                // Valuation
+                const valCell = document.createElement('td');
+                valCell.className = 'valuation-cell';
+                if (product.valuation) {
+                    if (product.valuation.status === 'completed') {
+                        const div = document.createElement('div');
+                        div.className = 'valuation-text';
+                        div.textContent = product.valuation.text;
+                        valCell.appendChild(div);
+                        
+                        // Add price estimates if available
+                        if (product.valuation.price_new || product.valuation.price_current) {
+                            const pricesDiv = document.createElement('div');
+                            pricesDiv.className = 'price-estimates';
+                            pricesDiv.style.marginTop = '8px';
+                            
+                            if (product.valuation.price_new) {
+                                const priceNewDiv = document.createElement('div');
+                                priceNewDiv.className = 'table-price-new';
+                                priceNewDiv.textContent = `Hinta uutena: ~${product.valuation.price_new}€`;
+                                pricesDiv.appendChild(priceNewDiv);
+                            }
+                            
+                            if (product.valuation.price_current) {
+                                const priceCurrentDiv = document.createElement('div');
+                                priceCurrentDiv.className = 'table-price-current';
+                                priceCurrentDiv.textContent = `Arvo nyt: ${product.valuation.price_current}€`;
+                                pricesDiv.appendChild(priceCurrentDiv);
+                            }
+                            
+                            valCell.appendChild(pricesDiv);
+                        }
+                    } else if (product.valuation.status === 'error') {
+                        valCell.textContent = '❌ Error';
+                        valCell.title = product.valuation.message || 'Unknown error';
+                    } else {
+                        valCell.textContent = '⏳ Pending';
+                    }
+                } else {
+                    valCell.textContent = '—';
+                }
+                row.appendChild(valCell);
+                
+                // Timestamp
+                const timeCell = document.createElement('td');
+                timeCell.className = 'timestamp-cell';
+                if (product.discovered_at) {
+                    const date = new Date(product.discovered_at);
+                    const locale = currentLanguage === 'fi' ? 'fi-FI' : 'en-US';
+                    timeCell.textContent = date.toLocaleString(locale);
+                }
+                row.appendChild(timeCell);
+                
+                // Link
+                const linkCell = document.createElement('td');
+                linkCell.className = 'link-cell';
+                const link = document.createElement('a');
+                link.href = product.url;
+                link.target = '_blank';
+                link.textContent = translations[currentLanguage].view;
+                link.className = 'view-link';
+                linkCell.appendChild(link);
+                row.appendChild(linkCell);
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Load settings
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                const data = await response.json();
+                
+                if (data.success) {
+                    populateSettings(data.settings);
+                    // Initialize settings event listeners after settings are loaded
+                    initializeSettingsListeners();
+                } else {
+                    const errorMsg = currentLanguage === 'fi' ? 'Asetusten lataus epäonnistui' : 'Failed to load settings';
+                    showSettingsMessage(errorMsg, 'error');
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                const errorMsg = currentLanguage === 'fi' ? 'Virhe asetusten latauksessa' : 'Error loading settings';
+                showSettingsMessage(errorMsg, 'error');
+            }
+        }
+        
+        // Populate settings form
+        function populateSettings(s) {
+            document.getElementById('poll_interval').value = s.poll_interval_seconds || 60;
+            document.getElementById('timeout').value = s.request_timeout_seconds || 15;
+            document.getElementById('max_retries').value = s.max_retries || 2;
+            document.getElementById('listing_url').value = s.listing_url || '';
+            
+            document.getElementById('images_enabled').checked = s.images?.download_enabled ?? true;
+            document.getElementById('max_images').value = s.images?.max_images_per_item || 5;
+            
+            document.getElementById('openai_enabled').checked = s.openai?.enabled ?? false;
+            document.getElementById('openai_model').value = s.openai?.model || 'gpt-4o-mini';
+            document.getElementById('openai_base_url').value = s.openai?.base_url || 'https://api.openai.com/v1';
+            document.getElementById('valuation_interval').value = s.openai?.valuation_interval_minutes || 60;
+            
+            document.getElementById('server_host').value = s.server?.host || '127.0.0.1';
+            document.getElementById('server_port').value = s.server?.port || 8787;
+            
+            // Tori login settings
+            document.getElementById('tori_login_enabled').checked = s.tori_login?.enabled ?? false;
+            document.getElementById('tori_username').value = s.tori_login?.username || '';
+            // Don't populate password field for security
+            document.getElementById('tori_remember_session').checked = s.tori_login?.remember_session ?? true;
+            
+            // Telegram settings
+            document.getElementById('telegram_enabled').checked = s.telegram?.enabled ?? false;
+            document.getElementById('telegram_chat_id').value = s.telegram?.chat_id || '';
+            document.getElementById('telegram_include_images').checked = s.telegram?.include_images ?? true;
+            // Don't populate token field for security
+            
+            // Load logo settings are handled separately by loadLogoSettings()
+        }
+        
+        // Initialize settings page event listeners (called when settings page loads)
+        function initializeSettingsListeners() {
+            // Save settings
+            const saveSettingsBtn = document.getElementById('save-settings-btn');
+            if (!saveSettingsBtn || saveSettingsBtn.dataset.listenerAdded) return;
+            saveSettingsBtn.dataset.listenerAdded = 'true';
+            
+            saveSettingsBtn.addEventListener('click', async () => {
+            const settings = {
+                poll_interval_seconds: parseInt(document.getElementById('poll_interval').value),
+                listing_url: document.getElementById('listing_url').value,
+                request_timeout_seconds: parseInt(document.getElementById('timeout').value),
+                max_retries: parseInt(document.getElementById('max_retries').value),
+                openai: {
+                    enabled: document.getElementById('openai_enabled').checked,
+                    model: document.getElementById('openai_model').value,
+                    base_url: document.getElementById('openai_base_url').value,
+                    valuation_interval_minutes: parseInt(document.getElementById('valuation_interval').value)
+                },
+                images: {
+                    download_enabled: document.getElementById('images_enabled').checked,
+                    max_images_per_item: parseInt(document.getElementById('max_images').value)
+                },
+                server: {
+                    host: document.getElementById('server_host').value,
+                    port: parseInt(document.getElementById('server_port').value)
+                },
+                tori_login: {
+                    enabled: document.getElementById('tori_login_enabled').checked,
+                    username: document.getElementById('tori_username').value.trim(),
+                    remember_session: document.getElementById('tori_remember_session').checked
+                },
+                telegram: {
+                    enabled: document.getElementById('telegram_enabled').checked,
+                    chat_id: document.getElementById('telegram_chat_id').value.trim(),
+                    include_images: document.getElementById('telegram_include_images').checked
+                }
+            };
+            
+            const apiKey = document.getElementById('openai_key').value.trim();
+            if (apiKey && apiKey !== '***MASKED***') {
+                settings.openai.api_key = apiKey;
+            }
+            
+            const toriPassword = document.getElementById('tori_password').value.trim();
+            if (toriPassword && toriPassword !== '') {
+                settings.tori_login.password = toriPassword;
+            }
+            
+            const telegramToken = document.getElementById('telegram_token').value.trim();
+            if (telegramToken && telegramToken !== '') {
+                settings.telegram.token = telegramToken;
+            }
+            
+            try {
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(settings)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const successMsg = currentLanguage === 'fi' ? '✅ Asetukset tallennettu onnistuneesti!' : '✅ Settings saved successfully!';
+                    showSettingsMessage(successMsg, 'success');
+                    document.getElementById('openai_key').value = '';
+                    document.getElementById('tori_password').value = '';
+                    document.getElementById('telegram_token').value = '';
+                } else {
+                    const errorPrefix = currentLanguage === 'fi' ? '❌ Epäonnistui: ' : '❌ Failed: ';
+                    showSettingsMessage(errorPrefix + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                const errorMsg = currentLanguage === 'fi' ? '❌ Virhe asetusten tallennuksessa' : '❌ Error saving settings';
+                showSettingsMessage(errorMsg, 'error');
+            }
+        });
+        
+        // Test Telegram connection
+        const testTelegramBtn = document.getElementById('test-telegram-btn');
+        if (testTelegramBtn && !testTelegramBtn.dataset.listenerAdded) {
+            testTelegramBtn.dataset.listenerAdded = 'true';
+            testTelegramBtn.addEventListener('click', async () => {
+            const btn = document.getElementById('test-telegram-btn');
+            const originalText = btn.textContent;
+            const testingText = currentLanguage === 'fi' ? '⏳ Lähetetään...' : '⏳ Sending...';
+            
+            btn.disabled = true;
+            btn.textContent = testingText;
+            
+            const telegramConfig = {
+                token: document.getElementById('telegram_token').value.trim(),
+                chat_id: document.getElementById('telegram_chat_id').value.trim()
+            };
+            
+            if (!telegramConfig.token || !telegramConfig.chat_id) {
+                const errorMsg = currentLanguage === 'fi' ? 
+                    'Syötä Bot Token ja Chat ID ensin' : 
+                    'Please enter Bot Token and Chat ID first';
+                showSettingsMessage(errorMsg, 'error');
+                btn.disabled = false;
+                btn.textContent = originalText;
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/test-telegram', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(telegramConfig)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const successMsg = currentLanguage === 'fi' ? 
+                        '✅ Testivesti lähetetty onnistuneesti Telegramiin!' : 
+                        '✅ Test message sent successfully to Telegram!';
+                    showSettingsMessage(successMsg, 'success');
+                } else {
+                    const errorPrefix = currentLanguage === 'fi' ? '❌ Telegram-testi epäonnistui: ' : '❌ Telegram test failed: ';
+                    showSettingsMessage(errorPrefix + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error testing Telegram:', error);
+                const errorMsg = currentLanguage === 'fi' ? 
+                    '❌ Virhe Telegram-yhteydessä' : 
+                    '❌ Error testing Telegram connection';
+                showSettingsMessage(errorMsg, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        });
+        }
+        
+        // Reload settings
+        const loadSettingsBtn = document.getElementById('load-settings-btn');
+        if (loadSettingsBtn && !loadSettingsBtn.dataset.listenerAdded) {
+            loadSettingsBtn.dataset.listenerAdded = 'true';
+            loadSettingsBtn.addEventListener('click', () => {
+                loadSettings();
+                const msg = currentLanguage === 'fi' ? 'Asetukset ladattu uudelleen' : 'Settings reloaded';
+                showSettingsMessage(msg, 'info');
+            });
+        }
+        
+        // Trigger valuation
+        const valuateBtn = document.getElementById('valuate-btn');
+        if (valuateBtn && !valuateBtn.dataset.listenerAdded) {
+            valuateBtn.dataset.listenerAdded = 'true';
+            valuateBtn.addEventListener('click', async () => {
+                const btn = valuateBtn;
+            btn.disabled = true;
+            const runningText = currentLanguage === 'fi' ? '⏳ Suoritetaan...' : '⏳ Running...';
+            const originalText = btn.textContent;
+            btn.textContent = runningText;
+            
+            try {
+                const response = await fetch('/api/valuate', {method: 'POST'});
+                const data = await response.json();
+                
+                if (data.success) {
+                    const successMsg = currentLanguage === 'fi' ? 
+                        '✅ Arvostukset aloitettu! Tarkista tilanne muutaman minuutin kuluttua.' :
+                        '✅ Valuations started! Check back in a few minutes.';
+                    alert(successMsg);
+                } else {
+                    const errorPrefix = currentLanguage === 'fi' ? '❌ ' : '❌ ';
+                    alert(errorPrefix + (data.message || data.error || (currentLanguage === 'fi' ? 'Epäonnistui' : 'Failed')));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                const errorMsg = currentLanguage === 'fi' ? 
+                    '❌ Virhe arvostusten käynnistämisessä' :
+                    '❌ Error triggering valuations';
+                alert(errorMsg);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        });
+        }
+    } // End of initializeSettingsListeners
+        
+        function showError(message) {
+            const tbody = document.getElementById('products-body');
+            tbody.innerHTML = `<tr><td colspan="8" class="error">${message}</td></tr>`;
+        }
+        
+        function showSettingsMessage(message, type) {
+            const msgEl = document.getElementById('settings-message');
+            msgEl.textContent = message;
+            msgEl.className = `message ${type}`;
+            msgEl.style.display = 'block';
+            setTimeout(() => msgEl.style.display = 'none', 5000);
+        }
+        
+        
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set up navigation listeners
+            setupNavigationListeners();
+            
+            // Refresh button listener
+            const refreshBtn = document.getElementById('refresh-btn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', refreshCurrentPage);
+            }
+            
+            // Dashboard action buttons event listeners
+            // Fetch products button
+            const fetchBtn = document.getElementById('fetch-btn');
+            if (fetchBtn) {
+                fetchBtn.addEventListener('click', fetchToriProducts);
+            }
+            
+            // Save products button
+            const saveBtn = document.getElementById('save-btn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveToriProducts);
+            }
+            
+            // Run valuations button
+            const valuateBtn = document.getElementById('run-valuations-dash');
+            if (valuateBtn) {
+                valuateBtn.addEventListener('click', async () => {
+                    const btn = valuateBtn;
+                    btn.disabled = true;
+                    const runningText = currentLanguage === 'fi' ? '⏳ Suoritetaan...' : '⏳ Running...';
+                    const originalText = btn.textContent;
+                    btn.textContent = runningText;
+                    
+                    try {
+                        const response = await fetch('/api/valuate', {method: 'POST'});
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            const successMsg = currentLanguage === 'fi' ? 
+                                '✅ Arvostukset aloitettu!' :
+                                '✅ Valuations started!';
+                            showMessage(successMsg, 'success');
+                        } else {
+                            const errorMsg = data.message || data.error || (currentLanguage === 'fi' ? 'Epäonnistui' : 'Failed');
+                            showMessage(errorMsg, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error starting valuations:', error);
+                        const errorMsg = currentLanguage === 'fi' ? 'Virhe arvostusten aloituksessa' : 'Error starting valuations';
+                        showMessage(errorMsg, 'error');
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                    }
+                });
+            }
+            
+            // Fetch images button
+            const fetchImagesBtn = document.getElementById('fetch-images-dash');
+            if (fetchImagesBtn) {
+                fetchImagesBtn.addEventListener('click', async () => {
+                    const btn = fetchImagesBtn;
+                    btn.disabled = true;
+                    const runningText = currentLanguage === 'fi' ? '⏳ Haetaan...' : '⏳ Fetching...';
+                    const originalText = btn.textContent;
+                    btn.textContent = runningText;
+                    
+                    try {
+                        const response = await fetch('/api/fetch-images', {method: 'POST'});
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            const successMsg = currentLanguage === 'fi' ? 
+                                `✅ Haettu ${data.count || 0} kuvaa!` :
+                                `✅ Fetched ${data.count || 0} images!`;
+                            showMessage(successMsg, 'success');
+                        } else {
+                            const errorMsg = data.message || data.error || (currentLanguage === 'fi' ? 'Epäonnistui' : 'Failed');
+                            showMessage(errorMsg, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching images:', error);
+                        const errorMsg = currentLanguage === 'fi' ? 'Virhe kuvien haussa' : 'Error fetching images';
+                        showMessage(errorMsg, 'error');
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                    }
+                });
+            }
+            
+            // Fetch multiple pages button
+            const fetchMultiBtn = document.getElementById('fetch-multi-btn');
+            if (fetchMultiBtn) {
+                fetchMultiBtn.addEventListener('click', async () => {
+                    const btn = fetchMultiBtn;
+                    const numProductsInput = document.getElementById('num-products-input');
+                    const numProducts = parseInt(numProductsInput.value) || 150;
+                    
+                    if (numProducts < 50) {
+                        const errorMsg = currentLanguage === 'fi' ? 
+                            'Anna vähintään 50 tuotetta' : 
+                            'Please enter at least 50 products';
+                        showMessage(errorMsg, 'error');
+                        return;
+                    }
+                    
+                    btn.disabled = true;
+                    const runningText = currentLanguage === 'fi' ? '⏳ Haetaan...' : '⏳ Fetching...';
+                    const originalText = btn.textContent;
+                    btn.textContent = runningText;
+                    
+                    try {
+                        const response = await fetch('/api/fetch', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({num_products: numProducts})
+                        });
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            const successMsg = currentLanguage === 'fi' ? 
+                                `✅ Haetaan ~${numProducts} tuotetta taustalla. Tarkista tilanne hetken kuluttua.` :
+                                `✅ Fetching ~${numProducts} products in background. Check back in a moment.`;
+                            showMessage(successMsg, 'success');
+                            
+                            // Refresh products after a delay
+                            setTimeout(() => {
+                                if (currentPage === 'dashboard') {
+                                    loadDashboard();
+                                }
+                            }, 5000);
+                        } else {
+                            const errorMsg = data.message || data.error || (currentLanguage === 'fi' ? 'Epäonnistui' : 'Failed');
+                            showMessage(errorMsg, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching multiple pages:', error);
+                        const errorMsg = currentLanguage === 'fi' ? 'Virhe usean sivun haussa' : 'Error fetching multiple pages';
+                        showMessage(errorMsg, 'error');
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                    }
+                });
+            }
+            
+            // Refresh all data button
+            const refreshAllBtn = document.getElementById('refresh-all-btn');
+            if (refreshAllBtn) {
+                refreshAllBtn.addEventListener('click', async () => {
+                    const btn = refreshAllBtn;
+                    btn.disabled = true;
+                    const runningText = currentLanguage === 'fi' ? '⏳ Päivitetään...' : '⏳ Refreshing...';
+                    const originalText = btn.textContent;
+                    btn.textContent = runningText;
+                    
+                    try {
+                        const response = await fetch('/api/refresh-all', {method: 'POST'});
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            const successMsg = currentLanguage === 'fi' ? 
+                                `✅ Päivitetään ${data.count || 0} tuotteen tiedot taustalla. Tarkista tilanne hetken kuluttua.` :
+                                `✅ Refreshing ${data.count || 0} products in background. Check back in a moment.`;
+                            showMessage(successMsg, 'success');
+                            
+                            // Refresh dashboard after a delay
+                            setTimeout(() => {
+                                if (currentPage === 'dashboard') {
+                                    loadDashboard();
+                                }
+                            }, 3000);
+                        } else {
+                            const errorMsg = data.message || data.error || (currentLanguage === 'fi' ? 'Epäonnistui' : 'Failed');
+                            showMessage(errorMsg, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error refreshing all data:', error);
+                        const errorMsg = currentLanguage === 'fi' ? 'Virhe tietojen päivityksessä' : 'Error refreshing data';
+                        showMessage(errorMsg, 'error');
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                    }
+                });
+            }
+            
+            // Reactive search input with debouncing
+            const searchInput = document.getElementById('product-search-input');
+            if (searchInput) {
+                let searchTimeout;
+                searchInput.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.trim().toLowerCase();
+                    
+                    // Clear previous timeout
+                    clearTimeout(searchTimeout);
+                    
+                    // Debounce: wait 300ms before executing search
+                    searchTimeout = setTimeout(() => {
+                        // Only search if 3 or more characters
+                        if (searchTerm.length >= 3) {
+                            const filteredProducts = allProducts.filter(product => {
+                                const title = (product.title || '').toLowerCase();
+                                const description = (product.description || '').toLowerCase();
+                                const location = (product.location || '').toLowerCase();
+                                const seller = (product.seller || '').toLowerCase();
+                                
+                                return title.includes(searchTerm) || 
+                                       description.includes(searchTerm) || 
+                                       location.includes(searchTerm) || 
+                                       seller.includes(searchTerm);
+                            });
+                            
+                            // Update the display based on current page
+                            if (currentPage === 'dashboard') {
+                                displayRecentProducts(filteredProducts.slice(0, 6));
+                            } else if (currentPage === 'products') {
+                                displayProductsGrid(filteredProducts);
+                            } else if (currentPage === 'products-list') {
+                                displayProducts(filteredProducts);
+                            }
+                            
+                            // Show search result count
+                            const countMsg = currentLanguage === 'fi' ? 
+                                `Löytyi ${filteredProducts.length} tuotetta` :
+                                `Found ${filteredProducts.length} products`;
+                            console.log(countMsg);
+                        } else if (searchTerm.length === 0) {
+                            // Reset to show all products
+                            if (currentPage === 'dashboard') {
+                                displayRecentProducts(allProducts.slice(0, 6));
+                            } else if (currentPage === 'products') {
+                                displayProductsGrid(allProducts);
+                            } else if (currentPage === 'products-list') {
+                                displayProducts(allProducts);
+                            }
+                        }
+                    }, 300); // 300ms debounce delay
+                });
+            }
+            
+            // Load saved language preference
+            const savedLanguage = localStorage.getItem('language') || 'fi';
+            const languageSelectEl = document.getElementById('language-select');
+            const languageSelectSidebarEl = document.getElementById('language-select-sidebar');
+            if (languageSelectEl) languageSelectEl.value = savedLanguage;
+            if (languageSelectSidebarEl) languageSelectSidebarEl.value = savedLanguage;
+            setLanguage(savedLanguage);
+            
+            // Language selector event listeners
+            if (languageSelectEl) {
+                languageSelectEl.addEventListener('change', (e) => {
+                    setLanguage(e.target.value);
+                    if (languageSelectSidebarEl) languageSelectSidebarEl.value = e.target.value;
+                });
+            }
+            
+            if (languageSelectSidebarEl) {
+                languageSelectSidebarEl.addEventListener('change', (e) => {
+                    setLanguage(e.target.value);
+                    if (languageSelectEl) languageSelectEl.value = e.target.value;
+                });
+            }
+            
+            // Initialize logo functionality
+            initializeLogoFunctionality();
+            
+            // Show dashboard by default
+            showPage('dashboard');
+        });
+        
+        // Auto-refresh
+        setInterval(() => {
+            if (currentPage === 'products' || currentPage === 'products-list' || currentPage === 'dashboard') {
+                if (currentPage === 'dashboard') {
+                    loadDashboard();
+                } else {
+                    loadProducts();
+                }
+            }
+        }, REFRESH_INTERVAL);
+        
+        console.log('Tori Annataan Bot GUI loaded. Auto-refresh: 5min');
+    </script>
+</body>
+</html>
