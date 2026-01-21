@@ -19,6 +19,23 @@ Monitors **wanted/buying requests** ("Ostetaan" = Wanted to buy)
 
 Both bots can run simultaneously without conflicts!
 
+## Management Interfaces
+
+### 🖥️ TUI Controller (Recommended)
+Terminal-based interface to control both bots:
+```bash
+python3 toribot_controller.py
+```
+Features: Start/stop bots, view logs, check status (only one bot runs at a time)
+
+### 🌐 Unified Web GUI
+View data from both bots in one interface:
+- Open `unified_gui.html` in browser
+- Toggle between bots with animated slider
+- Shows real-time status for both
+
+See [CONTROLLER_README.md](CONTROLLER_README.md) for detailed documentation.
+
 ## Features
 
 - 🔄 **Automatic Polling**: Checks Tori.fi periodically (configurable)
