@@ -573,7 +573,8 @@ class ToriBot:
                 - debug_dir: path to debug directory
                 - images_dir: path to images directory
                 - default_settings: default settings dict
-                - valuation_prompt_builder: function to build OpenAI prompts
+                - valuation_prompt_builder: function(item) -> (system_message, user_prompt)
+                    that builds OpenAI prompts for the specific bot type
         """
         self.config = config
         self.settings_manager = SettingsManager(

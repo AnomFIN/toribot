@@ -58,7 +58,14 @@ DEFAULT_SETTINGS = {
 
 
 def build_annataan_valuation_prompt(item):
-    """Build OpenAI prompts for free items (Annataan)"""
+    """Build OpenAI prompts for free items (Annataan)
+    
+    Args:
+        item: Dictionary containing item data (title, description, location, seller)
+        
+    Returns:
+        tuple: (system_message, user_prompt) for OpenAI API
+    """
     system_message = "Olet hyödyllinen avustaja joka arvioi ilmaisia tuotteita suomeksi. Anna realistisia hinta-arvioita euroina."
     
     user_prompt = f"""Analysoi tämä ilmainen tuote Tori.fi palvelusta ja anna lyhyt arvio suomeksi:

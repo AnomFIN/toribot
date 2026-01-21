@@ -62,6 +62,12 @@ def build_ostobotti_valuation_prompt(item):
     
     Note: The 'seller' field in item data actually refers to the buyer/requester
     who posted the "wanted to buy" listing in the Ostobotti context.
+    
+    Args:
+        item: Dictionary containing item data (title, description, location, seller)
+        
+    Returns:
+        tuple: (system_message, user_prompt) for OpenAI API
     """
     system_message = "Olet hyödyllinen avustaja joka arvioi ostoilmoituksia suomeksi. Anna realistisia hinta-arvioita euroina ja markkinatilanne-analyysi."
     
