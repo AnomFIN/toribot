@@ -254,7 +254,7 @@ class ToriFetcher:
             
         try:
             # First get login page for any tokens/csrf
-            login_page = self.session.get("https://www.tori.fi/")
+            self.session.get("https://www.tori.fi/")
             
             # Attempt login (this is a simplified version - actual implementation would need proper form handling)
             login_data = {
