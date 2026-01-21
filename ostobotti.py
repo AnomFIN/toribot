@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Tori Annataan Bot - Free items monitoring bot
-Goal: Poll Tori.fi "annataan" (free) listings, detect new items, download images,
+Tori Ostobotti - Buying requests monitoring bot
+Goal: Poll Tori.fi "ostetaan" (wanted to buy) listings, detect new items, download images,
       run OpenAI valuations, and provide modern GUI with settings management.
 """
 
@@ -19,17 +19,17 @@ from toribot_base import (
     logger, ToriBot, ProductExtractor
 )
 
-# Configuration for Annataan Bot
-PRODUCTS_FILE = "products.json"
-SETTINGS_FILE = "settings.json"
-DEBUG_DIR = "debug"
-IMAGES_DIR = "images"
-GUI_FILE = "gui.html"
+# Configuration for Ostobotti
+PRODUCTS_FILE = "ostobotti_products.json"
+SETTINGS_FILE = "ostobotti_settings.json"
+DEBUG_DIR = "ostobotti_debug"
+IMAGES_DIR = "ostobotti_images"
+GUI_FILE = "ostobotti_gui.html"
 
-# Default settings for Annataan Bot
+# Default settings for Ostobotti
 DEFAULT_SETTINGS = {
-    "poll_interval_seconds": 60,
-    "listing_url": "https://www.tori.fi/recommerce/forsale/search?sort=PUBLISHED_DESC&trade_type=2",
+    "poll_interval_seconds": 300,  # 5 minutes as requested
+    "listing_url": "https://www.tori.fi/recommerce/forsale/search?sort=PUBLISHED_DESC&trade_type=3",
     "request_timeout_seconds": 15,
     "max_retries": 2,
     "products_per_page": 50,
@@ -46,7 +46,7 @@ DEFAULT_SETTINGS = {
     },
     "server": {
         "host": "127.0.0.1",
-        "port": 8788
+        "port": 8789
     },
     "tori_login": {
         "enabled": False,
@@ -57,8 +57,11 @@ DEFAULT_SETTINGS = {
 }
 
 
-def build_annataan_valuation_prompt(item):
-    """Build OpenAI prompts for free items (Annataan)
+def build_ostobotti_valuation_prompt(item):
+    """Build OpenAI prompts for buying requests (Ostetaan)
+    
+    Note: The 'seller' field in item data actually refers to the buyer/requester
+    who posted the "wanted to buy" listing in the Ostobotti context.
     
     Args:
         item: Dictionary containing item data (title, description, location, seller)
@@ -66,20 +69,20 @@ def build_annataan_valuation_prompt(item):
     Returns:
         tuple: (system_message, user_prompt) for OpenAI API
     """
-    system_message = "Olet hyödyllinen avustaja joka arvioi ilmaisia tuotteita suomeksi. Anna realistisia hinta-arvioita euroina."
+    system_message = "Olet hyödyllinen avustaja joka arvioi ostoilmoituksia suomeksi. Anna realistisia hinta-arvioita euroina ja markkinatilanne-analyysi."
     
-    user_prompt = f"""Analysoi tämä ilmainen tuote Tori.fi palvelusta ja anna lyhyt arvio suomeksi:
+    user_prompt = f"""Analysoi tämä ostoilmoitus Tori.fi palvelusta ja anna lyhyt arvio suomeksi:
 
 Otsikko: {item.get('title', 'Ei tietoa')}
 Kuvaus: {item.get('description', 'Ei kuvausta')}
 Sijainti: {item.get('location', 'Ei sijaintia')}
-Myyjä: {item.get('seller', 'Ei myyjätietoa')}
+Ostaja: {item.get('seller', 'Ei ostajatietoa')}
 
 Anna arvio 4-5 lauseessa:
-1. Arvio hinnasta uutena (€)
-2. Arvio nykyisestä arvosta käytettynä (€)
-3. Kunnon arvio ja keskeiset hyvät/huonot puolet
-4. Suositus: Kannattaako hakea? (Kyllä/Ei/Ehkä)
+1. Arvio tuotteen hinnasta uutena (€)
+2. Arvio kohtuullisesta myyntihinnasta käytettynä (€)
+3. Markkinatilanne: kuinka helppo tuote on myydä
+4. Suositus: Kannattaako myydä tälle ostajalle? (Kyllä/Ei/Ehkä)
 
 Lisää lopuksi molemmat arviot numeromuodossa:
 HINTA_UUTENA: X€
@@ -103,7 +106,7 @@ def index():
     return send_from_directory('.', GUI_FILE)
 
 
-@app.route('/gui.html')
+@app.route('/ostobotti_gui.html')
 def gui():
     """Serve GUI HTML file"""
     return send_from_directory('.', GUI_FILE)
@@ -181,6 +184,12 @@ def serve_image(filename):
     return send_from_directory(IMAGES_DIR, filename)
 
 
+@app.route('/ostobotti_images/<filename>')
+def serve_ostobotti_image(filename):
+    """Serve downloaded images (alternative path)"""
+    return send_from_directory(IMAGES_DIR, filename)
+
+
 @app.route('/api/fetch', methods=['POST'])
 def fetch_products():
     """Trigger product fetching"""
@@ -218,7 +227,7 @@ def save_products():
         if bot:
             items = bot.database.get_all_items()
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            filename = f"products_{timestamp}.csv"
+            filename = f"ostobotti_products_{timestamp}.csv"
             
             # Create CSV content
             output = StringIO()
@@ -336,7 +345,7 @@ def main():
     global bot
     
     logger.info("=" * 60)
-    logger.info("Tori Annataan Bot - Starting")
+    logger.info("Tori Ostobotti - Starting")
     logger.info("=" * 60)
     
     # Register signal handlers
@@ -350,7 +359,7 @@ def main():
         'debug_dir': DEBUG_DIR,
         'images_dir': IMAGES_DIR,
         'default_settings': DEFAULT_SETTINGS,
-        'valuation_prompt_builder': build_annataan_valuation_prompt
+        'valuation_prompt_builder': build_ostobotti_valuation_prompt
     }
     
     # Create bot instance
@@ -363,10 +372,10 @@ def main():
     settings = bot.settings_manager.get_settings()
     server_settings = settings.get("server", {})
     host = server_settings.get("host", "127.0.0.1")
-    port = server_settings.get("port", 8788)
+    port = server_settings.get("port", 8789)
     
     logger.info(f"Starting Flask server on http://{host}:{port}")
-    logger.info("Open http://127.0.0.1:8788 in your browser")
+    logger.info("Open http://127.0.0.1:8789 in your browser")
     logger.info("Press CTRL+C to stop")
     
     try:
