@@ -268,12 +268,17 @@
         
         // Check bot status
         async function checkBotStatus(bot) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
+            
             try {
                 const response = await fetch(`${API_ENDPOINTS[bot]}/settings`, {
-                    timeout: 3000
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
                 return response.ok;
             } catch (error) {
+                clearTimeout(timeoutId);
                 return false;
             }
         }
@@ -349,11 +354,25 @@
                 return;
             }
             
-            grid.innerHTML = products.slice(0, 20).map(product => `
+            grid.innerHTML = products.slice(0, 20).map(product => {
+                // Escape HTML to prevent XSS
+                const escapeHtml = (text) => {
+                    const div = document.createElement('div');
+                    div.textContent = text || '';
+                    return div.innerHTML;
+                };
+                
+                const title = escapeHtml(product.title || 'Untitled');
+                const description = escapeHtml((product.description || '').substring(0, 100));
+                const location = escapeHtml(product.location || 'Unknown');
+                const imageFile = product.image_files && product.image_files.length > 0 ? 
+                    escapeHtml(product.image_files[0]) : '';
+                
+                return `
                 <div class="product-card">
-                    ${product.image_files && product.image_files.length > 0 ? `
-                        <img src="${currentBot === 'toribot' ? '/images/' : '/ostobotti_images/'}${product.image_files[0]}" 
-                             alt="${product.title || 'Product'}" 
+                    ${imageFile ? `
+                        <img src="${currentBot === 'toribot' ? '/images/' : '/ostobotti_images/'}${imageFile}" 
+                             alt="${title}" 
                              onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'200\\' height=\\'150\\'%3E%3Crect fill=\\'%23ddd\\' width=\\'200\\' height=\\'150\\'/%3E%3Ctext fill=\\'%23999\\' x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\'%3ENo Image%3C/text%3E%3C/svg%3E'">
                     ` : `
                         <div style="background: #f0f0f0; height: 150px; display: flex; align-items: center; justify-content: center; color: #999;">
@@ -361,19 +380,19 @@
                         </div>
                     `}
                     <div class="product-info">
-                        <h3>${product.title || 'Untitled'}</h3>
-                        <p>${(product.description || '').substring(0, 100)}${(product.description || '').length > 100 ? '...' : ''}</p>
+                        <h3>${title}</h3>
+                        <p>${description}${(product.description || '').length > 100 ? '...' : ''}</p>
                         <div class="product-meta">
-                            <span><i class="fas fa-map-marker-alt"></i> ${product.location || 'Unknown'}</span>
+                            <span><i class="fas fa-map-marker-alt"></i> ${location}</span>
                             ${product.valuation && product.valuation.price_estimate ? 
-                                `<span><i class="fas fa-tag"></i> ~${product.valuation.price_estimate}€</span>` : ''}
+                                `<span><i class="fas fa-tag"></i> ~${escapeHtml(String(product.valuation.price_estimate))}€</span>` : ''}
                         </div>
-                        <a href="${product.url}" target="_blank" class="btn btn-sm btn-primary">
+                        <a href="${escapeHtml(product.url || '#')}" target="_blank" class="btn btn-sm btn-primary">
                             <i class="fas fa-external-link-alt"></i> View
                         </a>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
         
         // Update statistics
@@ -391,8 +410,10 @@
         }
         
         // Refresh products
-        async function refreshProducts() {
-            const btn = event.target.closest('button');
+        async function refreshProducts(event) {
+            const btn = event ? event.target.closest('button') : document.querySelector('button[onclick*="refreshProducts"]');
+            if (!btn) return;
+            
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
             

@@ -150,14 +150,17 @@ class ToribotController:
         print(f"{Colors.CYAN}{'-' * 60}{Colors.ENDC}")
         
         try:
-            # Read available output
-            while True:
+            # Read available output (limited to prevent blocking)
+            lines_read = 0
+            max_reads = 100  # Prevent infinite loop
+            while lines_read < max_reads:
                 line = self.running_process.stdout.readline()
                 if not line:
                     break
                 self.log_lines.append(line.strip())
                 if len(self.log_lines) > self.max_log_lines:
                     self.log_lines.pop(0)
+                lines_read += 1
         except:
             pass
         
