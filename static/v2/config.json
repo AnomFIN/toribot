@@ -1,0 +1,25 @@
+{
+  "app": {
+    "name": "ToriBot v2",
+    "version": "2.0.0",
+    "description": "Modern dashboard for Tori.fi monitoring bots"
+  },
+  "theme": {
+    "default": "dark",
+    "allowToggle": true
+  },
+  "auth": {
+    "enabled": false,
+    "pin": ""
+  },
+  "features": {
+    "realTimeLogs": true,
+    "charts": true,
+    "notifications": true
+  },
+  "polling": {
+    "statusInterval": 5000,
+    "productsInterval": 30000,
+    "logsInterval": 10000
+  }
+}

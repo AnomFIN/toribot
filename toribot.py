@@ -181,6 +181,39 @@ def serve_image(filename):
     return send_from_directory(IMAGES_DIR, filename)
 
 
+@app.route('/v2')
+@app.route('/v2/')
+def v2_index():
+    """Serve v2 GUI"""
+    return send_from_directory('static/v2', 'index.html')
+
+
+@app.route('/static/v2/<path:path>')
+def serve_v2_static(path):
+    """Serve v2 static files"""
+    return send_from_directory('static/v2', path)
+
+
+@app.route('/api/health')
+def get_health():
+    """Get bot health status"""
+    try:
+        items = bot.database.get_all_items()
+        settings = bot.settings_manager.get_settings()
+        
+        return jsonify({
+            "success": True,
+            "status": "running",
+            "version": "2.0.0",
+            "products_count": len(items),
+            "openai_enabled": settings.get("openai", {}).get("enabled", False),
+            "last_update": items[0].get("discovered_at") if items else None
+        })
+    except Exception as e:
+        logger.error(f"Error getting health: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 @app.route('/api/fetch', methods=['POST'])
 def fetch_products():
     """Trigger product fetching"""
