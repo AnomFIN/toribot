@@ -7,6 +7,7 @@ Goal: Poll Tori.fi "ostetaan" (wanted to buy) listings, detect new items, downlo
 
 import signal
 import sys
+import json
 import csv
 from io import StringIO
 from datetime import datetime
@@ -130,7 +131,6 @@ def get_products():
 def get_settings():
     """Get current settings"""
     try:
-        import json
         settings = bot.settings_manager.get_settings()
         # Mask API key
         settings_copy = json.loads(json.dumps(settings))
