@@ -201,13 +201,19 @@ def get_health():
         items = bot.database.get_all_items()
         settings = bot.settings_manager.get_settings()
         
+        # Compute the latest discovered_at timestamp explicitly, since item order is not guaranteed
+        last_update = max(
+            (item.get("discovered_at") for item in items if item.get("discovered_at") is not None),
+            default=None,
+        )
+
         return jsonify({
             "success": True,
             "status": "running",
             "version": "2.0.0",
             "products_count": len(items),
             "openai_enabled": settings.get("openai", {}).get("enabled", False),
-            "last_update": items[0].get("discovered_at") if items else None
+            "last_update": last_update
         })
     except Exception as e:
         logger.error(f"Error getting health: {e}")
