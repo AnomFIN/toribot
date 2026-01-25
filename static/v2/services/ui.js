@@ -125,18 +125,63 @@ const UI = {
   showModal(title, content, footer = null) {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
+    // Build static modal structure without interpolating dynamic content
     modal.innerHTML = `
       <div class="modal">
         <div class="modal-header">
-          <h3 class="modal-title">${title}</h3>
-          <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
+          <h3 class="modal-title"></h3>
+          <button class="modal-close">
             <i class="fas fa-times"></i>
           </button>
         </div>
-        <div class="modal-body">${content}</div>
-        ${footer ? `<div class="modal-footer">${footer}</div>` : ''}
+        <div class="modal-body"></div>
+        <div class="modal-footer" style="display: none;"></div>
       </div>
     `;
+
+    const titleEl = modal.querySelector('.modal-title');
+    const bodyEl = modal.querySelector('.modal-body');
+    const footerEl = modal.querySelector('.modal-footer');
+    const closeBtn = modal.querySelector('.modal-close');
+
+    if (titleEl && typeof title === 'string') {
+      titleEl.textContent = title;
+    }
+
+    if (bodyEl) {
+      if (content instanceof Node) {
+        bodyEl.appendChild(content);
+      } else if (Array.isArray(content)) {
+        content.forEach((item) => {
+          if (item instanceof Node) {
+            bodyEl.appendChild(item);
+          } else if (typeof item === 'string') {
+            const p = document.createElement('p');
+            p.textContent = item;
+            bodyEl.appendChild(p);
+          }
+        });
+      } else if (typeof content === 'string') {
+        // Treat content as plain text to avoid XSS
+        bodyEl.textContent = content;
+      }
+    }
+
+    if (footerEl) {
+      if (footer instanceof Node) {
+        footerEl.style.display = '';
+        footerEl.appendChild(footer);
+      } else if (typeof footer === 'string' && footer.trim() !== '') {
+        footerEl.style.display = '';
+        footerEl.textContent = footer;
+      }
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        modal.remove();
+      });
+    }
     
     // Close on backdrop click
     modal.addEventListener('click', (e) => {
