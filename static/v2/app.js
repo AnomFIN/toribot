@@ -82,7 +82,7 @@ class App {
     globalSearch?.addEventListener('input', UI.debounce((e) => {
       state.set('filters.search', e.target.value);
       if (this.currentPage === 'products') {
-        Dashboard.renderProducts();
+        Products.renderTable();
       }
     }, 300));
 
