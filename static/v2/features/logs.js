@@ -119,7 +119,6 @@ const Logs = {
    * Generate sample logs for demonstration
    */
   generateSampleLogs() {
-    const products = state.get('products');
     const settings = state.get('settings');
     const stats = state.get('stats');
     
