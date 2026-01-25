@@ -48,17 +48,40 @@ class ToastService {
     const icon = this.getIcon(type);
     const toastTitle = title || this.getDefaultTitle(type);
 
-    toast.innerHTML = `
-      <div class="toast-icon">${icon}</div>
-      <div class="toast-content">
-        ${toastTitle ? `<div class="toast-title">${toastTitle}</div>` : ''}
-        <div class="toast-message">${message}</div>
-      </div>
-      <button class="toast-close" onclick="toast.dismiss(this.closest('.toast'))">
-        <i class="fas fa-times"></i>
-      </button>
-    `;
+    // Icon (trusted HTML for the icon only)
+    const iconElement = document.createElement('div');
+    iconElement.className = 'toast-icon';
+    iconElement.innerHTML = icon;
 
+    // Content container
+    const contentElement = document.createElement('div');
+    contentElement.className = 'toast-content';
+
+    // Optional title (untrusted content as text)
+    if (toastTitle) {
+      const titleElement = document.createElement('div');
+      titleElement.className = 'toast-title';
+      titleElement.textContent = toastTitle;
+      contentElement.appendChild(titleElement);
+    }
+
+    // Message (untrusted content as text)
+    const messageElement = document.createElement('div');
+    messageElement.className = 'toast-message';
+    messageElement.textContent = message;
+    contentElement.appendChild(messageElement);
+
+    // Close button
+    const closeButton = document.createElement('button');
+    closeButton.className = 'toast-close';
+    closeButton.type = 'button';
+    closeButton.innerHTML = '<i class="fas fa-times"></i>';
+    closeButton.addEventListener('click', () => this.dismiss(toast));
+
+    // Assemble toast
+    toast.appendChild(iconElement);
+    toast.appendChild(contentElement);
+    toast.appendChild(closeButton);
     return toast;
   }
 
