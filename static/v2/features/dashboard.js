@@ -170,7 +170,12 @@ const Dashboard = {
       : '';
 
     return `
-      <div class="card" style="cursor: pointer;" onclick="Dashboard.showProductDetail('${product.id}')">
+      <div class="card"
+           style="cursor: pointer;"
+           role="button"
+           tabindex="0"
+           onclick="Dashboard.showProductDetail('${product.id}')"
+           onkeydown="if (event.key === 'Enter' || event.key === ' ') { Dashboard.showProductDetail('${product.id}'); }">
         <img src="${imageUrl}" alt="${UI.escapeHTML(product.title || 'Product')}" 
              style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: var(--space-md);"
              onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
