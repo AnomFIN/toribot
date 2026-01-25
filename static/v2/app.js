@@ -141,7 +141,13 @@ class App {
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     state.set('theme', newTheme);
     this.applyTheme();
-    toast.info(i18n.t('toast.themeChanged', { theme: newTheme }));
+    toast.info(
+      i18n.t(
+        newTheme === 'dark'
+          ? 'toast.themeChangedToDark'
+          : 'toast.themeChangedToLight'
+      )
+    );
   }
 
   /**
