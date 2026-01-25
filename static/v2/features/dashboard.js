@@ -181,7 +181,7 @@ const Dashboard = {
           ${UI.escapeHTML(UI.truncate(product.description || '', 80))}
         </p>
         <div style="display: flex; justify-content: space-between; align-items: center; font-size: var(--text-xs); color: var(--text-muted);">
-          <span><i class="fas fa-map-marker-alt"></i> ${product.location || 'N/A'}</span>
+          <span><i class="fas fa-map-marker-alt"></i> ${UI.escapeHTML(product.location || 'N/A')}</span>
           <span>${UI.formatDate(product.discovered_at)}</span>
         </div>
         ${valuationBadge ? `<div style="margin-top: var(--space-sm);">${valuationBadge}</div>` : ''}
