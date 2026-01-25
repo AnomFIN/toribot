@@ -50,7 +50,7 @@ This release introduces a completely redesigned, modern dashboard interface (v2)
 - Auto-scroll toggle
 - Copy to clipboard functionality
 - Clear logs option
-- Real-time log streaming (backend implementation ready)
+- Real-time log streaming (planned backend support)
 
 **Settings**
 - Comprehensive settings management
