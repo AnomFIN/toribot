@@ -86,10 +86,30 @@ class App {
       }
     }, 300));
 
+    // Language toggle
+    const languageToggle = document.getElementById('language-toggle');
+    languageToggle?.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.dataset.lang;
+        if (lang) {
+          i18n.setLanguage(lang);
+          this.updateLanguage();
+        }
+      });
+    });
+
+    // Listen for language changes
+    window.addEventListener('languageChanged', () => {
+      this.updateLanguage();
+    });
+
     // Restore sidebar state
     if (state.get('sidebarCollapsed')) {
       sidebar.classList.add('collapsed');
     }
+
+    // Set initial language button state
+    this.updateLanguageButtons();
   }
 
   /**
@@ -121,7 +141,102 @@ class App {
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     state.set('theme', newTheme);
     this.applyTheme();
-    toast.info(`Theme switched to ${newTheme} mode`);
+    toast.info(i18n.t('toast.themeChanged', { theme: newTheme }));
+  }
+
+  /**
+   * Update language buttons
+   */
+  updateLanguageButtons() {
+    const currentLang = i18n.getLanguage();
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      if (btn.dataset.lang === currentLang) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
+  /**
+   * Update UI text when language changes
+   */
+  updateLanguage() {
+    // Update language buttons
+    this.updateLanguageButtons();
+
+    // Update HTML lang attribute
+    document.documentElement.lang = i18n.getLanguage();
+
+    // Update static UI elements
+    this.updateStaticUIText();
+
+    // Re-render current page to apply translations
+    this.renderPage(this.currentPage);
+
+    // Update status text
+    const statusText = document.getElementById('status-text');
+    const botStatus = state.get('botStatus');
+    if (statusText) {
+      if (botStatus === 'online') {
+        statusText.textContent = i18n.t('status.online');
+      } else if (botStatus === 'offline') {
+        statusText.textContent = i18n.t('status.offline');
+      } else {
+        statusText.textContent = i18n.t('status.checking');
+      }
+    }
+
+    // Update search placeholder
+    const globalSearch = document.getElementById('global-search');
+    if (globalSearch) {
+      globalSearch.placeholder = i18n.t('header.search');
+    }
+  }
+
+  /**
+   * Update static UI text
+   */
+  updateStaticUIText() {
+    // Update navigation links
+    const navLinks = {
+      'dashboard': 'nav.dashboard',
+      'products': 'nav.products',
+      'logs': 'nav.logs',
+      'settings': 'nav.settings'
+    };
+
+    document.querySelectorAll('.nav-link').forEach(link => {
+      const page = link.dataset.page;
+      if (page && navLinks[page]) {
+        const textSpan = link.querySelector('.nav-text');
+        if (textSpan) {
+          textSpan.textContent = i18n.t(navLinks[page]);
+        }
+      }
+    });
+
+    // Update theme toggle text
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+      const theme = state.get('theme');
+      const text = themeToggle.querySelector('span');
+      if (text) {
+        text.textContent = i18n.t(theme === 'dark' ? 'theme.dark' : 'theme.light');
+      }
+    }
+
+    // Update page title
+    const titles = {
+      dashboard: 'dashboard.title',
+      products: 'products.title',
+      logs: 'logs.title',
+      settings: 'settings.title',
+    };
+    const pageTitle = document.getElementById('page-title');
+    if (pageTitle && titles[this.currentPage]) {
+      pageTitle.textContent = i18n.t(titles[this.currentPage]);
+    }
   }
 
   /**

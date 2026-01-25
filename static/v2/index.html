@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="fi" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -84,6 +84,14 @@
             <i class="fas fa-search header-search-icon"></i>
             <input type="text" placeholder="Search products..." id="global-search">
           </div>
+          <div class="language-toggle" id="language-toggle" title="Switch language / Vaihda kieli">
+            <button class="lang-btn" data-lang="fi">
+              <span class="flag-icon">🇫🇮</span>
+            </button>
+            <button class="lang-btn" data-lang="en">
+              <span class="flag-icon">🇬🇧</span>
+            </button>
+          </div>
           <div class="header-status">
             <div class="status-indicator" id="status-indicator"></div>
             <span id="status-text">Checking...</span>
@@ -99,6 +107,7 @@
   </div>
 
   <!-- Service Scripts -->
+  <script src="/static/v2/services/i18n.js"></script>
   <script src="/static/v2/services/api.js"></script>
   <script src="/static/v2/services/state.js"></script>
   <script src="/static/v2/services/toast.js"></script>
