@@ -234,7 +234,7 @@ const Dashboard = {
       `<img src="/images/${img}" style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm);" onerror="this.style.display='none'">`
     ).join('') || `<p style="color: var(--text-muted);">${i18n.t('product.noImages')}</p>`;
 
-    const worth = product.valuation?.price_current || product.valuation?.price_estimate;
+    const worth = product.valuation?.price_current ?? product.valuation?.price_estimate;
 
     const valuation = product.valuation?.status === 'completed'
       ? `
