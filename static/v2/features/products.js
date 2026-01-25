@@ -253,7 +253,7 @@ const Products = {
               </td>
               <td>${UI.escapeHTML(p.location || 'N/A')}</td>
               <td>${UI.formatPrice(p.price)}</td>
-              <td>${worth ? `~${worth}€` : '-'}</td>
+              <td>${worth != null ? `~${worth}€` : '-'}</td>
               <td>${UI.formatDate(p.discovered_at)}</td>
               <td>${UI.createStatusBadge(p.valuation?.status || 'pending')}</td>
               <td>
