@@ -10,7 +10,8 @@ class APIService {
   }
 
   /**
-   * Generic fetch wrapper with error handling
+   * Generic fetch wrapper with timeout and error handling
+   * Note: Retry logic not yet implemented - handled by backend endpoints
    */
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;

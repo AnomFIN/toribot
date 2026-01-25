@@ -81,9 +81,11 @@ const Logs = {
 
   /**
    * Set log level filter
+   * Note: Filter is currently non-functional (placeholder for future backend implementation)
    */
   setLogLevel(level) {
     this.logLevel = level;
+    // TODO: Implement filtering when real /api/logs endpoint is added
     this.loadLogs();
   },
 

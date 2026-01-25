@@ -154,6 +154,22 @@ const Dashboard = {
         ${recent.map(product => this.renderProductCard(product)).join('')}
       </div>
     `;
+    
+    // Add event listeners for product cards
+    container.querySelectorAll('.product-card').forEach(card => {
+      const productId = card.dataset.productId;
+      
+      card.addEventListener('click', () => {
+        if (productId) this.showProductDetail(productId);
+      });
+      
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (productId) this.showProductDetail(productId);
+        }
+      });
+    });
   },
 
   /**
@@ -170,12 +186,11 @@ const Dashboard = {
       : '';
 
     return `
-      <div class="card"
+      <div class="card product-card"
            style="cursor: pointer;"
            role="button"
            tabindex="0"
-           onclick="Dashboard.showProductDetail('${product.id}')"
-           onkeydown="if (event.key === 'Enter' || event.key === ' ') { Dashboard.showProductDetail('${product.id}'); }">
+           data-product-id="${UI.escapeHTML(product.id)}">
         <img src="${imageUrl}" alt="${UI.escapeHTML(product.title || 'Product')}" 
              style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: var(--space-md);"
              onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">

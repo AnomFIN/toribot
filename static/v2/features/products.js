@@ -76,6 +76,16 @@ const Products = {
 
     // Setup filter listeners
     this.setupFilterListeners();
+    
+    // Set the persisted valuation filter value
+    const hasValuation = state.get('filters.hasValuation');
+    const valuationSelect = document.getElementById('filter-valuation');
+    if (valuationSelect && hasValuation !== null) {
+      valuationSelect.value = hasValuation.toString();
+    }
+    
+    // Set initial view mode button styling
+    this.updateViewModeButtons();
 
     // Render products
     this.renderTable();
@@ -146,9 +156,23 @@ const Products = {
    */
   setViewMode(mode) {
     this.viewMode = mode;
-    document.getElementById('view-grid')?.classList.toggle('btn-primary', mode === 'grid');
-    document.getElementById('view-table')?.classList.toggle('btn-primary', mode === 'table');
+    this.updateViewModeButtons();
     this.renderTable();
+  },
+  
+  /**
+   * Update view mode button styling
+   */
+  updateViewModeButtons() {
+    const gridBtn = document.getElementById('view-grid');
+    const tableBtn = document.getElementById('view-table');
+    
+    if (gridBtn && tableBtn) {
+      gridBtn.classList.toggle('btn-primary', this.viewMode === 'grid');
+      gridBtn.classList.toggle('btn-secondary', this.viewMode !== 'grid');
+      tableBtn.classList.toggle('btn-primary', this.viewMode === 'table');
+      tableBtn.classList.toggle('btn-secondary', this.viewMode !== 'table');
+    }
   },
 
   /**
