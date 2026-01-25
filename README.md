@@ -79,8 +79,7 @@ The new v2 dashboard provides a modern, professional interface:
 - **Server**: Host and port configuration
 
 ### 📝 Logs
-- **Log Viewer**: Monospace font with syntax highlighting
-- **Filtering**: Filter by log level (info, warning, error)
+- **Log Viewer**: Monospace font log output
 - **Auto-scroll**: Toggle automatic scrolling
 - **Copy/Clear**: Copy logs to clipboard or clear view
 
