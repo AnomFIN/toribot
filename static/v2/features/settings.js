@@ -218,9 +218,20 @@ const Settings = {
     const currentSettings = state.get('settings');
     const mergedSettings = this.deepMerge(currentSettings, newSettings);
 
+    // Prepare payload for API:
+    // - If openai.api_key is empty or masked, omit it so the server keeps the existing key.
+    const payload = JSON.parse(JSON.stringify(mergedSettings));
+    if (
+      payload &&
+      payload.openai &&
+      (payload.openai.api_key === '' || payload.openai.api_key === '***MASKED***')
+    ) {
+      delete payload.openai.api_key;
+    }
+
     try {
       toast.info('Saving settings...');
-      const res = await api.updateSettings(mergedSettings);
+      const res = await api.updateSettings(payload);
       
       if (res.success) {
         state.set('settings', mergedSettings);

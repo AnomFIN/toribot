@@ -252,7 +252,7 @@ const Dashboard = {
 
     const footer = `
       <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Close</button>
-      <a href="${product.url}" target="_blank" class="btn btn-primary">
+      <a href="${UI.escapeHTML(product.url)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
         <i class="fas fa-external-link-alt"></i> View on Tori.fi
       </a>
     `;

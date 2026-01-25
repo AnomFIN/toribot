@@ -179,6 +179,14 @@ const Products = {
       `;
     } else {
       container.innerHTML = this.renderTableView(products);
+      
+      // Add event listeners for product detail buttons
+      container.querySelectorAll('.product-detail-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const productId = e.currentTarget.dataset.productId;
+          if (productId) Dashboard.showProductDetail(productId);
+        });
+      });
     }
 
     this.renderPagination();
@@ -206,27 +214,27 @@ const Products = {
               <td>
                 <div style="display: flex; align-items: center; gap: var(--space-sm);">
                   ${p.image_files?.[0] ? `
-                    <img src="/images/${p.image_files[0]}" 
+                    <img src="/images/${UI.escapeHTML(p.image_files[0])}" 
                          style="width: 50px; height: 50px; object-fit: cover; border-radius: var(--radius-sm);"
                          onerror="this.style.display='none'">
                   ` : ''}
                   <div>
-                    <div style="font-weight: 500;">${UI.truncate(p.title, 40)}</div>
-                    <div style="font-size: var(--text-xs); color: var(--text-muted);">${p.seller || 'N/A'}</div>
+                    <div style="font-weight: 500;">${UI.escapeHTML(UI.truncate(p.title || '', 40))}</div>
+                    <div style="font-size: var(--text-xs); color: var(--text-muted);">${UI.escapeHTML(p.seller || 'N/A')}</div>
                   </div>
                 </div>
               </td>
-              <td>${(p.location || 'N/A').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+              <td>${UI.escapeHTML(p.location || 'N/A')}</td>
               <td>${UI.formatPrice(p.price)}</td>
               <td>${UI.formatDate(p.discovered_at)}</td>
               <td>${UI.createStatusBadge(p.valuation?.status || 'pending')}</td>
               <td>
                 <div style="display: flex; gap: var(--space-xs);">
-                  <button class="btn btn-sm btn-secondary" onclick="Dashboard.showProductDetail('${p.id}')" 
+                  <button class="btn btn-sm btn-secondary product-detail-btn" data-product-id="${UI.escapeHTML(p.id)}" 
                           title="View details">
                     <i class="fas fa-eye"></i>
                   </button>
-                  <a href="${p.url}" target="_blank" class="btn btn-sm btn-secondary" 
+                  <a href="${UI.escapeHTML(p.url)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-secondary" 
                      title="Open on Tori.fi">
                     <i class="fas fa-external-link-alt"></i>
                   </a>
