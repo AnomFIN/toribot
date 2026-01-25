@@ -230,11 +230,11 @@ const Dashboard = {
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-md); margin-bottom: var(--space-md);">
           <div>
             <strong>Location:</strong><br>
-            <span style="color: var(--text-secondary);">${product.location || 'N/A'}</span>
+            <span style="color: var(--text-secondary);">${UI.escapeHTML(product.location || 'N/A')}</span>
           </div>
           <div>
             <strong>Seller:</strong><br>
-            <span style="color: var(--text-secondary);">${product.seller || 'N/A'}</span>
+            <span style="color: var(--text-secondary);">${UI.escapeHTML(product.seller || 'N/A')}</span>
           </div>
           <div>
             <strong>Discovered:</strong><br>
