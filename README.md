@@ -2,19 +2,33 @@
 
 Complete working bots for monitoring Tori.fi listings with OpenAI-based valuation.
 
+## 🎉 NEW: v2 Modern Dashboard Available!
+
+Experience the completely redesigned dashboard with modern UI, dark/light themes, and enhanced features!
+
+**Access v2:**
+- Toribot v2: http://127.0.0.1:8788/v2
+- Ostobotti v2: http://127.0.0.1:8789/v2
+
+**v1 still available at root URLs** (`/` instead of `/v2`)
+
+See [CHANGELOG_V2.md](CHANGELOG_V2.md) for full v2 features and improvements.
+
 ## Two Bots Available
 
 ### 1. Tori Annataan Bot 🎁
 Monitors **free items** ("Annataan" = Given away for free)
 - Port: 8788
 - Run with: `python3 toribot.py`
-- See: http://127.0.0.1:8788
+- v1 GUI: http://127.0.0.1:8788
+- **v2 GUI: http://127.0.0.1:8788/v2** ⭐
 
 ### 2. Tori Ostobotti 💰
 Monitors **wanted/buying requests** ("Ostetaan" = Wanted to buy)
 - Port: 8789
 - Run with: `python3 ostobotti.py`
-- See: http://127.0.0.1:8789
+- v1 GUI: http://127.0.0.1:8789
+- **v2 GUI: http://127.0.0.1:8789/v2** ⭐
 - Full documentation: [OSTOBOTTI_README.md](OSTOBOTTI_README.md)
 
 Both bots can run simultaneously without conflicts!
@@ -35,6 +49,48 @@ View data from both bots in one interface:
 - Shows real-time status for both
 
 See [CONTROLLER_README.md](CONTROLLER_README.md) for detailed documentation.
+
+## v2 Dashboard Features ⭐
+
+The new v2 dashboard provides a modern, professional interface:
+
+### 🎨 Design
+- **Dark/Light Themes**: Toggle between themes with one click
+- **Responsive Layout**: Works perfectly on desktop, tablet, and mobile
+- **Professional Components**: Cards, modals, toasts, badges, tables
+- **Smooth Animations**: Loading skeletons, transitions, hover effects
+
+### 📊 Dashboard
+- **KPI Cards**: Total products, new today, AI valuated, errors
+- **Quick Actions**: Fetch, valuate, refresh, export
+- **Recent Products**: Grid view with images and details
+- **Product Details**: Modal with full information and images
+
+### 🗂️ Products Page
+- **Advanced Filters**: Search, location, date, valuation status
+- **View Modes**: Toggle between grid and table view
+- **Pagination**: Navigate large datasets efficiently
+- **Sorting (coming soon)**: Sort by various fields
+
+### ⚙️ Settings
+- **General**: Poll interval, timeout, retries
+- **Images**: Enable/disable downloads, max images
+- **OpenAI**: API key, model selection, interval
+- **Server**: Host and port configuration
+
+### 📝 Logs
+- **Log Viewer**: Monospace font log output
+- **Auto-scroll**: Toggle automatic scrolling
+- **Copy/Clear**: Copy logs to clipboard or clear view
+
+### 🔔 User Experience
+- **Toast Notifications**: Success/error messages for all actions
+- **Loading States**: Skeleton loaders while data loads
+- **Empty States**: Helpful messages when no data exists
+- **Error States**: Clear error messages with retry buttons
+- **Real-Time Status**: Live bot status in header
+
+See [CHANGELOG_V2.md](CHANGELOG_V2.md) for complete v2 documentation and technical details.
 
 ## Features
 
