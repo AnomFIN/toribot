@@ -175,10 +175,10 @@ const Dashboard = {
              style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: var(--space-md);"
              onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
         <h4 style="font-size: var(--text-base); font-weight: 600; margin-bottom: var(--space-sm); color: var(--text-primary);">
-          ${UI.truncate(product.title, 50)}
+          ${UI.escapeHTML(UI.truncate(product.title || '', 50))}
         </h4>
         <p style="font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-sm);">
-          ${UI.truncate(product.description, 80)}
+          ${UI.escapeHTML(UI.truncate(product.description || '', 80))}
         </p>
         <div style="display: flex; justify-content: space-between; align-items: center; font-size: var(--text-xs); color: var(--text-muted);">
           <span><i class="fas fa-map-marker-alt"></i> ${product.location || 'N/A'}</span>
