@@ -266,16 +266,19 @@ const Dashboard = {
       if (res.success) {
         toast.success(res.message || 'Products fetched successfully');
         
-        // Refresh data after a delay
-        setTimeout(async () => {
-          const productsRes = await api.getProducts();
-          if (productsRes.success) {
-            state.set('products', productsRes.products || []);
-            state.calculateStats();
-            this.renderStats();
-            this.renderRecentProducts();
+        // Immediately refresh data after fetch
+        const productsRes = await api.getProducts();
+        if (productsRes.success) {
+          state.set('products', productsRes.products || []);
+          state.calculateStats();
+          this.renderStats();
+          this.renderRecentProducts();
+
+          // If user is on Products page, refresh that view as well
+          if (state.currentPage === 'products' && typeof Products !== 'undefined' && typeof Products.renderTable === 'function') {
+            Products.renderTable();
           }
-        }, 2000);
+        }
       } else {
         toast.error(res.error || 'Failed to fetch products');
       }
