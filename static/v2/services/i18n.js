@@ -96,7 +96,7 @@ const i18n = {
       'settings.openai.valuationInterval': 'Arviointiväli (min)',
       'settings.images': 'Kuvien lataus',
       'settings.images.enabled': 'Lataa kuvat',
-      'settings.images.maxPerItem': 'Max kuvia per tuote',
+      'settings.images.maxPerItem': 'Kuvia enintään',
       'settings.save': 'Tallenna asetukset',
       'settings.cancel': 'Peruuta',
       'settings.saved': 'Asetukset tallennettu',
