@@ -216,7 +216,7 @@ const Products = {
                   </div>
                 </div>
               </td>
-              <td>${p.location || 'N/A'}</td>
+              <td>${(p.location || 'N/A').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
               <td>${UI.formatPrice(p.price)}</td>
               <td>${UI.formatDate(p.discovered_at)}</td>
               <td>${UI.createStatusBadge(p.valuation?.status || 'pending')}</td>
