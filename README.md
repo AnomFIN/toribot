@@ -70,7 +70,7 @@ The new v2 dashboard provides a modern, professional interface:
 - **Advanced Filters**: Search, location, date, valuation status
 - **View Modes**: Toggle between grid and table view
 - **Pagination**: Navigate large datasets efficiently
-- **Sorting**: Sort by various fields
+- **Sorting (coming soon)**: Sort by various fields
 
 ### ⚙️ Settings
 - **General**: Poll interval, timeout, retries
