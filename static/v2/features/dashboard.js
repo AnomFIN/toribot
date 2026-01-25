@@ -214,7 +214,7 @@ const Dashboard = {
       ? `
         <div style="background: var(--surface-hover); padding: var(--space-md); border-radius: var(--radius-md); margin-top: var(--space-md);">
           <h4 style="margin-bottom: var(--space-sm);"><i class="fas fa-brain"></i> AI Valuation</h4>
-          <p style="white-space: pre-wrap;">${product.valuation.response || 'No response'}</p>
+          <p style="white-space: pre-wrap;">${UI.escapeHTML(product.valuation.response || 'No response')}</p>
         </div>
       `
       : '<p style="color: var(--text-muted); margin-top: var(--space-md);">No AI valuation yet</p>';
