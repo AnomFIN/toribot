@@ -83,13 +83,17 @@ const UI = {
    * Create error state
    */
   createErrorState(title, message, onRetry = null) {
+    const retryAttr = onRetry != null
+      ? ` data-retry-id="${this.escapeHTML(String(onRetry))}"`
+      : '';
+
     return `
       <div class="error-state">
         <div class="error-state-icon"><i class="fas fa-exclamation-circle"></i></div>
         <div class="error-state-title">${title}</div>
         <div class="error-state-message">${message}</div>
         ${onRetry ? `
-          <button class="btn btn-primary mt-md" onclick="${onRetry}">
+          <button class="btn btn-primary mt-md" type="button"${retryAttr}>
             <i class="fas fa-redo"></i> Retry
           </button>
         ` : ''}
