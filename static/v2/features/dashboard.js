@@ -186,8 +186,8 @@ const Dashboard = {
       : '';
     
     // Get worth value
-    const worth = product.valuation?.price_current || product.valuation?.price_estimate;
-    const worthDisplay = worth 
+    const worth = product.valuation?.price_current ?? product.valuation?.price_estimate;
+    const worthDisplay = worth != null
       ? `<div style="font-size: var(--text-sm); color: var(--primary); font-weight: 600; margin-top: var(--space-xs);">
            <i class="fas fa-tag"></i> ${i18n.t('product.worth')}: ~${worth}€
          </div>`
