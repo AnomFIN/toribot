@@ -10,8 +10,8 @@ const Dashboard = {
   render(container) {
     container.innerHTML = `
       <div class="content-header">
-        <h2 class="content-title">Dashboard</h2>
-        <p class="content-description">Overview of your Tori.fi monitoring bot</p>
+        <h2 class="content-title">${i18n.t('dashboard.title')}</h2>
+        <p class="content-description">${i18n.t('dashboard.description')}</p>
       </div>
 
       <!-- Stats Grid -->
@@ -22,21 +22,21 @@ const Dashboard = {
       <!-- Quick Actions -->
       <div class="card mt-lg">
         <div class="card-header">
-          <h3 class="card-title">Quick Actions</h3>
+          <h3 class="card-title">${i18n.t('dashboard.quickActions')}</h3>
         </div>
         <div class="card-body">
           <div style="display: flex; gap: var(--space-md); flex-wrap: wrap;">
             <button class="btn btn-primary" onclick="Dashboard.fetchProducts()">
-              <i class="fas fa-sync-alt"></i> Fetch New Products
+              <i class="fas fa-sync-alt"></i> ${i18n.t('dashboard.fetchProducts')}
             </button>
             <button class="btn btn-primary" onclick="Dashboard.triggerValuation()">
-              <i class="fas fa-brain"></i> Run AI Valuation
+              <i class="fas fa-brain"></i> ${i18n.t('dashboard.runValuation')}
             </button>
             <button class="btn btn-secondary" onclick="Dashboard.refreshAll()">
-              <i class="fas fa-redo"></i> Refresh All Products
+              <i class="fas fa-redo"></i> ${i18n.t('dashboard.refreshAll')}
             </button>
             <button class="btn btn-secondary" onclick="Dashboard.saveProducts()">
-              <i class="fas fa-download"></i> Export to CSV
+              <i class="fas fa-download"></i> ${i18n.t('dashboard.exportCSV')}
             </button>
           </div>
         </div>
@@ -45,9 +45,9 @@ const Dashboard = {
       <!-- Recent Products -->
       <div class="card mt-lg">
         <div class="card-header">
-          <h3 class="card-title">Recent Products</h3>
+          <h3 class="card-title">${i18n.t('dashboard.recentProducts')}</h3>
           <button class="btn btn-sm btn-secondary" onclick="app.navigate('products')">
-            View All <i class="fas fa-arrow-right"></i>
+            ${i18n.t('dashboard.viewAll')} <i class="fas fa-arrow-right"></i>
           </button>
         </div>
         <div class="card-body">
@@ -91,25 +91,25 @@ const Dashboard = {
       {
         icon: 'fa-box',
         value: stats.total,
-        label: 'Total Products',
+        label: i18n.t('dashboard.stats.total'),
         color: 'primary',
       },
       {
         icon: 'fa-sparkles',
         value: stats.newToday,
-        label: 'New Today',
+        label: i18n.t('dashboard.stats.newToday'),
         color: 'info',
       },
       {
         icon: 'fa-brain',
         value: stats.withValuation,
-        label: 'AI Valuated',
+        label: i18n.t('dashboard.stats.withValuation'),
         color: 'success',
       },
       {
         icon: 'fa-exclamation-triangle',
         value: stats.errors,
-        label: 'Errors',
+        label: i18n.t('dashboard.stats.errors'),
         color: 'warning',
       },
     ];
@@ -139,9 +139,9 @@ const Dashboard = {
     if (products.length === 0) {
       container.innerHTML = UI.createEmptyState(
         '<i class="fas fa-box-open"></i>',
-        'No products yet',
-        'Start by fetching products from Tori.fi',
-        '<button class="btn btn-primary" onclick="Dashboard.fetchProducts()"><i class="fas fa-sync-alt"></i> Fetch Products</button>'
+        i18n.t('dashboard.noProducts'),
+        i18n.t('dashboard.noProductsDesc'),
+        `<button class="btn btn-primary" onclick="Dashboard.fetchProducts()"><i class="fas fa-sync-alt"></i> ${i18n.t('dashboard.fetchProducts')}</button>`
       );
       return;
     }
@@ -182,7 +182,15 @@ const Dashboard = {
     
     const hasValuation = product.valuation?.status === 'completed';
     const valuationBadge = hasValuation 
-      ? `<span class="badge badge-success"><i class="fas fa-check"></i> Valuated</span>`
+      ? `<span class="badge badge-success"><i class="fas fa-check"></i> ${i18n.t('products.valuated')}</span>`
+      : '';
+    
+    // Get worth value
+    const worth = product.valuation?.price_current ?? product.valuation?.price_estimate;
+    const worthDisplay = worth != null
+      ? `<div style="font-size: var(--text-sm); color: var(--primary); font-weight: 600; margin-top: var(--space-xs);">
+           <i class="fas fa-tag"></i> ${i18n.t('product.worth')}: ~${worth}€
+         </div>`
       : '';
 
     return `
@@ -204,6 +212,7 @@ const Dashboard = {
           <span><i class="fas fa-map-marker-alt"></i> ${UI.escapeHTML(product.location || 'N/A')}</span>
           <span>${UI.formatDate(product.discovered_at)}</span>
         </div>
+        ${worthDisplay}
         ${valuationBadge ? `<div style="margin-top: var(--space-sm);">${valuationBadge}</div>` : ''}
       </div>
     `;
@@ -217,22 +226,25 @@ const Dashboard = {
     const product = products.find(p => p.id === productId);
     
     if (!product) {
-      toast.error('Product not found');
+      toast.error(i18n.t('product.notFound'));
       return;
     }
 
     const images = product.image_files?.map(img => 
       `<img src="/images/${img}" style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm);" onerror="this.style.display='none'">`
-    ).join('') || '<p style="color: var(--text-muted);">No images available</p>';
+    ).join('') || `<p style="color: var(--text-muted);">${i18n.t('product.noImages')}</p>`;
+
+    const worth = product.valuation?.price_current ?? product.valuation?.price_estimate;
 
     const valuation = product.valuation?.status === 'completed'
       ? `
         <div style="background: var(--surface-hover); padding: var(--space-md); border-radius: var(--radius-md); margin-top: var(--space-md);">
-          <h4 style="margin-bottom: var(--space-sm);"><i class="fas fa-brain"></i> AI Valuation</h4>
+          <h4 style="margin-bottom: var(--space-sm);"><i class="fas fa-brain"></i> ${i18n.t('product.valuation')}</h4>
+          ${worth ? `<p style="font-size: var(--text-lg); color: var(--primary); font-weight: 600; margin-bottom: var(--space-sm);"><i class="fas fa-tag"></i> ${i18n.t('product.worth')}: ~${worth}€</p>` : ''}
           <p style="white-space: pre-wrap;">${UI.escapeHTML(product.valuation.response || 'No response')}</p>
         </div>
       `
-      : '<p style="color: var(--text-muted); margin-top: var(--space-md);">No AI valuation yet</p>';
+      : `<p style="color: var(--text-muted); margin-top: var(--space-md);">${i18n.t('product.noValuation')}</p>`;
 
     const content = `
       <div style="max-height: 70vh; overflow-y: auto;">
@@ -240,23 +252,23 @@ const Dashboard = {
           ${images}
         </div>
         <h3 style="margin-bottom: var(--space-sm);">${UI.escapeHTML(product.title)}</h3>
-        <p style="color: var(--text-secondary); margin-bottom: var(--space-md);">${UI.escapeHTML(product.description || 'No description')}</p>
+        <p style="color: var(--text-secondary); margin-bottom: var(--space-md);">${UI.escapeHTML(product.description || i18n.t('product.noDescription'))}</p>
         
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-md); margin-bottom: var(--space-md);">
           <div>
-            <strong>Location:</strong><br>
+            <strong>${i18n.t('product.location')}:</strong><br>
             <span style="color: var(--text-secondary);">${UI.escapeHTML(product.location || 'N/A')}</span>
           </div>
           <div>
-            <strong>Seller:</strong><br>
+            <strong>${i18n.t('product.seller')}:</strong><br>
             <span style="color: var(--text-secondary);">${UI.escapeHTML(product.seller || 'N/A')}</span>
           </div>
           <div>
-            <strong>Discovered:</strong><br>
+            <strong>${i18n.t('product.discovered')}:</strong><br>
             <span style="color: var(--text-secondary);">${UI.formatDate(product.discovered_at)}</span>
           </div>
           <div>
-            <strong>Price:</strong><br>
+            <strong>${i18n.t('product.price')}:</strong><br>
             <span style="color: var(--text-secondary);">${UI.formatPrice(product.price)}</span>
           </div>
         </div>
@@ -266,9 +278,9 @@ const Dashboard = {
     `;
 
     const footer = `
-      <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Close</button>
+      <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">${i18n.t('product.close')}</button>
       <a href="${UI.escapeHTML(product.url)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
-        <i class="fas fa-external-link-alt"></i> View on Tori.fi
+        <i class="fas fa-external-link-alt"></i> ${i18n.t('product.viewOnTori')}
       </a>
     `;
 

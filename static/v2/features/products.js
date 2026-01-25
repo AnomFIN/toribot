@@ -12,8 +12,8 @@ const Products = {
   render(container) {
     container.innerHTML = `
       <div class="content-header">
-        <h2 class="content-title">Products</h2>
-        <p class="content-description">Browse and manage discovered products</p>
+        <h2 class="content-title">${i18n.t('products.title')}</h2>
+        <p class="content-description">${i18n.t('products.description')}</p>
       </div>
 
       <!-- Filters -->
@@ -21,43 +21,43 @@ const Products = {
         <div class="card-body">
           <div class="grid grid-cols-4">
             <div class="input-group">
-              <label class="input-label">Search</label>
-              <input type="text" class="input" placeholder="Search products..." 
+              <label class="input-label">${i18n.t('products.filter.search')}</label>
+              <input type="text" class="input" placeholder="${i18n.t('products.filter.search')}..." 
                      id="filter-search" value="${state.get('filters.search') || ''}">
             </div>
             <div class="input-group">
-              <label class="input-label">Location</label>
-              <input type="text" class="input" placeholder="Location" 
+              <label class="input-label">${i18n.t('products.filter.location')}</label>
+              <input type="text" class="input" placeholder="${i18n.t('products.filter.location')}" 
                      id="filter-location" value="${state.get('filters.location') || ''}">
             </div>
             <div class="input-group">
-              <label class="input-label">Date From</label>
+              <label class="input-label">${i18n.t('products.filter.dateFrom')}</label>
               <input type="date" class="input" id="filter-date-from" 
                      value="${state.get('filters.dateFrom') || ''}">
             </div>
             <div class="input-group">
-              <label class="input-label">Has Valuation</label>
+              <label class="input-label">${i18n.t('products.filter.hasValuation')}</label>
               <select class="select" id="filter-valuation">
-                <option value="">All</option>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
+                <option value="">${i18n.t('products.filter.all')}</option>
+                <option value="true">${i18n.t('products.filter.yes')}</option>
+                <option value="false">${i18n.t('products.filter.no')}</option>
               </select>
             </div>
           </div>
           <div style="margin-top: var(--space-md); display: flex; gap: var(--space-sm);">
             <button class="btn btn-primary" onclick="Products.applyFilters()">
-              <i class="fas fa-filter"></i> Apply Filters
+              <i class="fas fa-filter"></i> ${i18n.t('products.filter.apply')}
             </button>
             <button class="btn btn-secondary" onclick="Products.clearFilters()">
-              <i class="fas fa-times"></i> Clear
+              <i class="fas fa-times"></i> ${i18n.t('products.filter.clear')}
             </button>
             <div style="margin-left: auto; display: flex; gap: var(--space-sm);">
               <button class="btn btn-secondary btn-icon" onclick="Products.setViewMode('grid')" 
-                      title="Grid view" id="view-grid">
+                      title="${i18n.t('products.viewGrid')}" id="view-grid">
                 <i class="fas fa-th"></i>
               </button>
               <button class="btn btn-secondary btn-icon" onclick="Products.setViewMode('table')" 
-                      title="Table view" id="view-table">
+                      title="${i18n.t('products.viewTable')}" id="view-table">
                 <i class="fas fa-list"></i>
               </button>
             </div>
@@ -187,9 +187,9 @@ const Products = {
     if (products.length === 0) {
       container.innerHTML = UI.createEmptyState(
         '<i class="fas fa-box-open"></i>',
-        'No products found',
-        'Try adjusting your filters or fetch new products',
-        '<button class="btn btn-primary" onclick="Dashboard.fetchProducts()"><i class="fas fa-sync-alt"></i> Fetch Products</button>'
+        i18n.t('products.noFound'),
+        i18n.t('products.noFoundDesc'),
+        `<button class="btn btn-primary" onclick="Dashboard.fetchProducts()"><i class="fas fa-sync-alt"></i> ${i18n.t('dashboard.fetchProducts')}</button>`
       );
       this.renderPagination();
       return;
@@ -224,16 +224,19 @@ const Products = {
       <table class="table">
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Location</th>
-            <th>Price</th>
-            <th>Discovered</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>${i18n.t('products.table.title')}</th>
+            <th>${i18n.t('products.table.location')}</th>
+            <th>${i18n.t('products.table.price')}</th>
+            <th>${i18n.t('products.table.worth')}</th>
+            <th>${i18n.t('products.table.discovered')}</th>
+            <th>${i18n.t('products.table.status')}</th>
+            <th>${i18n.t('products.table.actions')}</th>
           </tr>
         </thead>
         <tbody>
-          ${products.map(p => `
+          ${products.map(p => {
+            const worth = p.valuation?.price_current || p.valuation?.price_estimate;
+            return `
             <tr>
               <td>
                 <div style="display: flex; align-items: center; gap: var(--space-sm);">
@@ -250,22 +253,23 @@ const Products = {
               </td>
               <td>${UI.escapeHTML(p.location || 'N/A')}</td>
               <td>${UI.formatPrice(p.price)}</td>
+              <td>${worth != null ? `~${worth}€` : '-'}</td>
               <td>${UI.formatDate(p.discovered_at)}</td>
               <td>${UI.createStatusBadge(p.valuation?.status || 'pending')}</td>
               <td>
                 <div style="display: flex; gap: var(--space-xs);">
                   <button class="btn btn-sm btn-secondary product-detail-btn" data-product-id="${UI.escapeHTML(p.id)}" 
-                          title="View details">
+                          title="${i18n.t('products.viewDetails')}">
                     <i class="fas fa-eye"></i>
                   </button>
                   <a href="${UI.escapeHTML(p.url)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-secondary" 
-                     title="Open on Tori.fi">
+                     title="${i18n.t('products.openTori')}">
                     <i class="fas fa-external-link-alt"></i>
                   </a>
                 </div>
               </td>
             </tr>
-          `).join('')}
+          `}).join('')}
         </tbody>
       </table>
     `;

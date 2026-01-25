@@ -518,3 +518,40 @@
 .spinning {
   animation: spin 1s linear infinite;
 }
+
+/* Language Toggle Component */
+.language-toggle {
+  display: flex;
+  gap: var(--space-xs);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-xs);
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xs) var(--space-sm);
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--text-lg);
+}
+
+.lang-btn:hover {
+  background: var(--surface-hover);
+}
+
+.lang-btn.active {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.flag-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
