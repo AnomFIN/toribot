@@ -139,9 +139,9 @@ const Dashboard = {
     if (products.length === 0) {
       container.innerHTML = UI.createEmptyState(
         '<i class="fas fa-box-open"></i>',
-        'No products yet',
-        'Start by fetching products from Tori.fi',
-        '<button class="btn btn-primary" onclick="Dashboard.fetchProducts()"><i class="fas fa-sync-alt"></i> Fetch Products</button>'
+        i18n.t('dashboard.noProducts'),
+        i18n.t('dashboard.noProductsDesc'),
+        `<button class="btn btn-primary" onclick="Dashboard.fetchProducts()"><i class="fas fa-sync-alt"></i> ${i18n.t('dashboard.fetchProducts')}</button>`
       );
       return;
     }
