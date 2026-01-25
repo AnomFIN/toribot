@@ -296,7 +296,7 @@ const i18n = {
   init() {
     // Load saved language preference or default to Finnish
     const savedLang = localStorage.getItem('language');
-    this.currentLang = savedLang || 'fi';
+    this.currentLang = (savedLang && this.translations[savedLang]) ? savedLang : 'fi';
     
     console.log(`🌐 i18n initialized with language: ${this.currentLang}`);
   },
