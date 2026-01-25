@@ -396,24 +396,53 @@ class ProductExtractor:
                 else:
                     errors.append("Seller info not available (login required)")
             
-            # Images - improved extraction with multiple patterns
+            # Images - improved extraction with strict validation
             images = []
             image_patterns = [
-                r'"image"\s*:\s*"(https://[^"]+)"',
-                r'"imageUrl"\s*:\s*"(https://[^"]+)"',
-                r'src="(https://[^"]*tori[^"]*\.(jpg|jpeg|png|webp)[^"]*)"|src="(https://[^"]*image[^"]*\.(jpg|jpeg|png|webp)[^"]*)"'
+                # Primary product image patterns (high priority)
+                r'"mainImage"\s*:\s*"(https://[^"]+\.(?:jpg|jpeg|png|webp)[^"]*)"',
+                r'"imageUrl"\s*:\s*"(https://[^"]+\.(?:jpg|jpeg|png|webp)[^"]*)"',
+                r'"productImage"\s*:\s*"(https://[^"]+\.(?:jpg|jpeg|png|webp)[^"]*)"',
+                
+                # Gallery patterns (medium priority)
+                r'data-src="(https://[^"]*(?:images|img)[^"]*\.(?:jpg|jpeg|png|webp)[^"]*)"',
+                r'src="(https://[^"]*(?:images|img)[^"]*\.(?:jpg|jpeg|png|webp)[^"]*)"',
+                
+                # Fallback patterns (low priority)
+                r'"image"\s*:\s*"(https://[^"]+\.(?:jpg|jpeg|png|webp)[^"]*)"',
+            ]
+            
+            # Filter patterns to avoid ads and UI elements
+            ad_patterns = [
+                r'banner', r'advertisement', r'promo', r'logo', r'icon',
+                r'avatar', r'thumbnail', r'watermark', r'overlay'
             ]
             
             for pattern in image_patterns:
                 img_matches = re.findall(pattern, html, re.IGNORECASE)
-                for match_groups in img_matches:
-                    # Handle different regex group structures
-                    img_url = match_groups[0] if isinstance(match_groups, tuple) else match_groups
-                    if img_url and img_url.startswith('https://'):
+                for match in img_matches:
+                    img_url = match if isinstance(match, str) else match[0]
+                    
+                    # Validate image URL
+                    if (img_url and 
+                        img_url.startswith('https://') and
+                        # Ensure it's from a trusted domain
+                        ('tori.fi' in img_url or 'tor.se' in img_url or 'images' in img_url) and
+                        # Avoid ad/UI images
+                        not any(ad_term in img_url.lower() for ad_term in ad_patterns) and
+                        # Must have proper image extension
+                        re.search(r'\.(jpg|jpeg|png|webp)(\?|$)', img_url, re.IGNORECASE)):
+                        
                         images.append(img_url)
             
-            # Remove duplicates and limit to 5
-            images = list(set(images))[:5]
+            # Remove duplicates while preserving order, limit to 5
+            seen = set()
+            unique_images = []
+            for img in images:
+                if img not in seen and len(unique_images) < 5:
+                    seen.add(img)
+                    unique_images.append(img)
+            images = unique_images
             
             if not images:
                 errors.append("No images found")

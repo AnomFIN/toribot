@@ -1776,6 +1776,67 @@
             }
         });
         
+        // Test Tori.fi login
+        const testLoginBtn = document.getElementById('test-login-btn');
+        if (testLoginBtn && !testLoginBtn.dataset.listenerAdded) {
+            testLoginBtn.dataset.listenerAdded = 'true';
+            testLoginBtn.addEventListener('click', async () => {
+                const btn = document.getElementById('test-login-btn');
+                const originalText = btn.textContent;
+                const testingText = currentLanguage === 'fi' ? '⏳ Testataan...' : '⏳ Testing...';
+                
+                btn.disabled = true;
+                btn.textContent = testingText;
+                
+                const username = document.getElementById('tori_username').value.trim();
+                const password = document.getElementById('tori_password').value.trim();
+                
+                if (!username || !password) {
+                    const errorMsg = currentLanguage === 'fi' ? 
+                        'Syötä käyttäjätunnus ja salasana ensin' : 
+                        'Please enter username and password first';
+                    showSettingsMessage(errorMsg, 'error');
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/test-login', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        const successMsg = currentLanguage === 'fi' ? 
+                            '✅ Kirjautuminen onnistui! Tunnukset ovat kunnossa.' : 
+                            '✅ Login successful! Credentials are valid.';
+                        showSettingsMessage(successMsg, 'success');
+                    } else {
+                        const errorMsg = currentLanguage === 'fi' ? 
+                            '❌ Kirjautuminen epäonnistui. Tarkista tunnukset.' : 
+                            '❌ Login failed. Please check your credentials.';
+                        showSettingsMessage(errorMsg, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error testing login:', error);
+                    const errorMsg = currentLanguage === 'fi' ? 
+                        '❌ Virhe kirjautumistestissä' : 
+                        '❌ Error testing login';
+                    showSettingsMessage(errorMsg, 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+            });
+        }
+        
         // Test Telegram connection
         const testTelegramBtn = document.getElementById('test-telegram-btn');
         if (testTelegramBtn && !testTelegramBtn.dataset.listenerAdded) {

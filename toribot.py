@@ -24,7 +24,7 @@ PRODUCTS_FILE = "products.json"
 SETTINGS_FILE = "settings.json"
 DEBUG_DIR = "debug"
 IMAGES_DIR = "images"
-GUI_FILE = "gui.html"
+GUI_FILE = "index.html"
 
 # Default settings for Annataan Bot
 DEFAULT_SETTINGS = {
@@ -99,20 +99,14 @@ bot = None
 
 @app.route('/')
 def index():
-    """Serve main GUI"""
+    """Serve main page (now V2)"""
     return send_from_directory('.', GUI_FILE)
 
 
-@app.route('/gui.html')
-def gui():
-    """Serve GUI HTML file"""
-    return send_from_directory('.', GUI_FILE)
-
-
-@app.route('/styles.css')
-def styles():
-    """Serve CSS"""
-    return send_from_directory('.', 'styles.css')
+@app.route('/favicon.ico')
+def favicon():
+    """Serve favicon"""
+    return send_from_directory('.', 'logotp.png')
 
 
 @app.route('/api/products')
@@ -181,17 +175,48 @@ def serve_image(filename):
     return send_from_directory(IMAGES_DIR, filename)
 
 
-@app.route('/v2')
-@app.route('/v2/')
-def v2_index():
-    """Serve v2 GUI"""
-    return send_from_directory('static/v2', 'index.html')
+@app.route('/old')
+@app.route('/old/')
+def old_index():
+    """Serve old GUI"""
+    return send_from_directory('old', 'gui.html')
 
 
-@app.route('/static/v2/<path:path>')
-def serve_v2_static(path):
-    """Serve v2 static files"""
-    return send_from_directory('static/v2', path)
+@app.route('/old/<path:path>')
+def serve_old_files(path):
+    """Serve old static files"""
+    return send_from_directory('old', path)
+
+
+# Serve V2 as main (now at root)
+@app.route('/styles/<path:path>')
+def serve_styles(path):
+    """Serve style files"""
+    return send_from_directory('styles', path)
+
+
+@app.route('/services/<path:path>')
+def serve_services(path):
+    """Serve service files"""
+    return send_from_directory('services', path)
+
+
+@app.route('/features/<path:path>')
+def serve_features(path):
+    """Serve feature files"""
+    return send_from_directory('features', path)
+
+
+@app.route('/app.js')
+def serve_app_js():
+    """Serve main app file"""
+    return send_from_directory('.', 'app.js')
+
+
+@app.route('/config.json')
+def serve_config():
+    """Serve config file"""
+    return send_from_directory('.', 'config.json')
 
 
 @app.route('/api/health')
@@ -359,6 +384,63 @@ def fetch_images():
             return jsonify({"success": False, "error": "Bot not initialized"}), 500
     except Exception as e:
         logger.error(f"Error triggering image fetch: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/test-login', methods=['POST'])
+def test_login():
+    """Test Tori.fi login credentials"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "error": "No data provided"}), 400
+        
+        username = data.get('username', '').strip()
+        password = data.get('password', '').strip()
+        
+        if not username or not password:
+            return jsonify({"success": False, "error": "Username and password required"}), 400
+        
+        # Use the bot's fetcher to test login
+        if not bot or not bot.fetcher:
+            return jsonify({"success": False, "error": "Bot not initialized"}), 500
+        
+        # Save current credentials temporarily
+        current_settings = bot.settings_manager.get_settings()
+        original_login = current_settings.get('tori_login', {})
+        
+        # Set test credentials
+        test_settings = current_settings.copy()
+        test_settings['tori_login'] = {
+            'enabled': True,
+            'username': username,
+            'password': password,
+            'remember_session': True
+        }
+        bot.settings_manager.set_settings(test_settings)
+        
+        # Test login
+        login_success = bot.fetcher.login_if_configured()
+        
+        # Restore original credentials
+        current_settings['tori_login'] = original_login
+        bot.settings_manager.set_settings(current_settings)
+        
+        if login_success:
+            logger.info(f"Login test successful for user: {username}")
+            return jsonify({
+                "success": True, 
+                "message": "Login successful! Credentials are valid."
+            })
+        else:
+            logger.warning(f"Login test failed for user: {username}")
+            return jsonify({
+                "success": False, 
+                "error": "Login failed. Please check your credentials."
+            })
+            
+    except Exception as e:
+        logger.error(f"Error testing login: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 
