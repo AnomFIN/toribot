@@ -1061,11 +1061,22 @@
                 const existingNotes = logsContainer.querySelectorAll('.log-note');
                 const logLine = document.createElement('div');
                 logLine.className = 'log-line';
-                logLine.innerHTML = `
-                    <span class="log-timestamp">[${timestamp}]</span>
-                    <span class="log-level ${randomLog.color}">[${randomLog.level}]</span>
-                    <span class="log-message">${randomLog.message}</span>
-                `;
+
+                const timestampSpan = document.createElement('span');
+                timestampSpan.className = 'log-timestamp';
+                timestampSpan.textContent = `[${timestamp}]`;
+
+                const levelSpan = document.createElement('span');
+                levelSpan.className = `log-level ${randomLog.color}`;
+                levelSpan.textContent = `[${randomLog.level}]`;
+
+                const messageSpan = document.createElement('span');
+                messageSpan.className = 'log-message';
+                messageSpan.textContent = randomLog.message;
+
+                logLine.appendChild(timestampSpan);
+                logLine.appendChild(levelSpan);
+                logLine.appendChild(messageSpan);
                 
                 // Insert before the notes
                 if (existingNotes.length > 0) {
