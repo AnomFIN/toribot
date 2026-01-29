@@ -1174,9 +1174,10 @@
             const clearMessage = document.createElement('div');
             clearMessage.className = 'log-line';
             
+            const locale = currentLanguage === 'fi' ? 'fi-FI' : 'en-US';
             const timestamp = document.createElement('span');
             timestamp.className = 'log-timestamp';
-            timestamp.textContent = `[${new Date().toLocaleTimeString('fi-FI')}]`;
+            timestamp.textContent = `[${new Date().toLocaleTimeString(locale)}]`;
             
             const level = document.createElement('span');
             level.className = 'log-level log-info';
