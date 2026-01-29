@@ -308,13 +308,14 @@ body {
 .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto 1fr auto;
+    grid-template-rows: auto auto 1fr auto auto;
     gap: 30px;
     grid-template-areas:
         "stats stats"
         "actions actions"
         "recent status"
-        "recent status";
+        "recent status"
+        "logs logs";
 }
 
 .stats-grid {
@@ -1159,7 +1160,8 @@ td {
             "stats"
             "actions"
             "recent"
-            "status";
+            "status"
+            "logs";
     }
     
     .stats-grid {
@@ -1213,6 +1215,7 @@ td {
 
 /* Real-time Logs Styles */
 .real-time-logs {
+    grid-area: logs;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
     padding: 20px;
