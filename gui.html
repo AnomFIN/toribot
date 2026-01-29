@@ -642,6 +642,7 @@
                 logs: 'Logit',
                 view_logs: 'Näytä logit',
                 clear_logs: 'Tyhjennä logit',
+                logs_cleared: 'Logit tyhjennetty käyttäjän toimesta',
                 logs_description: 'Botin toiminta ja tapahtumat',
                 real_time_logs: 'Reaaliaikaiset logit',
                 export_data: 'Vie tiedot',
@@ -770,6 +771,7 @@
                 logs: 'Logs',
                 view_logs: 'View Logs',
                 clear_logs: 'Clear Logs',
+                logs_cleared: 'Logs cleared by user action',
                 logs_description: 'Bot activity and events',
                 real_time_logs: 'Real-time Logs',
                 export_data: 'Export Data',
@@ -1045,7 +1047,8 @@
             if (!logsContainer) return;
             
             const now = new Date();
-            const timestamp = now.toLocaleTimeString('fi-FI');
+            const locale = currentLanguage === 'fi' ? 'fi-FI' : 'en-US';
+            const timestamp = now.toLocaleTimeString(locale);
             
             // Simulate different log types based on current state
             const logTypes = [
@@ -1108,9 +1111,10 @@
             const clearMessage = document.createElement('div');
             clearMessage.className = 'log-line';
             
+            const locale = currentLanguage === 'fi' ? 'fi-FI' : 'en-US';
             const timestampSpan = document.createElement('span');
             timestampSpan.className = 'log-timestamp';
-            timestampSpan.textContent = `[${new Date().toLocaleTimeString('fi-FI')}]`;
+            timestampSpan.textContent = `[${new Date().toLocaleTimeString(locale)}]`;
             
             const levelSpan = document.createElement('span');
             levelSpan.className = 'log-level log-info';
@@ -1118,7 +1122,7 @@
             
             const messageSpan = document.createElement('span');
             messageSpan.className = 'log-message';
-            messageSpan.textContent = 'Logit tyhjennetty käyttäjän toimesta';
+            messageSpan.textContent = translations[currentLanguage].logs_cleared;
             
             clearMessage.appendChild(timestampSpan);
             clearMessage.appendChild(levelSpan);
