@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎁 Tori Annataan Bot - Dashboard</title>
+    <title>💰 Tori Ostobotti - Dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -13,7 +13,7 @@
     <!-- Sidebar Navigation -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h2>🎁 ToriBot</h2>
+            <h2>💰 Ostobotti</h2>
             <button class="sidebar-toggle" id="sidebar-toggle">
                 <i class="fas fa-bars"></i>
             </button>
@@ -35,7 +35,7 @@
             <li>
                 <a href="#" class="nav-link" data-page="products-list">
                     <i class="fas fa-list"></i>
-                    <span data-i18n="products_list">Liistanäkymä</span>
+                    <span data-i18n="products_list">Listanäkymä</span>
                 </a>
             </li>
             <li>
@@ -210,58 +210,6 @@
                             <i class="fas fa-brain status-icon"></i>
                             <span data-i18n="openai_status">OpenAI:</span>
                             <span class="status-value" id="openai-status">-</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Real-time Logs -->
-                <div class="real-time-logs">
-                    <div class="logs-header">
-                        <h3 data-i18n="real_time_logs">Reaaliaikaiset logit</h3>
-                        <div class="logs-actions">
-                            <button class="btn btn-secondary btn-sm" id="refresh-logs-btn">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                            <button class="btn btn-secondary btn-sm" id="clear-logs-btn">
-                                <i class="fas fa-trash"></i>
-                                <span data-i18n="clear_logs">Tyhjennä</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="logs-container" id="logs-container">
-                        <div class="log-line">
-                            <span class="log-timestamp">[Käynnistettiin]</span>
-                            <span class="log-level log-info">[INFO]</span>
-                            <span class="log-message">ToriBot käynnissä - seurataan Tori.fi ilmaisia tuotteita...</span>
-                        </div>
-                        <div class="log-note">
-                            <i class="fas fa-info-circle"></i>
-                            <span data-i18n="logs_description">Reaaliaikaiset logit näkyvät täällä kun botti on aktiivinen</span>
-                        </div>
-                        <div class="log-note">
-                            <i class="fas fa-folder-open"></i>
-                            <span>Yksityiskohtaiset logit: debug/ kansiossa</span>
-                        </div>
-                        <div class="log-info-section">
-                            <h4><i class="fas fa-question-circle"></i> Reaaliaikaisen streaming tietoa</h4>
-                            <p><strong>Nykyinen tilanne:</strong> Simuloidut logit (demo-tilassa)</p>
-                            <p><strong>Reaaliaikainen streaming vaatii:</strong></p>
-                            <ul>
-                                <li>🔗 WebSocket-yhteys backend-palvelimeen</li>
-                                <li>📁 Reaaliaikainen debug/ kansion tiedostojen seuranta</li>
-                                <li>🔄 Log-streaming API endpoint (/api/logs/stream)</li>
-                                <li>⚡ Tail-toiminnallisuus log-tiedostoille</li>
-                            </ul>
-                            <p><strong>Implementointi edellyttää:</strong></p>
-                            <ul>
-                                <li>Backend muutoksia Python-koodiin (toribot.py)</li>
-                                <li>Uusia riippuvuuksia: python-socketio, watchdog</li>
-                                <li>Frontin WebSocket-asiakaskoodi</li>
-                            </ul>
-                            <p class="note-highlight">
-                                💡 <strong>Väliaikaisesti:</strong> Todellisia logeja voi seurata debug/ kansiosta tai 
-                                käyttää terminal-komentoa: <code>tail -f debug/*.log</code>
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -555,7 +503,7 @@
                     </div>
                     <div class="form-group">
                         <label data-i18n="port">Portti:</label>
-                        <input type="number" id="server_port" min="1024" max="65535" value="8787">
+                        <input type="number" id="server_port" min="1024" max="65535" value="8789">
                         <small data-i18n="restart_required">Vaatii uudelleenkäynnistyksen</small>
                     </div>
                 </div>
@@ -672,11 +620,6 @@
                 total_estimated_value: 'Arvioitu kokonaisarvo',
                 total_images: 'Kuvia ladattu',
                 quick_actions: 'Pikavalinnat',
-                logs: 'Logit',
-                view_logs: 'Näytä logit',
-                clear_logs: 'Tyhjennä logit',
-                logs_description: 'Botin toiminta ja tapahtumat',
-                real_time_logs: 'Reaaliaikaiset logit',
                 export_data: 'Vie tiedot',
                 clear_old: 'Siivoa vanhat',
                 recent_products: 'Viimeisimmät tuotteet',
@@ -701,7 +644,7 @@
                 most_common_location: 'Yleisin sijainti',
                 success_rate: 'Arvostusprosentti',
                 loading: 'Ladataan...',
-                subtitle: 'Seurataan ilmaisia tuotteita Tori.fi palvelusta',
+                subtitle: 'Seurataan ostoilmoituksia Tori.fi palvelusta',
                 total_items: 'Tuotteita yhteensä:',
                 last_updated: 'Viimeksi päivitetty:',
                 never: 'Ei koskaan',
@@ -717,7 +660,7 @@
                 added: 'Lisätty',
                 link: 'Linkki',
                 loading_products: 'Ladataan tuotteita...',
-                no_products: 'Tuotteita ei löytynyt vielä. Botti aloittaa seurannan pian.',
+                no_products: 'Ostoilmoituksia ei löytynyt vielä. Botti aloittaa seurannan pian.',
                 bot_settings: 'Botin asetukset',
                 general_settings: 'Yleiset asetukset',
                 language: 'Kieli:',
@@ -796,125 +739,24 @@
                 test_telegram_desc: 'Lähetä testivesti Telegramiin'
             },
             en: {
-                dashboard: 'Kojelauta',
-                products: 'Tuotteet',
-                products_list: 'Listanäkymä',
-                analytics: 'Analytiikka',
-                settings: 'Asetukset',
-                refresh: 'Päivitä',
-                total_products: 'Tuotteita yhteensä',
-                valued_products: 'Arvostettuja tuotteita',
-                total_estimated_value: 'Arvioitu kokonaisarvo',
-                total_images: 'Kuvia ladattu',
-                quick_actions: 'Pikavalinnat',
-                logs: 'Logit',
-                view_logs: 'Näytä logit',
-                clear_logs: 'Tyhjennä logit',
-                logs_description: 'Botin toiminta ja tapahtumat',
-                real_time_logs: 'Reaaliaikaiset logit',
-                export_data: 'Vie tiedot',
-                clear_old: 'Poista vanhat',
-                recent_products: 'Viimeisimmät tuotteet',
-                system_status: 'Järjestelmän tila',
-                bot_status: 'Botin tila',
-                connection_status: 'Yhteys',
+                dashboard: 'Dashboard',
+                products: 'Products',
+                products_list: 'List View',
+                analytics: 'Analytics',
+                settings: 'Settings',
+                refresh: 'Refresh',
+                total_products: 'Total Products',
+                valued_products: 'Valued Products',
+                total_estimated_value: 'Total Estimated Value',
+                total_images: 'Images Downloaded',
+                quick_actions: 'Quick Actions',
+                export_data: 'Export Data',
+                clear_old: 'Clear Old',
+                recent_products: 'Recent Products',
+                system_status: 'System Status',
+                bot_status: 'Bot Status',
+                connection_status: 'Connection',
                 openai_status: 'OpenAI',
-                grid_view: 'Ruudukko',
-                list_view: 'Lista',
-                search_products: 'Hae tuotteita...',
-                newest: 'Uusimmat ensin',
-                oldest: 'Vanhimmat ensin',
-                valued: 'Arvostetuimmat',
-                price_high: 'Korkein arvo',
-                price_low: 'Matalin arvo',
-                actions: 'Toiminnot',
-                products_over_time: 'Tuotteet ajan myötä',
-                value_distribution: 'Arvojen jakauma',
-                detailed_statistics: 'Yksityiskohtaiset tilastot',
-                avg_value: 'Keskiarvo',
-                highest_value: 'Korkein arvo',
-                most_common_location: 'Yleisin sijainti',
-                success_rate: 'Arvostusprosentti',
-                loading: 'Ladataan...',
-                subtitle: 'Seurataan ilmaisia tuotteita Tori.fi palvelusta',
-                total_items: 'Tuotteita yhteensä:',
-                last_updated: 'Viimeksi päivitetty:',
-                never: 'Ei koskaan',
-                auto_refresh: 'Automaattipäivitys:',
-                run_valuations: '🤖 Suorita arvostukset',
-                fetch_images: '🖼️ Hae kuvat',
-                images: 'Kuvat',
-                title: 'Otsikko',
-                description: 'Kuvaus',
-                location: 'Sijainti',
-                seller: 'Myyjä',
-                valuation: 'Arvostus',
-                added: 'Lisätty',
-                link: 'Linkki',
-                loading_products: 'Ladataan tuotteita...',
-                no_products: 'Tuotteita ei löytynyt vielä. Botti aloittaa seurannan pian.',
-                bot_settings: 'Botin asetukset',
-                general_settings: 'Yleiset asetukset',
-                language: 'Kieli:',
-                poll_interval: 'Tarkistusväli (sekunnit):',
-                poll_interval_desc: 'Kuinka usein tarkistetaan uusia tuotteita (min: 10s)',
-                request_timeout: 'Pyyntöjen aikakatkaisu (sekunnit):',
-                max_retries: 'Uudelleenyritysten maksimimäärä:',
-                listing_url: 'Listauksen URL:',
-                image_settings: 'Kuvien asetukset',
-                enable_image_download: 'Aktivoi kuvien lataus',
-                max_images: 'Kuvia tuotetta kohden enintään:',
-                openai_settings: 'OpenAI asetukset',
-                enable_valuations: 'Aktivoi OpenAI arvostukset',
-                api_key: 'API-avain:',
-                api_key_desc: 'Tallennetaan turvallisesti settings.json tiedostoon',
-                model: 'Malli:',
-                base_url: 'Perus-URL:',
-                valuation_interval: 'Arvostusväli (minuutit):',
-                valuation_interval_desc: 'Kuinka usein automaattiset arvostukset suoritetaan',
-                server_settings: 'Palvelimen asetukset',
-                host: 'Isäntä:',
-                port: 'Portti:',
-                restart_required: 'Vaatii uudelleenkäynnistyksen',
-                save_settings: '💾 Tallenna asetukset',
-                reload_settings: '🔄 Lataa asetukset uudelleen',
-                view: 'Näytä',
-                no_images: 'Ei kuvia',
-                logo_settings: 'Logon asetukset',
-                logo_file: 'Logotiedosto:',
-                logo_file_desc: 'Valitse taustakuvaksi käytettävä logo (.png, .jpg, .svg)',
-                logo_url: 'Tai anna kuvan URL-osoite:',
-                logo_url_desc: 'Lataa logo suoraan URL-osoitteesta',
-                load_url: '📥 Lataa',
-                logo_opacity: 'Läpinäkyvyys:',
-                logo_blur: 'Sumennus:',
-                logo_position: 'Sijainti:',
-                logo_size: 'Koko:',
-                center: 'Keskällä',
-                top_left: 'Vasemmalla ylhäällä',
-                top_right: 'Oikealla ylhäällä',
-                bottom_left: 'Vasemmalla alhaalla',
-                bottom_right: 'Oikealla alhaalla',
-                contain: 'Mahtuu kokonaan',
-                cover: 'Peittää alueen',
-                small: 'Pieni (50%)',
-                medium: 'Keskikokoinen (75%)',
-                large: 'Suuri (100%)',
-                clear_logo: '🗑️ Poista logo',
-                tori_login_settings: 'Tori.fi kirjautuminen',
-                enable_tori_login: 'Aktivoi automaattinen kirjautuminen',
-                tori_login_desc: 'Botin kirjautuminen Tori.fi-palveluun parantaa hakutuloksia',
-                tori_username: 'Käyttäjätunnus/Sähköposti:',
-                tori_username_desc: 'Tori.fi-tilisi käyttäjätunnus tai sähköpostiosoite',
-                tori_password: 'Salasana:',
-                tori_password_desc: 'Tori.fi-tilisi salasana (tallennetaan turvallisesti)',
-                remember_session: 'Muista kirjautuminen',
-                remember_session_desc: 'Säästää istunnon uudelleenkäyttöä varten',
-                test_login: '🧪 Testaa kirjautuminen',
-                test_login_desc: 'Testaa kirjautumistiedot ennen tallennusta',
-                telegram_settings: 'Telegram-ilmoitukset',
-                enable_telegram: 'Aktivoi Telegram-ilmoitukset',
-                telegram_desc: 'Lähetä ilmoitus Telegramiin kun uusi tuote löytyy',
                 grid_view: 'Grid',
                 list_view: 'List',
                 search_products: 'Search products...',
@@ -932,7 +774,7 @@
                 most_common_location: 'Most Common Location',
                 success_rate: 'Valuation Rate',
                 loading: 'Loading...',
-                subtitle: 'Monitoring free items on Tori.fi',
+                subtitle: 'Monitoring buying requests on Tori.fi',
                 total_items: 'Total Items:',
                 last_updated: 'Last Updated:',
                 never: 'Never',
@@ -948,7 +790,7 @@
                 added: 'Added',
                 link: 'Link',
                 loading_products: 'Loading products...',
-                no_products: 'No products found yet. The bot will start monitoring shortly.',
+                no_products: 'No buying requests found yet. The bot will start monitoring shortly.',
                 bot_settings: 'Bot Settings',
                 general_settings: 'General Settings',
                 language: 'Language:',
@@ -1019,12 +861,12 @@
                 enable_telegram: 'Enable Telegram notifications',
                 telegram_desc: 'Send notification to Telegram when new product is found',
                 telegram_token: 'Bot Token:',
-                telegram_token_desc: 'Luo bot @BotFatherissa ja kopioi token tähän',
+                telegram_token_desc: 'Create bot with @BotFather and copy token here',
                 telegram_chat_id: 'Chat ID:',
-                telegram_chat_desc: 'Kanavan, ryhmän tai henkilökohtaisen chatin tunniste',
-                telegram_include_images: 'Sisällytä kuvat ilmoituksiin',
-                test_telegram: '🧪 Testaa Telegram-yhteys',
-                test_telegram_desc: 'Lähetä testivesti Telegramiin'
+                telegram_chat_desc: 'Channel, group or private chat identifier',
+                telegram_include_images: 'Include images in notifications',
+                test_telegram: '🧪 Test Telegram Connection',
+                test_telegram_desc: 'Send test message to Telegram'
             }
         };
         
@@ -1042,11 +884,6 @@
                     
                     const locale = currentLanguage === 'fi' ? 'fi-FI' : 'en-US';
                     document.getElementById('last-update-time').textContent = new Date().toLocaleTimeString(locale);
-                    
-                    // Initialize logs if on dashboard
-                    if (currentPage === 'dashboard') {
-                        initializeLogs();
-                    }
                 } else {
                     showError('Failed to load dashboard data');
                 }
@@ -1087,54 +924,10 @@
                 const productCard = document.createElement('div');
                 productCard.className = 'product-preview-card';
                 
-                // Create image element safely
-                const previewImage = document.createElement('div');
-                previewImage.className = 'preview-image';
-                
-                const img = document.createElement('img');
                 const image = product.image_files && product.image_files[0] 
                     ? `/images/${product.image_files[0]}` 
                     : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23e0e0e0"/><text x="50" y="50" text-anchor="middle" dy=".3em" fill="%23999">📦</text></svg>';
                 
-                img.src = image;
-                img.alt = product.title || 'Product';
-                img.onerror = () => {
-                    img.style.display = 'none';
-                    noImageDiv.style.display = 'flex';
-                };
-                
-                const noImageDiv = document.createElement('div');
-                noImageDiv.className = 'no-image';
-                noImageDiv.style.display = 'none';
-                noImageDiv.innerHTML = '<i class="fas fa-image"></i>';
-                
-                previewImage.appendChild(img);
-                previewImage.appendChild(noImageDiv);
-                
-                // Create content safely
-                const previewContent = document.createElement('div');
-                previewContent.className = 'preview-content';
-                
-                const title = document.createElement('h4');
-                title.textContent = product.title || 'Ei otsikkoa';
-                previewContent.appendChild(title);
-                
-                const locationP = document.createElement('p');
-                locationP.className = 'preview-location';
-                locationP.innerHTML = '<i class="fas fa-map-marker-alt"></i> ';
-                locationP.appendChild(document.createTextNode(product.location || 'Ei sijaintia'));
-                previewContent.appendChild(locationP);
-                
-                if (product.valuation?.price_estimate) {
-                    const valueP = document.createElement('p');
-                    valueP.className = 'preview-value';
-                    valueP.innerHTML = '<i class="fas fa-euro-sign"></i> ';
-                    valueP.appendChild(document.createTextNode(product.valuation.price_estimate + '€'));
-                    previewContent.appendChild(valueP);
-                }
-                
-                productCard.appendChild(previewImage);
-                productCard.appendChild(previewContent);
                 productCard.innerHTML = `
                     <div class="preview-image">
                         <img src="${image}" alt="${product.title || 'Product'}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
@@ -1170,116 +963,6 @@
             const openaiEnabled = settings.openai?.enabled && settings.openai?.api_key;
             document.getElementById('openai-status').textContent = openaiEnabled ? 'Aktiivinen' : 'Pois käytöstä';
         }
-        
-        let logsIntervalId;
-
-        // Real-time logs functionality
-        function initializeLogs() {
-            // Simulate real-time log updates
-            updateLogs();
-            
-            // Refresh logs every 5 seconds, avoid creating multiple intervals
-            if (logsIntervalId) {
-                clearInterval(logsIntervalId);
-            }
-            logsIntervalId = setInterval(updateLogs, 5000);
-            
-            // Event listeners for log controls
-            const clearLogsBtn = document.getElementById('clear-logs-btn');
-            const refreshLogsBtn = document.getElementById('refresh-logs-btn');
-            
-            if (clearLogsBtn && !clearLogsBtn.dataset.listenerAttached) {
-                clearLogsBtn.addEventListener('click', clearLogs);
-                clearLogsBtn.dataset.listenerAttached = 'true';
-            }
-            
-            if (refreshLogsBtn && !refreshLogsBtn.dataset.listenerAttached) {
-                refreshLogsBtn.addEventListener('click', updateLogs);
-                refreshLogsBtn.dataset.listenerAttached = 'true';
-            }
-        }
-        
-        function updateLogs() {
-            const logsContainer = document.getElementById('logs-container');
-            if (!logsContainer) return;
-            
-            const now = new Date();
-            const timestamp = now.toLocaleTimeString('fi-FI');
-            
-            // Simulate different log types based on current state
-            const logTypes = [
-                { level: 'INFO', color: 'log-info', message: 'Tarkistetaan uusia tuotteita Tori.fi:stä...' },
-                { level: 'INFO', color: 'log-info', message: `Löydettiin ${allProducts.length} tuotetta yhteensä` },
-                { level: 'INFO', color: 'log-info', message: 'Yhteys Tori.fi palvelimeen toimii' }
-            ];
-            
-            // Add a random log entry occasionally
-            if (Math.random() < 0.3) {
-                const randomLog = logTypes[Math.floor(Math.random() * logTypes.length)];
-                
-                const existingNotes = logsContainer.querySelectorAll('.log-note');
-                const logLine = document.createElement('div');
-                logLine.className = 'log-line';
-
-                const timestampSpan = document.createElement('span');
-                timestampSpan.className = 'log-timestamp';
-                timestampSpan.textContent = `[${timestamp}]`;
-
-                const levelSpan = document.createElement('span');
-                levelSpan.className = `log-level ${randomLog.color}`;
-                levelSpan.textContent = `[${randomLog.level}]`;
-
-                const messageSpan = document.createElement('span');
-                messageSpan.className = 'log-message';
-                messageSpan.textContent = randomLog.message;
-
-                logLine.appendChild(timestampSpan);
-                logLine.appendChild(levelSpan);
-                logLine.appendChild(messageSpan);
-                
-                // Insert before the notes
-                if (existingNotes.length > 0) {
-                    logsContainer.insertBefore(logLine, existingNotes[0]);
-                } else {
-                    logsContainer.appendChild(logLine);
-                }
-                
-                // Keep only last 10 log lines
-                const allLogLines = () => logsContainer.querySelectorAll('.log-line');
-                while (allLogLines().length > 10) {
-                    allLogLines()[0].remove();
-                }
-                
-                // Auto-scroll to bottom
-                logsContainer.scrollTop = logsContainer.scrollHeight;
-            }
-        }
-        
-        function clearLogs() {
-            const logsContainer = document.getElementById('logs-container');
-            if (!logsContainer) return;
-            
-            // Remove all log lines but keep the notes
-            const logLines = logsContainer.querySelectorAll('.log-line');
-            logLines.forEach(line => line.remove());
-            
-            // Add a clear message
-            const clearMessage = document.createElement('div');
-            clearMessage.className = 'log-line';
-            clearMessage.innerHTML = `
-                <span class="log-timestamp">[${new Date().toLocaleTimeString('fi-FI')}]</span>
-                <span class="log-level log-info">[INFO]</span>
-                <span class="log-message">Logit tyhjennetty käyttäjän toimesta</span>
-            `;
-            
-            const notes = logsContainer.querySelectorAll('.log-note');
-            if (notes.length > 0) {
-                logsContainer.insertBefore(clearMessage, notes[0]);
-            } else {
-                logsContainer.appendChild(clearMessage);
-            }
-        }
-        
         function setLanguage(lang) {
             currentLanguage = lang;
             document.querySelectorAll('[data-i18n]').forEach(element => {
@@ -1364,53 +1047,6 @@
             products.forEach(product => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                
-                // Create elements safely
-                const productImage = document.createElement('div');
-                productImage.className = 'product-image';
-                
-                if (product.image_files && product.image_files[0]) {
-                    const img = document.createElement('img');
-                    img.src = `/images/${product.image_files[0]}`;
-                    img.alt = product.title || 'Product';
-                    productImage.appendChild(img);
-                } else {
-                    const noImage = document.createElement('div');
-                    noImage.className = 'no-image';
-                    noImage.innerHTML = '<i class="fas fa-image"></i>';
-                    productImage.appendChild(noImage);
-                }
-                
-                const productInfo = document.createElement('div');
-                productInfo.className = 'product-info';
-                
-                const title = document.createElement('h3');
-                title.textContent = product.title || 'Ei otsikkoa';
-                productInfo.appendChild(title);
-                
-                const location = document.createElement('p');
-                location.className = 'location';
-                location.innerHTML = '<i class="fas fa-map-marker-alt"></i> ';
-                location.appendChild(document.createTextNode(product.location || 'Ei sijaintia'));
-                productInfo.appendChild(location);
-                
-                if (product.valuation?.price_estimate) {
-                    const value = document.createElement('p');
-                    value.className = 'value';
-                    value.innerHTML = '<i class="fas fa-euro-sign"></i> ';
-                    value.appendChild(document.createTextNode(product.valuation.price_estimate + '€'));
-                    productInfo.appendChild(value);
-                }
-                
-                const viewBtn = document.createElement('a');
-                viewBtn.href = product.url;
-                viewBtn.target = '_blank';
-                viewBtn.className = 'view-btn';
-                viewBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> Näytä';
-                productInfo.appendChild(viewBtn);
-                
-                card.appendChild(productImage);
-                card.appendChild(productInfo);
                 card.innerHTML = `
                     <div class="product-image">
                         ${product.image_files && product.image_files[0] 
@@ -2043,7 +1679,7 @@
             document.getElementById('valuation_interval').value = s.openai?.valuation_interval_minutes || 60;
             
             document.getElementById('server_host').value = s.server?.host || '127.0.0.1';
-            document.getElementById('server_port').value = s.server?.port || 8787;
+            document.getElementById('server_port').value = s.server?.port || 8789;
             
             // Tori login settings
             document.getElementById('tori_login_enabled').checked = s.tori_login?.enabled ?? false;
@@ -2545,7 +2181,7 @@
             }
         }, REFRESH_INTERVAL);
         
-        console.log('Tori Annataan Bot GUI loaded. Auto-refresh: 5min');
+        console.log('Tori Ostobotti GUI loaded. Auto-refresh: 5min');
     </script>
 </body>
 </html>
