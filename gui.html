@@ -1012,24 +1012,31 @@
             document.getElementById('openai-status').textContent = openaiEnabled ? 'Aktiivinen' : 'Pois käytöstä';
         }
         
+        let logsIntervalId;
+
         // Real-time logs functionality
         function initializeLogs() {
             // Simulate real-time log updates
             updateLogs();
             
-            // Refresh logs every 5 seconds
-            setInterval(updateLogs, 5000);
+            // Refresh logs every 5 seconds, avoid creating multiple intervals
+            if (logsIntervalId) {
+                clearInterval(logsIntervalId);
+            }
+            logsIntervalId = setInterval(updateLogs, 5000);
             
             // Event listeners for log controls
             const clearLogsBtn = document.getElementById('clear-logs-btn');
             const refreshLogsBtn = document.getElementById('refresh-logs-btn');
             
-            if (clearLogsBtn) {
+            if (clearLogsBtn && !clearLogsBtn.dataset.listenerAttached) {
                 clearLogsBtn.addEventListener('click', clearLogs);
+                clearLogsBtn.dataset.listenerAttached = 'true';
             }
             
-            if (refreshLogsBtn) {
+            if (refreshLogsBtn && !refreshLogsBtn.dataset.listenerAttached) {
                 refreshLogsBtn.addEventListener('click', updateLogs);
+                refreshLogsBtn.dataset.listenerAttached = 'true';
             }
         }
         
