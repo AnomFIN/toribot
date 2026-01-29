@@ -1292,7 +1292,8 @@ td {
             "stats"
             "actions"
             "recent"
-            "status";
+            "status"
+            "logs";
     }
     
     .stats-grid {

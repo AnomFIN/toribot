@@ -675,6 +675,7 @@
                 logs: 'Logit',
                 view_logs: 'Näytä logit',
                 clear_logs: 'Tyhjennä logit',
+                logs_cleared: 'Logit tyhjennetty käyttäjän toimesta',
                 logs_description: 'Botin toiminta ja tapahtumat',
                 real_time_logs: 'Reaaliaikaiset logit',
                 export_data: 'Vie tiedot',
@@ -810,6 +811,7 @@
                 logs: 'Logs',
                 view_logs: 'View Logs',
                 clear_logs: 'Clear Logs',
+                logs_cleared: 'Logs cleared by user',
                 logs_description: 'Bot activity and events',
                 real_time_logs: 'Real-time Logs',
                 export_data: 'Export Data',
@@ -1182,7 +1184,7 @@
             
             const message = document.createElement('span');
             message.className = 'log-message';
-            message.textContent = 'Logit tyhjennetty käyttäjän toimesta';
+            message.textContent = translations[currentLanguage].logs_cleared;
             
             clearMessage.appendChild(timestamp);
             clearMessage.appendChild(level);
