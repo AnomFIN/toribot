@@ -1086,10 +1086,9 @@
                 }
                 
                 // Keep only last 10 log lines
-                const logLines = logsContainer.querySelectorAll('.log-line');
-                while (logLines.length > 10) {
-                    logLines[0].remove();
-                    logLines = logsContainer.querySelectorAll('.log-line');
+                const allLogLines = () => logsContainer.querySelectorAll('.log-line');
+                while (allLogLines().length > 10) {
+                    allLogLines()[0].remove();
                 }
                 
                 // Auto-scroll to bottom
