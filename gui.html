@@ -1108,13 +1108,13 @@
             if (!logsContainer) return;
             
             const now = new Date();
-            const timestamp = now.toLocaleTimeString('fi-FI');
+            const timestamp = now.toLocaleTimeString('en-US');
             
             // Simulate different log types based on current state
             const logTypes = [
-                { level: 'INFO', color: 'log-info', message: 'Tarkistetaan uusia tuotteita Tori.fi:stä...' },
-                { level: 'INFO', color: 'log-info', message: `Löydettiin ${allProducts.length} tuotetta yhteensä` },
-                { level: 'INFO', color: 'log-info', message: 'Yhteys Tori.fi palvelimeen toimii' }
+                { level: 'INFO', color: 'log-info', message: 'Checking for new products on Tori.fi...' },
+                { level: 'INFO', color: 'log-info', message: `Found ${allProducts.length} products in total` },
+                { level: 'INFO', color: 'log-info', message: 'Connection to Tori.fi server active' }
             ];
             
             // Add a random log entry occasionally
@@ -1173,7 +1173,7 @@
             
             const timestampSpan = document.createElement('span');
             timestampSpan.className = 'log-timestamp';
-            timestampSpan.textContent = `[${new Date().toLocaleTimeString('fi-FI')}]`;
+            timestampSpan.textContent = `[${new Date().toLocaleTimeString('en-US')}]`;
             
             const levelSpan = document.createElement('span');
             levelSpan.className = 'log-level log-info';
