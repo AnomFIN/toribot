@@ -1003,7 +1003,9 @@
                 const noImageDiv = document.createElement('div');
                 noImageDiv.className = 'no-image';
                 noImageDiv.style.display = 'none';
-                noImageDiv.innerHTML = '<i class="fas fa-image"></i>';
+                const noImageIcon = document.createElement('i');
+                noImageIcon.className = 'fas fa-image';
+                noImageDiv.appendChild(noImageIcon);
                 
                 img.src = image;
                 img.alt = product.title || 'Product';
