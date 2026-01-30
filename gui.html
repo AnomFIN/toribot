@@ -675,6 +675,7 @@
                 logs: 'Logit',
                 view_logs: 'Näytä logit',
                 clear_logs: 'Tyhjennä logit',
+                logs_cleared: 'Logit tyhjennetty käyttäjän toimesta',
                 logs_description: 'Botin toiminta ja tapahtumat',
                 real_time_logs: 'Reaaliaikaiset logit',
                 export_data: 'Vie tiedot',
@@ -810,6 +811,7 @@
                 logs: 'Logs',
                 view_logs: 'View Logs',
                 clear_logs: 'Clear Logs',
+                logs_cleared: 'Logs cleared by user action',
                 logs_description: 'Bot activity and events',
                 real_time_logs: 'Real-time Logs',
                 export_data: 'Export Data',
@@ -961,6 +963,13 @@
                 avg_value: 'Average Value',
                 highest_value: 'Highest Value',
                 most_common_location: 'Most Common Location',
+                success_rate: 'Success Rate',
+                loading: 'Loading...',
+                subtitle: 'Tracking free products from Tori.fi',
+                total_items: 'Total Items:',
+                last_updated: 'Last Updated:',
+                never: 'Never',
+                auto_refresh: 'Auto Refresh:',
                 success_rate: 'Valuation Rate',
                 loading: 'Loading...',
                 subtitle: 'Tracking free items from Tori.fi',
@@ -984,6 +993,7 @@
                 added: 'Added',
                 link: 'Link',
                 loading_products: 'Loading products...',
+                no_products: 'No products found yet. Bot will start tracking soon.',
                 no_products: 'No products found yet. The bot will start monitoring shortly.',
                 bot_settings: 'Bot Settings',
                 general_settings: 'General Settings',
@@ -1000,6 +1010,7 @@
                 enable_valuations: 'Enable OpenAI Valuations',
                 api_key: 'API Key:',
                 api_key_desc: 'Securely stored in settings.json file',
+                api_key_desc: 'Saved securely to settings.json file',
                 model: 'Model:',
                 base_url: 'Base URL:',
                 valuation_interval: 'Valuation Interval (minutes):',
@@ -1008,6 +1019,7 @@
                 host: 'Host:',
                 port: 'Port:',
                 restart_required: 'Requires Restart',
+                restart_required: 'Restart Required',
                 save_settings: '💾 Save Settings',
                 reload_settings: '🔄 Reload Settings',
                 view: 'View',
@@ -1062,6 +1074,17 @@
                 clear_logo: '🗑️ Clear Logo',
                 tori_login_settings: 'Tori.fi Login',
                 enable_tori_login: 'Enable Automatic Login',
+                tori_login_desc: 'Bot login to Tori.fi improves search results',
+                tori_username: 'Username/Email:',
+                tori_username_desc: 'Your Tori.fi account username or email',
+                tori_password: 'Password:',
+                tori_password_desc: 'Your Tori.fi account password (saved securely)',
+                remember_session: 'Remember Login',
+                remember_session_desc: 'Saves session for reuse',
+                test_login: '🧪 Test Login',
+                test_login_desc: 'Test login credentials before saving',
+                telegram_settings: 'Telegram Notifications',
+                enable_telegram: 'Enable Telegram Notifications',
                 enable_tori_login: 'Enable automatic login',
                 tori_login_desc: 'Bot login to Tori.fi improves search results',
                 tori_username: 'Username/Email:',
@@ -1095,6 +1118,12 @@
                 telegram_include_images: 'Include Images in Notifications',
                 test_telegram: '🧪 Test Telegram Connection',
                 test_telegram_desc: 'Send a test message to Telegram'
+                telegram_token_desc: 'Create bot in @BotFather and copy token here',
+                telegram_chat_id: 'Chat ID:',
+                telegram_chat_desc: 'Channel, group or personal chat identifier',
+                telegram_include_images: 'Include images in notifications',
+                test_telegram: '🧪 Test Telegram Connection',
+                test_telegram_desc: 'Send test message to Telegram'
             }
         };
         
@@ -1161,6 +1190,11 @@
                 const previewImage = document.createElement('div');
                 previewImage.className = 'preview-image';
                 
+                const noImageDiv = document.createElement('div');
+                noImageDiv.className = 'no-image';
+                noImageDiv.style.display = 'none';
+                noImageDiv.innerHTML = '<i class="fas fa-image"></i>';
+                
                 const img = document.createElement('img');
                 const image = product.image_files && product.image_files[0] 
                     ? `/images/${product.image_files[0]}` 
@@ -1172,11 +1206,6 @@
                     img.style.display = 'none';
                     noImageDiv.style.display = 'flex';
                 };
-                
-                const noImageDiv = document.createElement('div');
-                noImageDiv.className = 'no-image';
-                noImageDiv.style.display = 'none';
-                noImageDiv.innerHTML = '<i class="fas fa-image"></i>';
                 
                 previewImage.appendChild(img);
                 previewImage.appendChild(noImageDiv);
@@ -1241,6 +1270,7 @@
             document.getElementById('openai-status').textContent = openaiEnabled ? 'Aktiivinen' : 'Pois käytöstä';
         }
         
+        let logUpdateInterval;
         let logsIntervalId;
 
         // Real-time logs functionality
@@ -1249,6 +1279,10 @@
             updateLogs();
             
             // Refresh logs every 5 seconds, avoid creating multiple intervals
+            if (logUpdateInterval) {
+                clearInterval(logUpdateInterval);
+            }
+            logUpdateInterval = setInterval(updateLogs, 5000);
             if (logsIntervalId) {
                 clearInterval(logsIntervalId);
             }
@@ -1274,7 +1308,8 @@
             if (!logsContainer) return;
             
             const now = new Date();
-            const timestamp = now.toLocaleTimeString('fi-FI');
+            const locale = currentLanguage === 'fi' ? 'fi-FI' : 'en-US';
+            const timestamp = now.toLocaleTimeString(locale);
             
             // Simulate different log types based on current state
             const logTypes = [
@@ -1290,6 +1325,19 @@
                 const existingNotes = logsContainer.querySelectorAll('.log-note');
                 const logLine = document.createElement('div');
                 logLine.className = 'log-line';
+                
+                const timestampSpan = document.createElement('span');
+                timestampSpan.className = 'log-timestamp';
+                timestampSpan.textContent = `[${timestamp}]`;
+                
+                const levelSpan = document.createElement('span');
+                levelSpan.className = `log-level ${randomLog.color}`;
+                levelSpan.textContent = `[${randomLog.level}]`;
+                
+                const messageSpan = document.createElement('span');
+                messageSpan.className = 'log-message';
+                messageSpan.textContent = randomLog.message;
+                
 
                 const timestampSpan = document.createElement('span');
                 timestampSpan.className = 'log-timestamp';
@@ -1336,11 +1384,23 @@
             // Add a clear message
             const clearMessage = document.createElement('div');
             clearMessage.className = 'log-line';
-            clearMessage.innerHTML = `
-                <span class="log-timestamp">[${new Date().toLocaleTimeString('fi-FI')}]</span>
-                <span class="log-level log-info">[INFO]</span>
-                <span class="log-message">Logit tyhjennetty käyttäjän toimesta</span>
-            `;
+            
+            const locale = currentLanguage === 'fi' ? 'fi-FI' : 'en-US';
+            const timestampSpan = document.createElement('span');
+            timestampSpan.className = 'log-timestamp';
+            timestampSpan.textContent = `[${new Date().toLocaleTimeString(locale)}]`;
+            
+            const levelSpan = document.createElement('span');
+            levelSpan.className = 'log-level log-info';
+            levelSpan.textContent = '[INFO]';
+            
+            const messageSpan = document.createElement('span');
+            messageSpan.className = 'log-message';
+            messageSpan.textContent = translations[currentLanguage].logs_cleared;
+            
+            clearMessage.appendChild(timestampSpan);
+            clearMessage.appendChild(levelSpan);
+            clearMessage.appendChild(messageSpan);
             
             const notes = logsContainer.querySelectorAll('.log-note');
             if (notes.length > 0) {
