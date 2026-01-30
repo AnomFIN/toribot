@@ -314,7 +314,7 @@ body {
         "stats stats"
         "actions actions"
         "recent status"
-        "recent status";
+        "logs logs";
 }
 
 .stats-grid {
@@ -1345,6 +1345,7 @@ td {
 
 /* Real-time Logs Styles */
 .real-time-logs {
+    grid-area: logs;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
     padding: 20px;
