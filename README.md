@@ -1,10 +1,100 @@
-# Tori Annataan Bot 🎁
+# Tori Bots 🎁💰
 
-Complete working bot for monitoring free items on Tori.fi with OpenAI-based valuation.
+Complete working bots for monitoring Tori.fi listings with OpenAI-based valuation.
+
+## 🎉 NEW: v2 Modern Dashboard Available!
+
+Experience the completely redesigned dashboard with modern UI, dark/light themes, and enhanced features!
+
+**Access v2:**
+- Toribot v2: http://127.0.0.1:8788/v2
+- Ostobotti v2: http://127.0.0.1:8789/v2
+
+**v1 still available at root URLs** (`/` instead of `/v2`)
+
+See [CHANGELOG_V2.md](CHANGELOG_V2.md) for full v2 features and improvements.
+
+## Two Bots Available
+
+### 1. Tori Annataan Bot 🎁
+Monitors **free items** ("Annataan" = Given away for free)
+- Port: 8788
+- Run with: `python3 toribot.py`
+- v1 GUI: http://127.0.0.1:8788
+- **v2 GUI: http://127.0.0.1:8788/v2** ⭐
+
+### 2. Tori Ostobotti 💰
+Monitors **wanted/buying requests** ("Ostetaan" = Wanted to buy)
+- Port: 8789
+- Run with: `python3 ostobotti.py`
+- v1 GUI: http://127.0.0.1:8789
+- **v2 GUI: http://127.0.0.1:8789/v2** ⭐
+- Full documentation: [OSTOBOTTI_README.md](OSTOBOTTI_README.md)
+
+Both bots can run simultaneously without conflicts!
+
+## Management Interfaces
+
+### 🖥️ TUI Controller (Recommended)
+Terminal-based interface to control both bots:
+```bash
+python3 toribot_controller.py
+```
+Features: Start/stop bots, view logs, check status (only one bot runs at a time)
+
+### 🌐 Unified Web GUI
+View data from both bots in one interface:
+- Open `unified_gui.html` in browser
+- Toggle between bots with animated slider
+- Shows real-time status for both
+
+See [CONTROLLER_README.md](CONTROLLER_README.md) for detailed documentation.
+
+## v2 Dashboard Features ⭐
+
+The new v2 dashboard provides a modern, professional interface:
+
+### 🎨 Design
+- **Dark/Light Themes**: Toggle between themes with one click
+- **Responsive Layout**: Works perfectly on desktop, tablet, and mobile
+- **Professional Components**: Cards, modals, toasts, badges, tables
+- **Smooth Animations**: Loading skeletons, transitions, hover effects
+
+### 📊 Dashboard
+- **KPI Cards**: Total products, new today, AI valuated, errors
+- **Quick Actions**: Fetch, valuate, refresh, export
+- **Recent Products**: Grid view with images and details
+- **Product Details**: Modal with full information and images
+
+### 🗂️ Products Page
+- **Advanced Filters**: Search, location, date, valuation status
+- **View Modes**: Toggle between grid and table view
+- **Pagination**: Navigate large datasets efficiently
+- **Sorting (coming soon)**: Sort by various fields
+
+### ⚙️ Settings
+- **General**: Poll interval, timeout, retries
+- **Images**: Enable/disable downloads, max images
+- **OpenAI**: API key, model selection, interval
+- **Server**: Host and port configuration
+
+### 📝 Logs
+- **Log Viewer**: Monospace font log output
+- **Auto-scroll**: Toggle automatic scrolling
+- **Copy/Clear**: Copy logs to clipboard or clear view
+
+### 🔔 User Experience
+- **Toast Notifications**: Success/error messages for all actions
+- **Loading States**: Skeleton loaders while data loads
+- **Empty States**: Helpful messages when no data exists
+- **Error States**: Clear error messages with retry buttons
+- **Real-Time Status**: Live bot status in header
+
+See [CHANGELOG_V2.md](CHANGELOG_V2.md) for complete v2 documentation and technical details.
 
 ## Features
 
-- 🔄 **Automatic Polling**: Checks Tori.fi every 60 seconds (configurable)
+- 🔄 **Automatic Polling**: Checks Tori.fi periodically (configurable)
 - 🖼️ **Image Download**: Downloads up to 5 images per item
 - 🤖 **OpenAI Valuation**: Automatic item valuation using GPT models
 - ⚙️ **Web GUI**: Modern interface with settings management
@@ -20,28 +110,49 @@ Complete working bot for monitoring free items on Tori.fi with OpenAI-based valu
 pip install -r requirements.txt
 ```
 
-### 2. Run the Bot
+### 2. Run the Bot(s)
 
+For **free items** bot:
 ```bash
 python3 toribot.py
 ```
 
+For **wanted/buying** bot:
+```bash
+python3 ostobotti.py
+```
+
+You can run both simultaneously!
+
 ### 3. Open GUI
 
-Open http://127.0.0.1:8787 in your browser
+- Annataan Bot (free items): http://127.0.0.1:8788
+- Ostobotti (buying requests): http://127.0.0.1:8789
 
 ## File Structure
 
 ```
 /toribot/
+  # Annataan Bot (Free Items)
   toribot.py            # Main bot application
   gui.html              # Web interface
-  styles.css            # Styling
-  requirements.txt      # Python dependencies
   products.json         # Product database (auto-created)
   settings.json         # Settings (auto-created)
   /debug/               # Debug logs (auto-created)
   /images/              # Downloaded images (auto-created)
+  
+  # Ostobotti (Wanted/Buying)
+  ostobotti.py          # Ostobotti application
+  ostobotti_gui.html    # Web interface
+  ostobotti_products.json  # Product database (auto-created)
+  ostobotti_settings.json  # Settings (auto-created)
+  /ostobotti_debug/     # Debug logs (auto-created)
+  /ostobotti_images/    # Downloaded images (auto-created)
+  
+  # Shared
+  styles.css            # Styling (shared)
+  requirements.txt      # Python dependencies (shared)
+  OSTOBOTTI_README.md   # Ostobotti documentation
 ```
 
 ## Settings

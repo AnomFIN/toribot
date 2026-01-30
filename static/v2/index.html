@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fi" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToriBot v2 - Modern Dashboard</title>
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pQq9YuqbWtaXDpUe1koXSPoaqe7iT730cdpShUMHbOWcZH/5LiCFYl8KKrkaI0s5momkM4Z5qX6L12HhDTXKAA==" crossorigin="anonymous">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/v2/styles/theme.css">
+  <link rel="stylesheet" href="/static/v2/styles/components.css">
+  <link rel="stylesheet" href="/static/v2/styles/layout.css">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-container">
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <!-- Sidebar Header -->
+      <div class="sidebar-header">
+        <a href="#" class="sidebar-logo">
+          <i class="fas fa-robot"></i>
+          <span>ToriBot v2</span>
+        </a>
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+
+      <!-- Sidebar Navigation -->
+      <div class="sidebar-nav">
+        <div class="nav-item">
+          <a href="#" class="nav-link active" data-page="dashboard">
+            <i class="fas fa-tachometer-alt nav-icon"></i>
+            <span class="nav-text">Dashboard</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="#" class="nav-link" data-page="products">
+            <i class="fas fa-box nav-icon"></i>
+            <span class="nav-text">Products</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="#" class="nav-link" data-page="logs">
+            <i class="fas fa-file-alt nav-icon"></i>
+            <span class="nav-text">Logs</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="#" class="nav-link" data-page="settings">
+            <i class="fas fa-cog nav-icon"></i>
+            <span class="nav-text">Settings</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+          <i class="fas fa-moon"></i>
+          <span>Dark Mode</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile Sidebar Backdrop -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-left">
+          <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1 class="header-title" id="page-title">Dashboard</h1>
+        </div>
+        <div class="header-right">
+          <div class="header-search">
+            <i class="fas fa-search header-search-icon"></i>
+            <input type="text" placeholder="Search products..." id="global-search">
+          </div>
+          <div class="language-toggle" id="language-toggle" title="Switch language / Vaihda kieli">
+            <button class="lang-btn" data-lang="fi" aria-label="Finnish / Suomi">
+              <span class="flag-icon">🇫🇮</span>
+            </button>
+            <button class="lang-btn" data-lang="en" aria-label="English / Englanti">
+              <span class="flag-icon">🇬🇧</span>
+            </button>
+          </div>
+          <div class="header-status">
+            <div class="status-indicator" id="status-indicator"></div>
+            <span id="status-text">Checking...</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="content" id="content">
+        <!-- Content will be loaded here dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Service Scripts -->
+  <script src="/static/v2/services/i18n.js"></script>
+  <script src="/static/v2/services/api.js"></script>
+  <script src="/static/v2/services/state.js"></script>
+  <script src="/static/v2/services/toast.js"></script>
+  <script src="/static/v2/services/ui.js"></script>
+
+  <!-- Feature Scripts -->
+  <script src="/static/v2/features/dashboard.js"></script>
+  <script src="/static/v2/features/products.js"></script>
+  <script src="/static/v2/features/logs.js"></script>
+  <script src="/static/v2/features/settings.js"></script>
+
+  <!-- Main App Script -->
+  <script src="/static/v2/app.js"></script>
+</body>
+</html>

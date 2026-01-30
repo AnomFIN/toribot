@@ -411,6 +411,91 @@ body {
     color: #667eea;
 }
 
+/* Multi-page fetch section */
+.multi-page-fetch {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.multi-page-fetch h4 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.1em;
+}
+
+.multi-page-fetch-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.multi-page-fetch-controls input[type="number"] {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.multi-page-fetch-controls .action-card {
+    flex: 1;
+}
+
+.multi-page-fetch small {
+    display: block;
+    margin-top: 8px;
+    opacity: 0.7;
+}
+
+.search-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.search-section h4 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.1em;
+}
+
+.search-input-container {
+    position: relative;
+    margin-top: 10px;
+}
+
+.search-input-container i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.search-input-container input[type="text"] {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.search-input-container input[type="text"]:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.search-section small {
+    display: block;
+    margin-top: 8px;
+    opacity: 0.7;
+}
+
 .recent-products {
     grid-area: recent;
 }
@@ -486,6 +571,53 @@ body {
 }
 
 .preview-value {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.preview-prices {
+    margin-top: 8px;
+}
+
+.preview-price-new {
+    margin: 2px 0;
+    font-size: 0.8em;
+    color: #999;
+}
+
+.preview-price-current {
+    margin: 2px 0;
+    font-size: 0.9em;
+    color: #28a745;
+    font-weight: 600;
+}
+
+.product-prices {
+    margin-top: 8px;
+}
+
+.price-new {
+    margin: 2px 0;
+    font-size: 0.85em;
+    color: #999;
+}
+
+.price-current {
+    margin: 2px 0;
+    font-size: 0.95em;
+    color: #28a745;
+    font-weight: 600;
+}
+
+.table-price-new {
+    margin: 2px 0;
+    font-size: 0.9em;
+    color: #999;
+}
+
+.table-price-current {
+    margin: 2px 0;
+    font-size: 1.1em;
     color: #28a745;
     font-weight: 600;
 }

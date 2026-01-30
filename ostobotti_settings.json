@@ -1,0 +1,28 @@
+{
+  "poll_interval_seconds": 300,
+  "listing_url": "https://www.tori.fi/recommerce/forsale/search?sort=PUBLISHED_DESC&trade_type=3",
+  "request_timeout_seconds": 15,
+  "max_retries": 2,
+  "products_per_page": 50,
+  "openai": {
+    "api_key": "",
+    "base_url": "https://api.openai.com/v1",
+    "model": "gpt-4o-mini",
+    "valuation_interval_minutes": 60,
+    "enabled": false
+  },
+  "images": {
+    "download_enabled": true,
+    "max_images_per_item": 5
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "port": 8789
+  },
+  "tori_login": {
+    "enabled": false,
+    "username": "",
+    "password": "",
+    "remember_session": true
+  }
+}
