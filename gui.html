@@ -1040,24 +1040,30 @@
                     previewContent.appendChild(valueP);
                 }
                 
+                // Add price information if available
+                if (product.valuation?.price_new || product.valuation?.price_current) {
+                    const pricesDiv = document.createElement('div');
+                    pricesDiv.className = 'preview-prices';
+                    
+                    if (product.valuation?.price_new) {
+                        const priceNewP = document.createElement('p');
+                        priceNewP.className = 'preview-price-new';
+                        priceNewP.textContent = `Hinta uutena: ~${product.valuation.price_new}€`;
+                        pricesDiv.appendChild(priceNewP);
+                    }
+                    
+                    if (product.valuation?.price_current) {
+                        const priceCurrentP = document.createElement('p');
+                        priceCurrentP.className = 'preview-price-current';
+                        priceCurrentP.textContent = `Arvo nyt: ${product.valuation.price_current}€`;
+                        pricesDiv.appendChild(priceCurrentP);
+                    }
+                    
+                    previewContent.appendChild(pricesDiv);
+                }
+                
                 productCard.appendChild(previewImage);
                 productCard.appendChild(previewContent);
-                productCard.innerHTML = `
-                    <div class="preview-image">
-                        <img src="${image}" alt="${product.title || 'Product'}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                        <div class="no-image" style="display:none"><i class="fas fa-image"></i></div>
-                    </div>
-                    <div class="preview-content">
-                        <h4>${product.title || 'Ei otsikkoa'}</h4>
-                        <p class="preview-location"><i class="fas fa-map-marker-alt"></i> ${product.location || 'Ei sijaintia'}</p>
-                        ${product.valuation?.price_new || product.valuation?.price_current ? `
-                            <div class="preview-prices">
-                                ${product.valuation?.price_new ? `<p class="preview-price-new">Hinta uutena: ~${product.valuation.price_new}€</p>` : ''}
-                                ${product.valuation?.price_current ? `<p class="preview-price-current">Arvo nyt: ${product.valuation.price_current}€</p>` : ''}
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
                 
                 productCard.addEventListener('click', () => {
                     window.open(product.url, '_blank');
@@ -1111,7 +1117,8 @@
             if (!logsContainer) return;
             
             const now = new Date();
-            const timestamp = now.toLocaleTimeString('fi-FI');
+            const locale = currentLanguage === 'fi' ? 'fi-FI' : 'en-US';
+            const timestamp = now.toLocaleTimeString(locale);
             
             // Simulate different log types based on current state
             const logTypes = [
@@ -1321,35 +1328,38 @@
                     productInfo.appendChild(value);
                 }
                 
+                // Add price information if available
+                if (product.valuation?.price_new || product.valuation?.price_current) {
+                    const pricesDiv = document.createElement('div');
+                    pricesDiv.className = 'product-prices';
+                    
+                    if (product.valuation?.price_new) {
+                        const priceNewP = document.createElement('p');
+                        priceNewP.className = 'price-new';
+                        priceNewP.textContent = `Hinta uutena: ~${product.valuation.price_new}€`;
+                        pricesDiv.appendChild(priceNewP);
+                    }
+                    
+                    if (product.valuation?.price_current) {
+                        const priceCurrentP = document.createElement('p');
+                        priceCurrentP.className = 'price-current';
+                        priceCurrentP.textContent = `Arvo nyt: ${product.valuation.price_current}€`;
+                        pricesDiv.appendChild(priceCurrentP);
+                    }
+                    
+                    productInfo.appendChild(pricesDiv);
+                }
+                
                 const viewBtn = document.createElement('a');
-                viewBtn.href = product.url;
+                viewBtn.href = product.url || '#';
                 viewBtn.target = '_blank';
                 viewBtn.className = 'view-btn';
-                viewBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> Näytä';
+                viewBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> ';
+                viewBtn.appendChild(document.createTextNode('Näytä'));
                 productInfo.appendChild(viewBtn);
                 
                 card.appendChild(productImage);
                 card.appendChild(productInfo);
-                card.innerHTML = `
-                    <div class="product-image">
-                        ${product.image_files && product.image_files[0] 
-                            ? `<img src="/images/${product.image_files[0]}" alt="${product.title}">`
-                            : '<div class="no-image"><i class="fas fa-image"></i></div>'}
-                    </div>
-                    <div class="product-info">
-                        <h3>${product.title || 'Ei otsikkoa'}</h3>
-                        <p class="location"><i class="fas fa-map-marker-alt"></i> ${product.location || 'Ei sijaintia'}</p>
-                        ${product.valuation?.price_new || product.valuation?.price_current ? `
-                            <div class="product-prices">
-                                ${product.valuation?.price_new ? `<p class="price-new">Hinta uutena: ~${product.valuation.price_new}€</p>` : ''}
-                                ${product.valuation?.price_current ? `<p class="price-current">Arvo nyt: ${product.valuation.price_current}€</p>` : ''}
-                            </div>
-                        ` : ''}
-                        <a href="${product.url}" target="_blank" class="view-btn">
-                            <i class="fas fa-external-link-alt"></i> Näytä
-                        </a>
-                    </div>
-                `;
                 container.appendChild(card);
             });
         }
