@@ -1023,20 +1023,15 @@
                 search_products_title: 'Search Products',
                 search_placeholder: 'Type at least 3 characters...',
                 search_desc: 'Search updates automatically as you type'
-                search_desc: 'Search updates automatically as you type',
                 telegram_settings: 'Telegram Notifications',
                 enable_telegram: 'Enable Telegram notifications',
                 telegram_desc: 'Send notification to Telegram when new product is found',
                 telegram_token: 'Bot Token:',
-                telegram_token_desc: 'Create a bot with @BotFather and copy the token here',
                 telegram_chat_id: 'Chat ID:',
                 telegram_chat_desc: 'Channel, group or personal chat identifier',
-                telegram_include_images: 'Include Images in Notifications',
                 test_telegram: '🧪 Test Telegram Connection',
                 test_telegram_desc: 'Send a test message to Telegram'
                 telegram_token_desc: 'Create bot in @BotFather and copy token here',
-                telegram_chat_id: 'Chat ID:',
-                telegram_chat_desc: 'Channel, group or personal chat identifier',
                 telegram_include_images: 'Include images in notifications',
                 test_telegram: '🧪 Test Telegram Connection',
                 test_telegram_desc: 'Send test message to Telegram'
@@ -1116,6 +1111,13 @@
                 const image = product.image_files && product.image_files[0] 
                     ? `/images/${product.image_files[0]}` 
                     : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23e0e0e0"/><text x="50" y="50" text-anchor="middle" dy=".3em" fill="%23999">📦</text></svg>';
+                
+                const noImageDiv = document.createElement('div');
+                noImageDiv.className = 'no-image';
+                noImageDiv.style.display = 'none';
+                const noImageIcon = document.createElement('i');
+                noImageIcon.className = 'fas fa-image';
+                noImageDiv.appendChild(noImageIcon);
                 
                 img.src = image;
                 img.alt = product.title || 'Product';
@@ -1236,9 +1238,9 @@
             
             // Simulate different log types based on current state
             const logTypes = [
-                { level: 'INFO', color: 'log-info', message: 'Tarkistetaan uusia tuotteita Tori.fi:stä...' },
-                { level: 'INFO', color: 'log-info', message: `Löydettiin ${allProducts.length} tuotetta yhteensä` },
-                { level: 'INFO', color: 'log-info', message: 'Yhteys Tori.fi palvelimeen toimii' }
+                { level: 'INFO', color: 'log-info', message: 'Checking for new products on Tori.fi...' },
+                { level: 'INFO', color: 'log-info', message: `Found ${allProducts.length} products in total` },
+                { level: 'INFO', color: 'log-info', message: 'Connection to Tori.fi server active' }
             ];
             
             // Add a random log entry occasionally
